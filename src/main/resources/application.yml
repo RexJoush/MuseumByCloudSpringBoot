@@ -1,0 +1,23 @@
+# 数据库连接信息
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://www.rexjoush.com:3306/museum?serverTimezone=UTC
+    username: root
+    password: liyihang123
+
+
+# mybatis 信息
+mybatis:
+  # 加载 Mybatis 映射文件
+  mapper-locations: classpath:mapper/*Mapper.xml
+  # 配置 pojo 别名
+  type-aliases-package: com.nwu.entity
+
+  # 配置下划线自动转驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+
+# server 端口
+server:
+  port: 8081
