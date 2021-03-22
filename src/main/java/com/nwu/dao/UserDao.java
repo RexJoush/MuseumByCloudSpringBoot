@@ -22,8 +22,12 @@ public interface UserDao {
      * 查询所有用户
      * @return 用户列表
      */
-    List<User> findAll();
+    List<User> findAll(int pageStart, int pageSize);
 
-
+    /**
+     * 获取用户的数量
+     * @return 用户数量
+     */
+    int getUserAmount();
 
 }

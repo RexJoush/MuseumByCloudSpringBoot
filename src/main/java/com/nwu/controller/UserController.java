@@ -1,6 +1,7 @@
 package com.nwu.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.QueryInfo;
 import com.nwu.entity.User;
 import com.nwu.service.UserService;
 import com.nwu.util.TokenUtils;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +20,14 @@ import java.util.Map;
  * @time 2021.03.18
  */
 
+/**
+ * 用户相关的 controller 层
+ */
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+
 
     @Resource
     private UserService userService;
@@ -34,8 +39,8 @@ public class UserController {
     @RequestMapping("/login")
     public Map<String, Object> login(String username, String password) {
 
-        System.out.println(password);
-        System.out.println(username);
+//        System.out.println(password);
+//        System.out.println(username);
 
         // 根据用户名密码进行查询用户
         User user = userService.login(username.trim(), DigestUtils.sha256Hex(password.trim()));
@@ -66,9 +71,7 @@ public class UserController {
     @RequestMapping("/info")
     public String getUserInfo(){
 
-        System.out.println("info");
         Map<String, Object> result = new HashMap<>();
-
 
         return JSON.toJSONString("User Info");
 
@@ -76,9 +79,6 @@ public class UserController {
 
     @RequestMapping("/logout")
     public String logout(){
-
-        System.out.println("logout");
-
 
         Map<String, Object> result = new HashMap<>();
         result.put("code",2200);
@@ -89,23 +89,23 @@ public class UserController {
     }
 
     @RequestMapping("/getUsers")
-    public String findAll(HttpServletRequest request){
+    public String findAll(QueryInfo queryInfo){
 
-        System.out.println("getUsers");
-
-        String token = request.getHeader("token");
-
-        String username = tokenUtils.getUsernameFromToken(token);
-
-        System.out.println(username);
+        int total = userService.getUserAmount();
+        int pageStart = (queryInfo.getPageStart() - 1) * queryInfo.getPageSize();
 
 
-        List<User> users = userService.findAll();
+        List<User> users = userService.findAll(pageStart, queryInfo.getPageSize());
 
         Map<String, Object> result = new HashMap<>();
-        result.put("data", users);
-
+        Map<String, Object> data = new HashMap<>();
+        data.put("data", users);
+        data.put("total", total);
+        result.put("code",1200);
+        result.put("message","获取用户列表成功");
+        result.put("data", data);
         return JSON.toJSONString(result);
+
 
     }
 

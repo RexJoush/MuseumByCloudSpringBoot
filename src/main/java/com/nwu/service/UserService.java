@@ -8,6 +8,10 @@ import java.util.List;
  * @author Rex Joush
  * @time 2021.03.18
  */
+
+/**
+ * 用户相关的 service 层接口
+ */
 public interface UserService {
 
     /**
@@ -20,6 +24,12 @@ public interface UserService {
      * 查询所有用户
      * @return 用户列表
      */
-    List<User> findAll();
+    List<User> findAll(int pageStart, int pageSize);
+
+    /**
+     * 获取用户的数量
+     * @return 用户数量
+     */
+    int getUserAmount();
 
 }

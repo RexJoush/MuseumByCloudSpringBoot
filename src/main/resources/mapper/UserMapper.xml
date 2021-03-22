@@ -13,6 +13,11 @@
 
     <select id="findAll" resultType="user">
         SELECT *
+        FROM user LIMIT #{pageStart}, #{pageSize}
+    </select>
+
+    <select id="getUserAmount" resultType="int">
+        SELECT count(id)
         FROM user
     </select>
 </mapper>
