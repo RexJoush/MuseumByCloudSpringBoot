@@ -102,7 +102,7 @@ public class CronJobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping()
+    @RequestMapping("/createOrReplaceCronJob")
     public String createOrReplaceCronJob(InputStream yamlInputStream){
         CronJob aCronJob = cronJobsService.createOrReplaceCronJob(yamlInputStream);
 
