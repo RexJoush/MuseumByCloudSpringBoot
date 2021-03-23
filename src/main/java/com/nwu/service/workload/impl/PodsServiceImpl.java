@@ -17,6 +17,9 @@ import java.util.List;
  */
 @Service
 public class PodsServiceImpl implements PodsService {
+    public static void main(String[] args) {
+        System.out.println(new PodsServiceImpl().findAllPods());
+    }
 
 
     @Override
