@@ -1,7 +1,13 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.DaemonSetsService;
+import com.nwu.util.KubernetesConfig;
+import io.fabric8.kubernetes.api.model.apps.DaemonSet;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
+
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * @author Rex Joush
@@ -13,5 +19,59 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DaemonSetsServiceImpl implements DaemonSetsService {
+    @Override
+    public List<DaemonSet> findAllDaemonSets(){
+
+        List<DaemonSet> items = KubernetesConfig.client.apps().daemonSets().inAnyNamespace().list().getItems();
+
+        return items;
+
+    }
+
+    @Override
+    public List<DaemonSet> findDaemonSetsByNamespace(String namespace) {
+
+        List<DaemonSet> items = KubernetesConfig.client.apps().daemonSets().inNamespace(namespace).list().getItems();
+
+        return items;
+    }
+
+    @Override
+    public Boolean deleteDaemonSetByNameAndNamespace(String name, String namespace){
+        Boolean delete = KubernetesConfig.client.apps().daemonSets().inNamespace(namespace).withName(name).delete();
+        return delete;
+    }
+
+    @Override
+    public DaemonSet loadDaemonSetFromYaml(InputStream yamlInputStream){
+        DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
+        return daemonSet;
+    }
+
+    @Override
+    public DaemonSet createDaemonSetByYaml(InputStream yamlInputStream){
+
+        DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
+        String nameSpace = daemonSet.getMetadata().getNamespace();
+        try {
+            daemonSet = KubernetesConfig.client.apps().daemonSets().inNamespace(nameSpace).create(daemonSet);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DaemonSetsServiceImpl类的createDaemonSetByYaml方法");
+        }
+        return daemonSet;
+    }
+
+    @Override
+    public DaemonSet createOrReplaceDaemonSet(InputStream yamlInputStream){
+        DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
+        String nameSpace = daemonSet.getMetadata().getNamespace();
+
+        try {
+            daemonSet = KubernetesConfig.client.apps().daemonSets().inNamespace(nameSpace).createOrReplace(daemonSet);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DaemonSetsServiceImpl类的createOrReplaceDaemonSet方法");
+        }
+        return daemonSet;
+    }
 
 }

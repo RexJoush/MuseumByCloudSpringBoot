@@ -1,0 +1,20 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: crontab-job
+  namespace: default
+spec:
+  schedule: "1 5 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: crontab-job
+              image: 'your-domain.com/your-project-path:version'
+              args:
+                - /usr/bin/php
+                - /www/demo.php
+          imagePullSecrets:
+            - name: secret
+          restartPolicy: OnFailure

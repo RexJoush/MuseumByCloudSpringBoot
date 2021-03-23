@@ -1,14 +1,17 @@
 package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.service.workload.PodsService;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.models.V1PodList;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +24,7 @@ import java.util.Map;
 /**
  * Pods 的 controller 层
  */
+
 @RequestMapping("/pods")
 @RestController
 public class PodsController {
@@ -57,5 +61,47 @@ public class PodsController {
         return JSON.toJSONString(result);
 
     }
+
+    @RequestMapping("deletePodByNameAndNamespace")
+    public String deletePodByNameAndNamespace(String name, String namespace){
+        Boolean delete = podsService.deletePodByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "删除 Pod 成功");
+        result.put("data", delete);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("loadPodFromYaml")
+    public String loadPodFromYaml(InputStream yamlInputStream){
+
+        Pod aPod = podsService.loadPodFromYaml(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载 Pod 成功");
+        result.put("data", aPod);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("createPodFromYaml")
+    public String createPodFromYaml(InputStream yamlInputStream){
+
+        Pod aPod = podsService.createPodByYaml(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 Pod 成功");
+        result.put("data", aPod);
+
+        return JSON.toJSONString(result);
+    }
+
 
 }

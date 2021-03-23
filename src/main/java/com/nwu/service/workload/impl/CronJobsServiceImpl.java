@@ -1,7 +1,13 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.CronJobsService;
+import com.nwu.util.KubernetesConfig;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * @author Rex Joush
@@ -14,4 +20,63 @@ import org.springframework.stereotype.Service;
 @Service
 public class CronJobsServiceImpl implements CronJobsService {
 
+    @Override
+    public List<CronJob> findAllCronJobs(){
+
+        List<CronJob> items = KubernetesConfig.client.batch().cronjobs().inAnyNamespace().list().getItems();
+
+        return items;
+
+    }
+
+    @Override
+    public List<CronJob> findCronJobsByNamespace(String namespace) {
+
+        List<CronJob> items = KubernetesConfig.client.batch().cronjobs().inNamespace(namespace).list().getItems();
+
+        return items;
+    }
+
+    @Override
+    public Boolean deleteCronJobByNameAndNamespace(String name, String namespace){
+
+        Boolean delete = KubernetesConfig.client.batch().cronjobs().inNamespace(namespace).withName(name).delete();
+
+        return delete;
+    }
+
+    @Override
+    public CronJob loadCronJobFromYaml(InputStream yamlInputStream){
+
+        CronJob cronJob = KubernetesConfig.client.batch().cronjobs().load(yamlInputStream).get();
+
+        return cronJob;
+    }
+
+    @Override
+    public CronJob createCronJobByYaml(InputStream yamlInputStream){
+
+        CronJob cronJob = KubernetesConfig.client.batch().cronjobs().load(yamlInputStream).get();
+        String nameSpace = cronJob.getMetadata().getNamespace();
+        try {
+            cronJob = KubernetesConfig.client.batch().cronjobs().inNamespace(nameSpace).create(cronJob);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在CronJobsServiceImpl类的createCronJobByYaml方法");
+        }
+        return cronJob;
+    }
+
+    @Override
+    public CronJob createOrReplaceCronJob(InputStream yamlInputStream){
+
+        CronJob cronJob = KubernetesConfig.client.batch().cronjobs().load(yamlInputStream).get();
+        String nameSpace = cronJob.getMetadata().getNamespace();
+
+        try {
+            cronJob = KubernetesConfig.client.batch().cronjobs().inNamespace(nameSpace).createOrReplace(cronJob);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在CronJobsServiceImpl类的createCronJobByYaml方法");
+        }
+        return cronJob;
+    }
 }

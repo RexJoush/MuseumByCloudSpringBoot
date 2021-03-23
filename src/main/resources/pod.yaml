@@ -1,0 +1,10 @@
+apiVersion: v1        　　          #必选，版本号，例如v1,版本号必须可以用 kubectl api-versions 查询到 .
+kind: Pod       　　　　　　         #必选，Pod
+metadata:       　　　　　　         #必选，元数据
+    name: zqyPodTest        　　          #必选，Pod名称
+spec:         　　　　　　　            #必选，Pod中容器的详细定义
+    containers:       　　　　            #必选，Pod中容器列表
+        - name: zqy      　　                #必选，容器名称,需符合RFC 1035规范
+          image: nginx     　　                #必选，容器的镜像名称
+          imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure #Pod的重启策略，Always表示一旦不管以何种方式终止运行，kubelet都将重启，OnFailure表示只有Pod以非0退出码退出才重启，Nerver表示不再重启该Pod
