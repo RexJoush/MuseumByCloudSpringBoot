@@ -52,4 +52,11 @@ public interface JobsService {
      * @return 创建的job
      */
     Job createJobByYaml(InputStream yamlInputStream);
+
+    /**
+     * 通过yaml文件创建或更新Job
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 创建或更新的job
+     */
+    Job createOrReplaceJob(InputStream yamlInputStream);
 }

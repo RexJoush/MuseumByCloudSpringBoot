@@ -101,4 +101,16 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/createOrReplaceDeployment")
+    public String createOrReplaceDeployment(InputStream yamlInputStream){
+        Deployment aDeployment = deploymentsService.createOrReplaceDeployment(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 Deployment 成功");
+        result.put("data", aDeployment);
+
+        return JSON.toJSONString(result);
+    }
 }

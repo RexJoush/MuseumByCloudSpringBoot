@@ -51,4 +51,11 @@ public interface ReplicationControllersService {
      * @return 创建的ReplicationController
      */
     ReplicationController createReplicationControllerByYaml(InputStream yamlInputStream);
+
+    /**
+     * 通过yaml文件创建或更新ReplicationController
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 创建或更新的ReplicationController
+     */
+    ReplicationController createOrReplaceReplicationController(InputStream yamlInputStream);
 }

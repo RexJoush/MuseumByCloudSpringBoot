@@ -101,8 +101,19 @@ public class DaemonSetsController {
         result.put("data", daemonSet);
 
         return JSON.toJSONString(result);
-
     }
 
+    @RequestMapping("/createOrReplaceDaemonSet")
+    public String createOrReplaceDaemonSet(InputStream yamlInputStream){
+        DaemonSet aDaemonSet = daemonSetsService.createOrReplaceDaemonSet(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 DaemonSet 成功");
+        result.put("data", aDaemonSet);
+
+        return JSON.toJSONString(result);
+    }
 
 }

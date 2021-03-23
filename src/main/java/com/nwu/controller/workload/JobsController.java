@@ -101,4 +101,18 @@ public class JobsController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/createOrReplaceJob")
+    public String createOrReplaceJob(InputStream yamlInputStream){
+        Job aJob = jobsService.createOrReplaceJob(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 Job 成功");
+        result.put("data", aJob);
+
+        return JSON.toJSONString(result);
+    }
+
 }

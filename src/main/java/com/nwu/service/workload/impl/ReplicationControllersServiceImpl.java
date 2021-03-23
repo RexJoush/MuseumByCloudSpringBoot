@@ -66,4 +66,18 @@ public class ReplicationControllersServiceImpl implements ReplicationControllers
         return replicationController;
     }
 
+    @Override
+    public ReplicationController createOrReplaceReplicationController(InputStream yamlInputStream){
+
+        ReplicationController replicationController = KubernetesConfig.client.replicationControllers().load(yamlInputStream).get();
+        String nameSpace = replicationController.getMetadata().getNamespace();
+
+        try {
+            replicationController = KubernetesConfig.client.replicationControllers().inNamespace(nameSpace).createOrReplace(replicationController);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ReplicationControllersServiceImpl类的createOrReplaceReplicationController方法");
+        }
+        return replicationController;
+    }
+
 }

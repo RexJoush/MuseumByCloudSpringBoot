@@ -100,4 +100,17 @@ public class ReplicaSetsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/createOrReplaceReplicaSet")
+    public String createOrReplaceReplicaSet(InputStream yamlInputStream){
+        ReplicaSet aReplicaSet = replicaSetsService.createOrReplaceReplicaSet(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 ReplicaSet 成功");
+        result.put("data", aReplicaSet);
+
+        return JSON.toJSONString(result);
+    }
+
 }

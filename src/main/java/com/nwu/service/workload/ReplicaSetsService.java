@@ -52,4 +52,12 @@ public interface ReplicaSetsService {
      * @return 创建的ReplicaSet
      */
     ReplicaSet createReplicaSetByYaml(InputStream yamlInputStream);
+
+    /**
+     * 通过yaml文件创建或更新ReplicaSet
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 创建或更新的ReplicaSet
+     */
+    ReplicaSet createOrReplaceReplicaSet(InputStream yamlInputStream);
+
 }

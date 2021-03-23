@@ -66,4 +66,17 @@ public class DeploymentsServiceImpl implements DeploymentsService {
         return deployment;
     }
 
+    @Override
+    public Deployment createOrReplaceDeployment(InputStream yamlInputStream){
+
+        Deployment deployment = KubernetesConfig.client.apps().deployments().load(yamlInputStream).get();
+        String nameSpace = deployment.getMetadata().getNamespace();
+
+        try {
+            deployment = KubernetesConfig.client.apps().deployments().inNamespace(nameSpace).createOrReplace(deployment);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DeploymentsServiceImpl类的createOrReplaceDeployment方法");
+        }
+        return deployment;
+    }
 }

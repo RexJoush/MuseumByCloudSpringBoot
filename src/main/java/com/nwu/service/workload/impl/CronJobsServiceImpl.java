@@ -75,7 +75,7 @@ public class CronJobsServiceImpl implements CronJobsService {
         try {
             cronJob = KubernetesConfig.client.batch().cronjobs().inNamespace(nameSpace).createOrReplace(cronJob);
         }catch(Exception e){
-            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在CronJobsServiceImpl类的createCronJobByYaml方法");
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在CronJobsServiceImpl类的createOrReplaceCronJob方法");
         }
         return cronJob;
     }

@@ -100,4 +100,18 @@ public class ReplicationControllersController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/createOrReplaceReplicationController")
+    public String createOrReplaceReplicationController(InputStream yamlInputStream){
+        ReplicationController aReplicationController = replicationControllersService.createOrReplaceReplicationController(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 ReplicationController 成功");
+        result.put("data", aReplicationController);
+
+        return JSON.toJSONString(result);
+    }
+
 }

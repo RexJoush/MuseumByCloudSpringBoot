@@ -68,4 +68,18 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
         return replicaSet;
     }
 
+    @Override
+    public ReplicaSet createOrReplaceReplicaSet(InputStream yamlInputStream){
+
+        ReplicaSet replicaSet = KubernetesConfig.client.apps().replicaSets().load(yamlInputStream).get();
+        String nameSpace = replicaSet.getMetadata().getNamespace();
+
+        try {
+            replicaSet = KubernetesConfig.client.apps().replicaSets().inNamespace(nameSpace).createOrReplace(replicaSet);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ReplicaSetsServiceImpl类的createOrReplaceReplicaSet方法");
+        }
+        return replicaSet;
+    }
+
 }

@@ -65,4 +65,18 @@ public class JobsServiceImpl implements JobsService {
         }
         return job;
     }
+
+    @Override
+    public Job createOrReplaceJob(InputStream yamlInputStream){
+
+        Job job = KubernetesConfig.client.batch().jobs().load(yamlInputStream).get();
+        String nameSpace = job.getMetadata().getNamespace();
+
+        try {
+            job = KubernetesConfig.client.batch().jobs().inNamespace(nameSpace).createOrReplace(job);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在JobsServiceImpl类的createOrReplaceJob方法");
+        }
+        return job;
+    }
 }

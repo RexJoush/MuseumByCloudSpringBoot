@@ -67,4 +67,18 @@ public class PodsServiceImpl implements PodsService {
         return pod;
     }
 
+    @Override
+    public Pod createOrReplacePod(InputStream yamlInputStream){
+
+        Pod pod = KubernetesConfig.client.pods().load(yamlInputStream).get();
+        String nameSpace = pod.getMetadata().getNamespace();
+
+        try {
+            pod = KubernetesConfig.client.pods().inNamespace(nameSpace).createOrReplace(pod);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在PodsServiceImpl类的createOrReplacePod方法");
+        }
+        return pod;
+    }
+
 }

@@ -54,5 +54,11 @@ public interface DeploymentsService {
      */
     Deployment createDeploymentByYaml(InputStream yamlInputStream);
 
+    /**
+     * 通过yaml文件创建或更新Deployment
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 创建或更新的Deployment
+     */
+    Deployment createOrReplaceDeployment(InputStream yamlInputStream);
 
 }

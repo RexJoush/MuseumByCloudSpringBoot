@@ -47,9 +47,16 @@ public interface PodsService {
     Pod loadPodFromYaml(InputStream yamlInputStream);
 
     /**
-     * 通过yaml文件创建CronJob
+     * 通过yaml文件创建Pod
      * @param yamlInputStream yaml文件输入流 InputStream
-     * @return 创建的Cronjob
+     * @return 创建的Pod
      */
     Pod createPodByYaml(InputStream yamlInputStream);
+
+    /**
+     * 通过yaml文件创建或更新Pod
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 创建或更新的Pod
+     */
+    Pod createOrReplacePod(InputStream yamlInputStream);
 }

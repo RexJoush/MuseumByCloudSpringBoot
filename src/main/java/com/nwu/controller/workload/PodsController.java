@@ -103,5 +103,17 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/createOrReplacePod")
+    public String createOrReplacePod(InputStream yamlInputStream){
+        Pod aPod = podsService.createOrReplacePod(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 Pod 成功");
+        result.put("data", aPod);
+
+        return JSON.toJSONString(result);
+    }
 
 }

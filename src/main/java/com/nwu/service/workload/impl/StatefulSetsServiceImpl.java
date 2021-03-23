@@ -64,4 +64,19 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
         }
         return statefulSet;
     }
+
+    @Override
+    public StatefulSet createOrReplaceStatefulSet(InputStream yamlInputStream){
+
+        StatefulSet statefulSet = KubernetesConfig.client.apps().statefulSets().load(yamlInputStream).get();
+        String nameSpace = statefulSet.getMetadata().getNamespace();
+
+        try {
+            statefulSet = KubernetesConfig.client.apps().statefulSets().inNamespace(nameSpace).createOrReplace(statefulSet);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在StatefulSetsServiceImpl类的createOrReplaceStatefulSet方法");
+        }
+        return statefulSet;
+    }
+
 }

@@ -51,4 +51,11 @@ public interface StatefulSetsService {
      * @return 创建的StatefulSet
      */
     StatefulSet createStatefulSetByYaml(InputStream yamlInputStream);
+
+    /**
+     * 通过yaml文件创建或更新StatefulSet
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 创建或更新的StatefulSet
+     */
+    StatefulSet createOrReplaceStatefulSet(InputStream yamlInputStream);
 }
