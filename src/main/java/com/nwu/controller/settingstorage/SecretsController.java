@@ -6,16 +6,14 @@ package com.nwu.controller.settingstorage;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.google.protobuf.Api;
 import com.nwu.service.settingstorage.impl.SecretsServiceImpl;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.proto.V1;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +58,47 @@ public class SecretsController {
 
     }
 
+    @RequestMapping("/deleteSecret")
+    public String deleteSecretByNameAndNamespace(String name, String namespace) throws ApiException{
 
+        Boolean isDeleteSecrets = secretsService.deleteSecretByNameAndNamespace(name,namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "删除 Secret 成功");
+        result.put("data", isDeleteSecrets);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/loadSecret")
+    public String loadSecretFromYaml(InputStream yamlInputStream){
+
+        Secret secret = secretsService.loadSecretFromYaml(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载 Secret 成功");
+        result.put("data", secret);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/createSecret")
+    public String createSecretByYaml(InputStream yamlInputStream){
+
+        Secret secretByYaml = secretsService.createSecretByYaml(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 Secret 成功");
+        result.put("data", secretByYaml);
+
+        return JSON.toJSONString(result);
+
+    }
 
 }

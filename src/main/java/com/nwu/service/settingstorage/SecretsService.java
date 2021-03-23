@@ -8,6 +8,7 @@ package com.nwu.service.settingstorage;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -28,5 +29,27 @@ public interface SecretsService {
      * @return Secret 列表
      */
     List<Secret> findSecretsByNamespace(String namespace);
+
+    /**
+     * 通过 name 和 namespace 删除 Secret
+     * @param name
+     * @param namespace
+     * @return boolean值
+     */
+    Boolean deleteSecretByNameAndNamespace(String name,String namespace);
+
+    /**
+     * 通过加载 yaml 文件
+     * @param yamlInputStream
+     * @return Secret
+     */
+    Secret loadSecretFromYaml(InputStream yamlInputStream);
+
+    /**
+     * 通过 yaml 文件创建 secret
+     * @param yamlInputStream
+     * @return secret
+     */
+    Secret createSecretByYaml(InputStream yamlInputStream);
 
 }

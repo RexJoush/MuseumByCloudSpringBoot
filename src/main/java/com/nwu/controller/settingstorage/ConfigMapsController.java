@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,5 +58,46 @@ public class ConfigMapsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/deleteConfigMap")
+    public String deleteConfigMapByNameAndNamespace(String name, String namespace) throws ApiException{
+
+        Boolean isDeleteConfigMap = configMapsService.deleteConfigMapByNameAndNamespace(name, namespace);
+
+        Map<String,Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "删除 ConfigMap 成功");
+        result.put("data", isDeleteConfigMap);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/loadConfigMap")
+    public String loadConfigMapFromYaml(InputStream yamlinputStream){
+
+        ConfigMap configMap = configMapsService.loadConfigMapFromYaml(yamlinputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载 ConfigMap 成功");
+        result.put("data", configMap);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/createConfigMap")
+    public String createConfigMapByYaml(InputStream yamlinputStream){
+
+        ConfigMap configMapByYaml = configMapsService.createConfigMapByYaml(yamlinputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 ConfigMap 成功");
+        result.put("data", configMapByYaml);
+
+        return JSON.toJSONString(result);
+    }
 
 }

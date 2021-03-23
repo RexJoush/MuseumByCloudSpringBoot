@@ -8,6 +8,7 @@ package com.nwu.service.settingstorage;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -28,4 +29,33 @@ public interface ConfigMapsService {
      */
     List<ConfigMap> findConfigMapsByNamespace(String namespace);
 
+    /**
+     * 通过 name 和 namespace 删除 ConfigMap
+     * @param name
+     * @param namespace
+     * @return
+     */
+    Boolean deleteConfigMapByNameAndNamespace(String name,String namespace);
+
+    /**
+     * 通过加载 yaml 文件
+     * @param inputStream
+     * @return
+     */
+    ConfigMap loadConfigMapFromYaml(InputStream inputStream);
+
+    /**
+     * 通过 yaml 文件创建 ConfigMap
+     * @param inputStream
+     * @return
+     */
+    ConfigMap createConfigMapByYaml(InputStream inputStream);
+
+    /**
+     * 修改 ConfigMap 文件
+     * @param name
+     * @param namespace
+     * @return
+     */
+    //ConfigMap updateConfigMap(String name,String namespace);
 }
