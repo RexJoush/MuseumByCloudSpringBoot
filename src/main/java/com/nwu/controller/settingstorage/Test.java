@@ -1,5 +1,5 @@
 package com.nwu.controller.settingstorage;
-
+/*
 import com.nwu.service.settingstorage.impl.ConfigMapsServiceImpl;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.kubernetes.client.openapi.ApiException;
@@ -42,4 +42,4 @@ public class Test {
 >>>>>>> 680a31ede4ad7922feff4f2c40d61e099032257d
 
     }
-}
+}*/

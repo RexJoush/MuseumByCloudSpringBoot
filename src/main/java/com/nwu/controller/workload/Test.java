@@ -1,10 +1,12 @@
 package com.nwu.controller.workload;
-/**
+
 import com.nwu.controller.workload.PodsController;
+import com.nwu.service.cluster.impl.ClusterRolesServiceImpl;
 import com.nwu.service.workload.impl.*;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.File;
@@ -27,10 +29,12 @@ public class Test {
             String value = test.get(key);
             System.out.println(key + value);
         }
+        ClusterRolesServiceImpl clusterRolesService = new ClusterRolesServiceImpl();
+        List<ClusterRole> allClusterRoles = clusterRolesService.getAllClusterRoles();
 
+        System.out.println(allClusterRoles);
 
-
-
+/*
         String path = Test.class.getClassLoader().getResource("RS.yaml").getPath();
         File file = new File(path);
         FileInputStream fileInputStream = new FileInputStream(file);
@@ -42,9 +46,9 @@ public class Test {
         //String nameSpace = cj.getMetadata().getNamespace();
         System.out.println(str);
         //System.out.println(cj);
-        fileInputStream.close();
+        fileInputStream.close();*/
     }
-}*/
+}
 
 /**
  * Copyright (C) 2015 Red Hat, Inc.
@@ -62,7 +66,7 @@ public class Test {
  * limitations under the License.
  */
 
-
+/*
 import com.nwu.util.KubernetesConfig;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -75,11 +79,12 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
+*/
 /**
  * This sample code is Java equivalent to `kubectl exec my-pod -- ls /`. It assumes that
  * a Pod with specified name exists in the cluster.
  */
+/*
 public class Test {
     private static final Logger logger = LoggerFactory.getLogger(Test.class);
     private static final CountDownLatch execLatch = new CountDownLatch(1);
@@ -125,4 +130,4 @@ public class Test {
             execLatch.countDown();
         }
     }
-}
+}*/
