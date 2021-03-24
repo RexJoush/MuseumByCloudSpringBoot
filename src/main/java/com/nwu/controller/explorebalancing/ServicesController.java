@@ -8,13 +8,16 @@ package com.nwu.controller.explorebalancing;
 import com.alibaba.fastjson.JSON;
 import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.KubernetesConfig;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
+import org.checkerframework.checker.units.qual.K;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +28,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/services")
 public class ServicesController {
+
     public static void main(String[] args) {
         System.out.println(new ServicesServiceImpl().findAllServices());
     }
 
+
     @Resource
     private ServicesServiceImpl serviceService;
+
 
     @RequestMapping("getAllServices")
     public String findAllServices() throws ApiException {
@@ -47,5 +53,78 @@ public class ServicesController {
 
     }
 
+    @RequestMapping("getServicesByNamespace")
+    public String findServicesByNamespace(String namespace) throws ApiException{
 
+        List<Service> v1ServiceList = serviceService.findServicesByNamespace(namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Service 列表成功");
+        result.put("data", v1ServiceList);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping
+    public String deleteServiceByNameAndNamespace(String name, String namespace){
+
+        Boolean deleteSvc = serviceService.deleteServicesByNameAndNamespace(name,namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "删除 Service 成功");
+        result.put("data", deleteSvc);
+
+        return JSON.toJSONString(result);
+
+
+    }
+
+    @RequestMapping("loadServiceFromYaml")
+    public String loadServiceFromYaml(InputStream yamlInputStream){
+
+        Service service = serviceService.loadServiceFromYaml(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载 Service 成功");
+        result.put("data", service);
+
+        return JSON.toJSONString(result);
+    }
+
+
+    @RequestMapping("createServiceFromYaml")
+    public String createServiceFromYaml(InputStream yamlInputStream){
+
+        Service service = serviceService.createServiceByYaml(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 Service 成功");
+        result.put("data", service);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/createOrReplaceService")
+    public String createOrReplaceService(InputStream yamlInputStream){
+
+        Service service = serviceService.createOrReplaceService(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 Service 成功");
+        result.put("data", service);
+
+        return JSON.toJSONString(result);
+    }
 }
+
+
