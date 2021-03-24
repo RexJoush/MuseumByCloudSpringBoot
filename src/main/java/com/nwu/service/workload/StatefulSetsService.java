@@ -41,21 +41,21 @@ public interface StatefulSetsService {
 
     /**
      * 从yaml文件加载一个StatefulSet到StatefulSet实例
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 加载的StatefulSet
      */
     StatefulSet loadStatefulSetFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建StatefulSet
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建的StatefulSet
      */
     StatefulSet createStatefulSetByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新StatefulSet
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建或更新的StatefulSet
      */
     StatefulSet createOrReplaceStatefulSet(String path) throws FileNotFoundException;

@@ -42,21 +42,21 @@ public interface ReplicaSetsService {
 
     /**
      * 从yaml文件加载一个ReplicaSet到ReplicaSet实例
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 加载的ReplicaSet
      */
     ReplicaSet loadReplicaSetFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建ReplicaSet
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建的ReplicaSet
      */
     ReplicaSet createReplicaSetByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新ReplicaSet
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建或更新的ReplicaSet
      */
     ReplicaSet createOrReplaceReplicaSet(String path) throws FileNotFoundException;

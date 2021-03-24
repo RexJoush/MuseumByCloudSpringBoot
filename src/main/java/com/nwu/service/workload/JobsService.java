@@ -42,21 +42,21 @@ public interface JobsService {
 
     /**
      * 从yaml文件加载一个job到Job实例
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 加载的Job
      */
     Job loadJobFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建Job
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建的job
      */
     Job createJobByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新Job
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建或更新的job
      */
     Job createOrReplaceJob(String path) throws FileNotFoundException;

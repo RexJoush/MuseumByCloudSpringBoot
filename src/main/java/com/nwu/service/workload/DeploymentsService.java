@@ -43,21 +43,21 @@ public interface DeploymentsService {
 
     /**
      * 从yaml文件加载一个Deployment到Deployment实例
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 加载的Deployment
      */
     Deployment loadDeploymentFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建Deployment
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建的Deployment
      */
     Deployment createDeploymentByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新Deployment
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建或更新的Deployment
      */
     Deployment createOrReplaceDeployment(String path) throws FileNotFoundException;
