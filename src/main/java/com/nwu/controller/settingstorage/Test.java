@@ -12,10 +12,11 @@ import java.util.List;
 
 public class Test {
     public static void main(String[] args) throws FileNotFoundException, ApiException {
-        String path = Test.class.getClassLoader().getResource("configMap.yaml").getPath();
+        String path = Test.class.getClassLoader().getResource("RS.yaml").getPath();
         File file = new File(path);
         FileInputStream fileInputStream = new FileInputStream(file);
         ConfigMapsServiceImpl configMapsServiceImpl = new ConfigMapsServiceImpl();
+
 
         ConfigMap configMapByYaml = configMapsServiceImpl.createConfigMapByYaml(fileInputStream);
         List<ConfigMap> allConfigMaps = configMapsServiceImpl.findAllConfigMaps();

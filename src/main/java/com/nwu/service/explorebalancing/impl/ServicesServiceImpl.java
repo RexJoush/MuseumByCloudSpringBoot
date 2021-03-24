@@ -31,6 +31,18 @@ public class ServicesServiceImpl implements ServicesService {
         return items;
 
     }
+
+
+    @Override
+    public List<io.fabric8.kubernetes.api.model.Service> findServicesByNamespace(String namespace){
+
+        List<io.fabric8.kubernetes.api.model.Service> item = KubernetesConfig.client.services().inNamespace(namespace).list().getItems();
+
+        return item;
+
+    }
+
+    @Override
     public io.fabric8.kubernetes.api.model.Service loadServiceFromYaml(InputStream yamlInputStream){
 
         io.fabric8.kubernetes.api.model.Service service = KubernetesConfig.client.services().load(yamlInputStream).get();
@@ -40,21 +52,39 @@ public class ServicesServiceImpl implements ServicesService {
 
 
     @Override
-    public io.fabric8.kubernetes.api.model.Service createServiceYaml(InputStream yamlInputStream){
+    public io.fabric8.kubernetes.api.model.Service createServiceByYaml(InputStream yamlInputStream){
 
         io.fabric8.kubernetes.api.model.Service createSvc = KubernetesConfig.client.services().load(yamlInputStream).get();
         String nameSpace = createSvc.getMetadata().getNamespace();
-        createSvc = KubernetesConfig.client.services().inNamespace(nameSpace).create(createSvc);
-
+        try {
+            createSvc = KubernetesConfig.client.services().inNamespace(nameSpace).create(createSvc);
+        }catch(Exception e){
+            System.out.println("创建失败,在ServicesService类的creatServiceByYaml方法中");
+        }
         return createSvc;
     }
 
+    @Override
+    public io.fabric8.kubernetes.api.model.Service createOrReplaceService(InputStream yamlInputStream){
+
+        io.fabric8.kubernetes.api.model.Service service = KubernetesConfig.client.services().load(yamlInputStream).get();
+        String namespace = service.getMetadata().getNamespace();
+        try{
+            service = KubernetesConfig.client.services().inNamespace(namespace).createOrReplace(service);
+        }catch (Exception e){
+            System.out.println("失败，问题在ServicesService类中的creatOrReplaceService方法中");
+        }
+
+        return service;
+    }
 
     @Override
-    public Boolean deleteServices(String serviceName,String namespace){
+    public Boolean deleteServicesByNameAndNamespace(String serviceName,String namespace){
 
         Boolean deleteSvc = KubernetesConfig.client.services().inNamespace(namespace).withName(serviceName).delete();
 
         return deleteSvc;
     }
+
+
 }
