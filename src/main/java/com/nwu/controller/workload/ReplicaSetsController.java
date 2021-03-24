@@ -29,7 +29,7 @@ public class ReplicaSetsController {
     @Resource
     private ReplicaSetsServiceImpl replicaSetsService;
 
-    @RequestMapping("getAllReplicaSets")
+    @RequestMapping("/getAllReplicaSets")
     public String findAllReplicaSets() throws ApiException {
 
         List<ReplicaSet> replicaSetList = replicaSetsService.findAllReplicaSets();
@@ -44,7 +44,7 @@ public class ReplicaSetsController {
 
     }
 
-    @RequestMapping("getReplicaSetsByNamespace")
+    @RequestMapping("/getReplicaSetsByNamespace")
     public String findReplicaSetsByNamespace(String namespace) throws ApiException {
 
         List<ReplicaSet> replicaSetList = replicaSetsService.findReplicaSetsByNamespace(namespace);
@@ -59,7 +59,7 @@ public class ReplicaSetsController {
 
     }
 
-    @RequestMapping("deleteReplicaSetByNameAndNamespace")
+    @RequestMapping("/deleteReplicaSetByNameAndNamespace")
     public String deleteReplicaSetByNameAndNamespace(String name, String namespace){
         Boolean delete = replicaSetsService.deleteReplicaSetByNameAndNamespace(name, namespace);
 
@@ -72,7 +72,7 @@ public class ReplicaSetsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadReplicaSetFromYaml")
+    @RequestMapping("/loadReplicaSetFromYaml")
     public String loadReplicaSetFromYaml(InputStream yamlInputStream){
 
         ReplicaSet aReplicaSet = replicaSetsService.loadReplicaSetFromYaml(yamlInputStream);
@@ -86,7 +86,7 @@ public class ReplicaSetsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadReplicaSetFromYaml")
+    @RequestMapping("/createReplicaSetFromYaml")
     public String createReplicaSetFromYaml(InputStream yamlInputStream){
 
         ReplicaSet aReplicaSet = replicaSetsService.createReplicaSetByYaml(yamlInputStream);
@@ -109,6 +109,19 @@ public class ReplicaSetsController {
         result.put("code", 1200);
         result.put("message", "创建或更新 ReplicaSet 成功");
         result.put("data", aReplicaSet);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/setReplicas")
+    public String setReplicas(String name, String namespace, Integer replicas){
+        replicaSetsService.setReplicas(name, namespace, replicas);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 ReplicaSet 成功");
+        result.put("data", "未明确");
 
         return JSON.toJSONString(result);
     }

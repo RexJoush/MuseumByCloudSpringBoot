@@ -31,7 +31,7 @@ public class JobsController {
     @Resource
     private JobsServiceImpl jobsService;
 
-    @RequestMapping("getAllJobs")
+    @RequestMapping("/getAllJobs")
     public String findAllJobs() throws ApiException {
 
         List<Job> jobs = jobsService.findAllJobs();
@@ -46,7 +46,7 @@ public class JobsController {
 
     }
 
-    @RequestMapping("getJobsByNamespace")
+    @RequestMapping("/getJobsByNamespace")
     public String findJobsByNamespace(String namespace) throws ApiException {
 
         List<Job> v1JobList = jobsService.findJobsByNamespace(namespace);
@@ -61,7 +61,7 @@ public class JobsController {
 
     }
 
-    @RequestMapping("deleteJobByNameAndNamespace")
+    @RequestMapping("/deleteJobByNameAndNamespace")
     public String deleteJobByNameAndNamespace(String name, String namespace){
         Boolean delete = jobsService.deleteJobByNameAndNamespace(name, namespace);
 
@@ -74,7 +74,7 @@ public class JobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadJobFromYaml")
+    @RequestMapping("/loadJobFromYaml")
     public String loadJobFromYaml(InputStream yamlInputStream){
 
         Job aJob = jobsService.loadJobFromYaml(yamlInputStream);
@@ -88,7 +88,7 @@ public class JobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createJobFromYaml")
+    @RequestMapping("/createJobFromYaml")
     public String createJobFromYaml(InputStream yamlInputStream){
 
         Job aJob = jobsService.createJobByYaml(yamlInputStream);

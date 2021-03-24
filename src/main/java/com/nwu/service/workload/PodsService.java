@@ -67,4 +67,6 @@ public interface PodsService {
      * @return
      */
     String getPodLogByNameAndNamespace(String name, String namespace);
+
+
 }

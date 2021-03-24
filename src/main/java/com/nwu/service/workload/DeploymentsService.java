@@ -69,4 +69,12 @@ public interface DeploymentsService {
      */
     String getDeploymentLogByNameAndNamespace(String name, String namespace);
 
+    /**
+     * 设置Deployment控制的Pod副本数量
+     * @param name Deployment名称
+     * @param namespace Deployment命名空间
+     * @param replicas Pod副本数量
+     */
+    void setReplicas(String name, String namespace, Integer replicas);
+
 }

@@ -32,7 +32,7 @@ public class PodsController {
     @Resource
     private PodsServiceImpl podsService;
 
-    @RequestMapping("getAllPods")
+    @RequestMapping("/getAllPods")
     public String findAllPods() throws ApiException {
 
         List<Pod> pods = podsService.findAllPods();
@@ -47,7 +47,7 @@ public class PodsController {
 
     }
 
-    @RequestMapping("getPodsByNamespace")
+    @RequestMapping("/getPodsByNamespace")
     public String findPodsByNamespace(String namespace) throws ApiException {
 
         List<Pod> v1PodList = podsService.findPodsByNamespace(namespace);
@@ -62,7 +62,7 @@ public class PodsController {
 
     }
 
-    @RequestMapping("deletePodByNameAndNamespace")
+    @RequestMapping("/deletePodByNameAndNamespace")
     public String deletePodByNameAndNamespace(String name, String namespace){
         Boolean delete = podsService.deletePodByNameAndNamespace(name, namespace);
 
@@ -75,7 +75,7 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadPodFromYaml")
+    @RequestMapping("/loadPodFromYaml")
     public String loadPodFromYaml(InputStream yamlInputStream){
 
         Pod aPod = podsService.loadPodFromYaml(yamlInputStream);
@@ -89,7 +89,7 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createPodFromYaml")
+    @RequestMapping("/createPodFromYaml")
     public String createPodFromYaml(InputStream yamlInputStream){
 
         Pod aPod = podsService.createPodByYaml(yamlInputStream);
@@ -116,7 +116,7 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("getPodLogByNameAndNamespace")
+    @RequestMapping("/getPodLogByNameAndNamespace")
     public String getPodLogByNameAndNamespace(String name, String namespace){
         String str = podsService.getPodLogByNameAndNamespace(name, namespace);
 

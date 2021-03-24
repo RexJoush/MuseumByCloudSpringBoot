@@ -29,7 +29,7 @@ public class DaemonSetsController {
     @Resource
     private DaemonSetsServiceImpl daemonSetsService;
 
-    @RequestMapping("getAllDaemonSets")
+    @RequestMapping("/getAllDaemonSets")
     public String findAllDaemonSets() throws ApiException {
 
         List<DaemonSet> daemonSets = daemonSetsService.findAllDaemonSets();
@@ -44,7 +44,7 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("getDaemonSetsByNamespace")
+    @RequestMapping("/getDaemonSetsByNamespace")
     public String findDaemonSetsByNamespace(String namespace) throws ApiException {
 
         List<DaemonSet> v1DaemonSetList = daemonSetsService.findDaemonSetsByNamespace(namespace);
@@ -59,7 +59,7 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("deleteDaemonSetByNameAndNamespace")
+    @RequestMapping("/deleteDaemonSetByNameAndNamespace")
     public String deleteDaemonSetByNameAndNamespace(String name, String namespace) throws ApiException {
 
         Boolean delete = daemonSetsService.deleteDaemonSetByNameAndNamespace(name, namespace);
@@ -74,7 +74,7 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("loadDaemonSetFromYaml")
+    @RequestMapping("/loadDaemonSetFromYaml")
     public String loadDaemonSetFromYaml(InputStream yamlInputStream) throws ApiException {
 
         DaemonSet daemonSet = daemonSetsService.loadDaemonSetFromYaml(yamlInputStream);
@@ -89,7 +89,7 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("createDaemonSetByYaml")
+    @RequestMapping("/createDaemonSetByYaml")
     public String createDaemonSetByYaml(InputStream yamlInputStream) throws ApiException {
 
         DaemonSet daemonSet = daemonSetsService.createDaemonSetByYaml(yamlInputStream);

@@ -60,4 +60,12 @@ public interface ReplicaSetsService {
      */
     ReplicaSet createOrReplaceReplicaSet(InputStream yamlInputStream);
 
+    /**
+     * 设置ReplicaSet控制的Pod副本数量
+     * @param name ReplicaSet名称
+     * @param namespace ReplicaSet命名空间
+     * @param replicas Pod副本数量
+     */
+    void setReplicas(String name, String namespace, Integer replicas);
+
 }

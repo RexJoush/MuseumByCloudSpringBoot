@@ -92,4 +92,16 @@ public class DeploymentsServiceImpl implements DeploymentsService {
 
         return log;
     }
+
+    @Override
+    public void setReplicas(String name, String namespace, Integer replicas){
+        try{
+            KubernetesConfig.client.apps().deployments().inNamespace(namespace)
+                    .withName(name).edit().getSpec().setReplicas(replicas);
+        }catch(Exception e){
+            System.out.println("设置Deployment的replicas失败");
+        }
+    }
+
+
 }

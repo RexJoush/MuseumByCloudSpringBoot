@@ -31,7 +31,7 @@ public class CronJobsController {
     @Resource
     private CronJobsServiceImpl cronJobsService;
 
-    @RequestMapping("getAllCronJobs")
+    @RequestMapping("/getAllCronJobs")
     public String findAllCronJobs() throws ApiException {
 
         List<CronJob> v1CronJobList = cronJobsService.findAllCronJobs();
@@ -46,7 +46,7 @@ public class CronJobsController {
 
     }
 
-    @RequestMapping("getCronJobsByNamespace")
+    @RequestMapping("/getCronJobsByNamespace")
     public String findCronJobsByNamespace(String namespace) throws ApiException {
 
         List<CronJob> v1CronJobList = cronJobsService.findCronJobsByNamespace(namespace);
@@ -61,7 +61,7 @@ public class CronJobsController {
 
     }
 
-    @RequestMapping("deleteCronJobByNameAndNamespace")
+    @RequestMapping("/deleteCronJobByNameAndNamespace")
     public String deleteCronJobByNameAndNamespace(String name, String namespace){
         Boolean delete = cronJobsService.deleteCronJobByNameAndNamespace(name, namespace);
 
@@ -74,7 +74,7 @@ public class CronJobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadCronJobFromYaml")
+    @RequestMapping("/loadCronJobFromYaml")
     public String loadCronJobFromYaml(InputStream yamlInputStream){
 
         CronJob aCronJob = cronJobsService.loadCronJobFromYaml(yamlInputStream);
@@ -88,7 +88,7 @@ public class CronJobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createCronJobFromYaml")
+    @RequestMapping("/createCronJobFromYaml")
     public String createCronJobFromYaml(InputStream yamlInputStream){
 
         CronJob aCronJob = cronJobsService.createCronJobByYaml(yamlInputStream);

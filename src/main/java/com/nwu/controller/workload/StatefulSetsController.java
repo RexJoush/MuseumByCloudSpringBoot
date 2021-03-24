@@ -30,7 +30,7 @@ public class StatefulSetsController {
     @Resource
     private StatefulSetsServiceImpl statefulSetsService;
 
-    @RequestMapping("getAllStatefulSets")
+    @RequestMapping("/getAllStatefulSets")
     public String findAllStatefulSets() throws ApiException {
 
         List<StatefulSet> statefulSetList = statefulSetsService.findAllStatefulSets();
@@ -45,7 +45,7 @@ public class StatefulSetsController {
 
     }
 
-    @RequestMapping("getStatefulSetsByNamespace")
+    @RequestMapping("/getStatefulSetsByNamespace")
     public String findStatefulSetsByNamespace(String namespace) throws ApiException {
 
         List<StatefulSet> statefulSetList = statefulSetsService.findStatefulSetsByNamespace(namespace);
@@ -60,7 +60,7 @@ public class StatefulSetsController {
 
     }
 
-    @RequestMapping("deleteStatefulSetByNameAndNamespace")
+    @RequestMapping("/deleteStatefulSetByNameAndNamespace")
     public String deleteStatefulSetByNameAndNamespace(String name, String namespace){
         Boolean delete = statefulSetsService.deleteStatefulSetByNameAndNamespace(name, namespace);
 
@@ -73,7 +73,7 @@ public class StatefulSetsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadStatefulSetFromYaml")
+    @RequestMapping("/loadStatefulSetFromYaml")
     public String loadStatefulSetFromYaml(InputStream yamlInputStream){
 
         StatefulSet aStatefulSet = statefulSetsService.loadStatefulSetFromYaml(yamlInputStream);
@@ -87,7 +87,7 @@ public class StatefulSetsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createStatefulSetFromYaml")
+    @RequestMapping("/createStatefulSetFromYaml")
     public String createStatefulSetFromYaml(InputStream yamlInputStream){
 
         StatefulSet aStatefulSet = statefulSetsService.createStatefulSetByYaml(yamlInputStream);

@@ -30,7 +30,7 @@ public class DeploymentsController {
     @Resource
     private DeploymentsServiceImpl deploymentsService;
 
-    @RequestMapping("getAllDeployments")
+    @RequestMapping("/getAllDeployments")
     public String findAllDeployments() throws ApiException {
 
         List<Deployment> deployments = deploymentsService.findAllDeployments();
@@ -45,7 +45,7 @@ public class DeploymentsController {
 
     }
 
-    @RequestMapping("getDeploymentsByNamespace")
+    @RequestMapping("/getDeploymentsByNamespace")
     public String findDeploymentsByNamespace(String namespace) throws ApiException {
 
         List<Deployment> v1DeploymentList = deploymentsService.findDeploymentsByNamespace(namespace);
@@ -60,7 +60,7 @@ public class DeploymentsController {
 
     }
 
-    @RequestMapping("deleteDeploymentByNameAndNamespace")
+    @RequestMapping("/deleteDeploymentByNameAndNamespace")
     public String deleteDeploymentByNameAndNamespace(String name, String namespace){
         Boolean delete = deploymentsService.deleteDeploymentByNameAndNamespace(name, namespace);
 
@@ -73,7 +73,7 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadDeploymentFromYaml")
+    @RequestMapping("/loadDeploymentFromYaml")
     public String loadDeploymentFromYaml(InputStream yamlInputStream){
 
         Deployment aDeployment = deploymentsService.loadDeploymentFromYaml(yamlInputStream);
@@ -87,7 +87,7 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createDeploymentByYaml")
+    @RequestMapping("/createDeploymentByYaml")
     public String createDeploymentByYaml(InputStream yamlInputStream){
 
         Deployment aDeployment = deploymentsService.createDeploymentByYaml(yamlInputStream);
@@ -114,7 +114,7 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("getDeploymentLogByNameAndNamespace")
+    @RequestMapping("/getDeploymentLogByNameAndNamespace")
     public String getDeploymentLogByNameAndNamespace(String name, String namespace){
         String str = deploymentsService.getDeploymentLogByNameAndNamespace(name, namespace);
 
@@ -126,4 +126,19 @@ public class DeploymentsController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/setReplicas")
+    public String setReplicas(String name, String namespace, Integer replicas){
+
+        deploymentsService.setReplicas(name, namespace, replicas);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "可能设置 Deployment的replicas 成功");
+        result.put("data", "未明确");
+
+        return JSON.toJSONString(result);
+    }
+
 }

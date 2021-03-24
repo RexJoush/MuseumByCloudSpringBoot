@@ -82,4 +82,13 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
         return replicaSet;
     }
 
+    @Override
+    public void setReplicas(String name, String namespace, Integer replicas){
+        try {
+            KubernetesConfig.client.apps().replicaSets().inNamespace(namespace).withName(name).edit().getSpec().setReplicas(replicas);
+        }catch (Exception e){
+            System.out.println("设置ReplicaSet的replicas失败");
+        }
+    }
+
 }

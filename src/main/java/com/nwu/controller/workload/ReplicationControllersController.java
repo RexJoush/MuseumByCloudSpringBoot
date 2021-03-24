@@ -30,7 +30,7 @@ public class ReplicationControllersController {
     @Resource
     private ReplicationControllersServiceImpl replicationControllersService;
 
-    @RequestMapping("getAllReplicationControllers")
+    @RequestMapping("/getAllReplicationControllers")
     public String findAllReplicationControllers() throws ApiException {
 
         List<ReplicationController> replicationControllerList = replicationControllersService.findAllReplicationControllers();
@@ -45,7 +45,7 @@ public class ReplicationControllersController {
 
     }
 
-    @RequestMapping("getReplicationControllersByNamespace")
+    @RequestMapping("/getReplicationControllersByNamespace")
     public String findReplicationControllersByNamespace(String namespace) throws ApiException {
 
         List<ReplicationController> replicationControllerList = replicationControllersService.findReplicationControllersByNamespace(namespace);
@@ -60,7 +60,7 @@ public class ReplicationControllersController {
 
     }
 
-    @RequestMapping("deleteReplicationControllerByNameAndNamespace")
+    @RequestMapping("/deleteReplicationControllerByNameAndNamespace")
     public String deleteReplicationControllerByNameAndNamespace(String name, String namespace){
         Boolean delete = replicationControllersService.deleteReplicationControllerByNameAndNamespace(name, namespace);
 
@@ -73,7 +73,7 @@ public class ReplicationControllersController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadCronJobFromYaml")
+    @RequestMapping("/loadReplicationControllerFromYaml")
     public String loadReplicationControllerFromYaml(InputStream yamlInputStream){
 
         ReplicationController aReplicationController = replicationControllersService.loadReplicationControllerFromYaml(yamlInputStream);
@@ -87,7 +87,7 @@ public class ReplicationControllersController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createReplicationControllerFromYaml")
+    @RequestMapping("/createReplicationControllerFromYaml")
     public String createReplicationControllerFromYaml(InputStream yamlInputStream){
 
         ReplicationController aReplicationController = replicationControllersService.createReplicationControllerByYaml(yamlInputStream);
