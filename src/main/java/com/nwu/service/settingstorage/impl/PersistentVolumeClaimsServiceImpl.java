@@ -6,8 +6,11 @@ import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -42,7 +45,9 @@ public class PersistentVolumeClaimsServiceImpl implements PersistentVolumeClaims
     }
 
     @Override
-    public PersistentVolumeClaim loadPVCFromYaml(InputStream yamlInputStream) {
+    public PersistentVolumeClaim loadPVCFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         PersistentVolumeClaim persistentVolumeClaim = KubernetesConfig.client.persistentVolumeClaims().load(yamlInputStream).get();
 
@@ -50,7 +55,9 @@ public class PersistentVolumeClaimsServiceImpl implements PersistentVolumeClaims
     }
 
     @Override
-    public PersistentVolumeClaim createPVCByYaml(InputStream yamlInputStream) {
+    public PersistentVolumeClaim createPVCByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         PersistentVolumeClaim persistentVolumeClaim = KubernetesConfig.client.persistentVolumeClaims().load(yamlInputStream).get();
         String nameSpace = persistentVolumeClaim.getMetadata().getNamespace();
@@ -63,7 +70,9 @@ public class PersistentVolumeClaimsServiceImpl implements PersistentVolumeClaims
     }
 
     @Override
-    public PersistentVolumeClaim createOrReplacePVC(InputStream yamlInputStream) {
+    public PersistentVolumeClaim createOrReplacePVC(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         PersistentVolumeClaim pvc = KubernetesConfig.client.persistentVolumeClaims().load(yamlInputStream).get();
         String nameSpace = pvc.getMetadata().getNamespace();

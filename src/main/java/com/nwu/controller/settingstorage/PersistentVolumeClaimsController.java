@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -72,9 +73,9 @@ public class PersistentVolumeClaimsController {
     }
 
     @RequestMapping("/loadPVC")
-    public String loadPVCFromYaml(InputStream yamlInputStream){
+    public String loadPVCFromYaml(String path) throws FileNotFoundException {
 
-        PersistentVolumeClaim persistentVolumeClaim = persistentVolumeClaimsService.loadPVCFromYaml(yamlInputStream);
+        PersistentVolumeClaim persistentVolumeClaim = persistentVolumeClaimsService.loadPVCFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -86,9 +87,9 @@ public class PersistentVolumeClaimsController {
     }
 
     @RequestMapping("/createPVC")
-    public String createPVCByYaml(InputStream yamlInputStream){
+    public String createPVCByYaml(String path) throws FileNotFoundException {
 
-        PersistentVolumeClaim pvcByYaml = persistentVolumeClaimsService.createPVCByYaml(yamlInputStream);
+        PersistentVolumeClaim pvcByYaml = persistentVolumeClaimsService.createPVCByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -100,8 +101,8 @@ public class PersistentVolumeClaimsController {
     }
 
     @RequestMapping("/createOrReplacePVC")
-    public String createOrReplacePVC(InputStream yamlInputStream){
-        PersistentVolumeClaim pvc = persistentVolumeClaimsService.createOrReplacePVC(yamlInputStream);
+    public String createOrReplacePVC(String path) throws FileNotFoundException{
+        PersistentVolumeClaim pvc = persistentVolumeClaimsService.createOrReplacePVC(path);
 
         Map<String, Object> result = new HashMap<>();
 

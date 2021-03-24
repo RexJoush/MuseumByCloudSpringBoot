@@ -8,6 +8,7 @@ package com.nwu.service.settingstorage;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -39,22 +40,25 @@ public interface ConfigMapsService {
 
     /**
      * 加载 yaml 文件 到 ConfigMap
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件的路径
      * @return 加载的 ConfigMap
+     * @throws FileNotFoundException
      */
-    ConfigMap loadConfigMapFromYaml(InputStream yamlInputStream);
+    ConfigMap loadConfigMapFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过 yaml 文件创建 ConfigMap
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件的路径
      * @return 创建的 ConfigMap
+     * @throws FileNotFoundException
      */
-    ConfigMap createConfigMapByYaml(InputStream yamlInputStream);
+    ConfigMap createConfigMapByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新ConfigMap
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件的路径
      * @return 创建或更新的ConfigMap
+     * @throws FileNotFoundException
      */
-    ConfigMap createOrReplaceConfigMap(InputStream yamlInputStream);
+    ConfigMap createOrReplaceConfigMap(String path) throws FileNotFoundException;
 }

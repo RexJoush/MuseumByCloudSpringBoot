@@ -8,6 +8,7 @@ package com.nwu.service.settingstorage;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -40,22 +41,25 @@ public interface PersistentVolumeClaimsService {
 
     /**
      * 通过加载 yaml 文件到 PersistentVolumeClaim 实例
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件的路径
      * @return 加载的 PersistentVolumeClaim
+     * @throws FileNotFoundException
      */
-    PersistentVolumeClaim loadPVCFromYaml(InputStream yamlInputStream);
+    PersistentVolumeClaim loadPVCFromYaml(String path) throws FileNotFoundException;;
 
     /**
      * 通过 yaml 文件创建 PersistentVolumeClaim
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入流 InputStream
      * @return 创建的 PersistentVolumeClaim
+     * @throws FileNotFoundException
      */
-    PersistentVolumeClaim createPVCByYaml(InputStream yamlInputStream);
+    PersistentVolumeClaim createPVCByYaml(String path) throws FileNotFoundException;;
 
     /**
      * 通过yaml文件创建或更新 PersistentVolumeClaim
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入流 InputStream
      * @return 创建或更新的 PersistentVolumeClaim
+     * @throws FileNotFoundException
      */
-    PersistentVolumeClaim createOrReplacePVC(InputStream yamlInputStream);
+    PersistentVolumeClaim createOrReplacePVC(String path) throws FileNotFoundException;;
 }

@@ -8,8 +8,11 @@ import io.kubernetes.client.openapi.ApiException;
 import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -52,7 +55,9 @@ public class SecretsServiceImpl implements SecretsService {
     }
 
     @Override
-    public Secret loadSecretFromYaml(InputStream yamlInputStream) {
+    public Secret loadSecretFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Secret secret = KubernetesConfig.client.secrets().load(yamlInputStream).get();
 
@@ -60,7 +65,9 @@ public class SecretsServiceImpl implements SecretsService {
     }
 
     @Override
-    public Secret createSecretByYaml(InputStream yamlInputStream) {
+    public Secret createSecretByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Secret secret = KubernetesConfig.client.secrets().load(yamlInputStream).get();
         String nameSpace = secret.getMetadata().getNamespace();
@@ -73,7 +80,9 @@ public class SecretsServiceImpl implements SecretsService {
     }
 
     @Override
-    public Secret createOrReplaceSecret(InputStream yamlInputStream) {
+    public Secret createOrReplaceSecret(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Secret secret = KubernetesConfig.client.secrets().load(yamlInputStream).get();
         String nameSpace = secret.getMetadata().getNamespace();

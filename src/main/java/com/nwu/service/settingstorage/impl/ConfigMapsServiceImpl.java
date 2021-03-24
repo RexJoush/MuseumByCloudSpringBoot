@@ -7,8 +7,11 @@ import io.kubernetes.client.openapi.ApiException;
 import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -53,7 +56,9 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     }
 
     @Override
-    public ConfigMap loadConfigMapFromYaml(InputStream yamlInputStream) {
+    public ConfigMap loadConfigMapFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
 
@@ -61,7 +66,9 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     }
 
     @Override
-    public ConfigMap createConfigMapByYaml(InputStream yamlInputStream) {
+    public ConfigMap createConfigMapByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
         String nameSpace = configMap.getMetadata().getNamespace();
@@ -75,13 +82,15 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     }
 
     @Override
-    public ConfigMap createOrReplaceConfigMap(InputStream yamlInputStream) {
+    public ConfigMap createOrReplaceConfigMap(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
         String nameSpace = configMap.getMetadata().getNamespace();
 
         try {
-        configMap = KubernetesConfig.client.configMaps().inNamespace(nameSpace).createOrReplace(configMap);
+            configMap = KubernetesConfig.client.configMaps().inNamespace(nameSpace).createOrReplace(configMap);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ConfigMapServiceImpl类的createOrReplaceConfigMap方法");
         }
