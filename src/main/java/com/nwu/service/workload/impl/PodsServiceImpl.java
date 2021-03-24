@@ -111,7 +111,7 @@ public class PodsServiceImpl implements PodsService {
     // imagePullSecret minCPURequirement minMemoryRequirement
     //command
     @Override
-    public List<Pod> createPod(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
+    public List<Pod> createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
                          String secretName, String images, String imagePullPolicy, String[] command, String[] args,
                          String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount){
 

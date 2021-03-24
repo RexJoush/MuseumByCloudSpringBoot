@@ -130,4 +130,22 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/createPodFromForm")
+    public String createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
+                                    String secretName, String images, String imagePullPolicy, String[] command, String[] args,
+                                    String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
+        List<Pod> podList = podsService.createPodFromForm(name, namespace, labels, annotations,
+                secretName, images, imagePullPolicy, command, args,
+                cpuLimit, cpuRequest, memoryLimit, memoryRequest, envVar, amount);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 Pod 成功");
+        result.put("data", podList);
+
+        return JSON.toJSONString(result);
+
+    }
+
 }

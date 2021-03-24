@@ -89,7 +89,7 @@ public interface PodsService {
      * @param amount Pod副本数量 Integer
      * @return 生成的Pod列表
      */
-    List<Pod> createPod(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
+    List<Pod> createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
                         String secretName, String images, String imagePullPolicy, String[] command, String[] args,
                         String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount);
 }
