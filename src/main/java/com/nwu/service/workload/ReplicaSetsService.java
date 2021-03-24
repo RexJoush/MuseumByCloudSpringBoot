@@ -9,6 +9,7 @@ import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -44,21 +45,21 @@ public interface ReplicaSetsService {
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 加载的ReplicaSet
      */
-    ReplicaSet loadReplicaSetFromYaml(InputStream yamlInputStream);
+    ReplicaSet loadReplicaSetFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建ReplicaSet
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建的ReplicaSet
      */
-    ReplicaSet createReplicaSetByYaml(InputStream yamlInputStream);
+    ReplicaSet createReplicaSetByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新ReplicaSet
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建或更新的ReplicaSet
      */
-    ReplicaSet createOrReplaceReplicaSet(InputStream yamlInputStream);
+    ReplicaSet createOrReplaceReplicaSet(String path) throws FileNotFoundException;
 
     /**
      * 设置ReplicaSet控制的Pod副本数量

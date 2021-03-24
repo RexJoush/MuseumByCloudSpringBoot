@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -76,9 +77,9 @@ public class PodsController {
     }
 
     @RequestMapping("/loadPodFromYaml")
-    public String loadPodFromYaml(InputStream yamlInputStream){
+    public String loadPodFromYaml(String path) throws FileNotFoundException {
 
-        Pod aPod = podsService.loadPodFromYaml(yamlInputStream);
+        Pod aPod = podsService.loadPodFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -90,9 +91,9 @@ public class PodsController {
     }
 
     @RequestMapping("/createPodFromYaml")
-    public String createPodFromYaml(InputStream yamlInputStream){
+    public String createPodFromYaml(String path) throws FileNotFoundException {
 
-        Pod aPod = podsService.createPodByYaml(yamlInputStream);
+        Pod aPod = podsService.createPodByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -104,8 +105,8 @@ public class PodsController {
     }
 
     @RequestMapping("/createOrReplacePod")
-    public String createOrReplacePod(InputStream yamlInputStream){
-        Pod aPod = podsService.createOrReplacePod(yamlInputStream);
+    public String createOrReplacePod(String path) throws FileNotFoundException {
+        Pod aPod = podsService.createOrReplacePod(path);
 
         Map<String, Object> result = new HashMap<>();
 

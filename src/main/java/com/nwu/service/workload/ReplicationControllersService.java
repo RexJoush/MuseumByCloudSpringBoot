@@ -9,6 +9,7 @@ import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -43,19 +44,27 @@ public interface ReplicationControllersService {
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 加载的ReplicationController
      */
-    ReplicationController loadReplicationControllerFromYaml(InputStream yamlInputStream);
+    ReplicationController loadReplicationControllerFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建ReplicationController
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建的ReplicationController
      */
-    ReplicationController createReplicationControllerByYaml(InputStream yamlInputStream);
+    ReplicationController createReplicationControllerByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新ReplicationController
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建或更新的ReplicationController
      */
-    ReplicationController createOrReplaceReplicationController(InputStream yamlInputStream);
+    ReplicationController createOrReplaceReplicationController(String path) throws FileNotFoundException;
+
+    /**
+     * 设置ReplicationController控制的Pod副本数量
+     * @param name ReplicationController名称
+     * @param namespace ReplicationController命名空间
+     * @param replicas Pod副本数量
+     */
+    void setReplicas(String name, String namespace, Integer replicas);
 }

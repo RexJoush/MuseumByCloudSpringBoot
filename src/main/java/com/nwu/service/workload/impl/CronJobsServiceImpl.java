@@ -5,9 +5,13 @@ import com.nwu.util.KubernetesConfig;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -46,7 +50,9 @@ public class CronJobsServiceImpl implements CronJobsService {
     }
 
     @Override
-    public CronJob loadCronJobFromYaml(InputStream yamlInputStream){
+    public CronJob loadCronJobFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         CronJob cronJob = KubernetesConfig.client.batch().cronjobs().load(yamlInputStream).get();
 
@@ -54,7 +60,9 @@ public class CronJobsServiceImpl implements CronJobsService {
     }
 
     @Override
-    public CronJob createCronJobByYaml(InputStream yamlInputStream){
+    public CronJob createCronJobByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         CronJob cronJob = KubernetesConfig.client.batch().cronjobs().load(yamlInputStream).get();
         String nameSpace = cronJob.getMetadata().getNamespace();
@@ -67,7 +75,9 @@ public class CronJobsServiceImpl implements CronJobsService {
     }
 
     @Override
-    public CronJob createOrReplaceCronJob(InputStream yamlInputStream){
+    public CronJob createOrReplaceCronJob(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         CronJob cronJob = KubernetesConfig.client.batch().cronjobs().load(yamlInputStream).get();
         String nameSpace = cronJob.getMetadata().getNamespace();

@@ -7,8 +7,13 @@ import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -46,7 +51,9 @@ public class JobsServiceImpl implements JobsService {
     }
 
     @Override
-    public Job loadJobFromYaml(InputStream yamlInputStream){
+    public Job loadJobFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Job job = KubernetesConfig.client.batch().jobs().load(yamlInputStream).get();
 
@@ -54,7 +61,9 @@ public class JobsServiceImpl implements JobsService {
     }
 
     @Override
-    public Job createJobByYaml(InputStream yamlInputStream){
+    public Job createJobByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Job job = KubernetesConfig.client.batch().jobs().load(yamlInputStream).get();
         String nameSpace = job.getMetadata().getNamespace();
@@ -67,7 +76,9 @@ public class JobsServiceImpl implements JobsService {
     }
 
     @Override
-    public Job createOrReplaceJob(InputStream yamlInputStream){
+    public Job createOrReplaceJob(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Job job = KubernetesConfig.client.batch().jobs().load(yamlInputStream).get();
         String nameSpace = job.getMetadata().getNamespace();

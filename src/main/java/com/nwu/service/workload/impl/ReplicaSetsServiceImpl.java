@@ -6,8 +6,13 @@ import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -46,7 +51,9 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
     }
 
     @Override
-    public ReplicaSet loadReplicaSetFromYaml(InputStream yamlInputStream){
+    public ReplicaSet loadReplicaSetFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ReplicaSet replicaSet = KubernetesConfig.client.apps().replicaSets().load(yamlInputStream).get();
 
@@ -54,7 +61,9 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
     }
 
     @Override
-    public ReplicaSet createReplicaSetByYaml(InputStream yamlInputStream){
+    public ReplicaSet createReplicaSetByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ReplicaSet replicaSet = KubernetesConfig.client.apps().replicaSets().load(yamlInputStream).get();
         String nameSpace = replicaSet.getMetadata().getNamespace();
@@ -69,7 +78,9 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
     }
 
     @Override
-    public ReplicaSet createOrReplaceReplicaSet(InputStream yamlInputStream){
+    public ReplicaSet createOrReplaceReplicaSet(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ReplicaSet replicaSet = KubernetesConfig.client.apps().replicaSets().load(yamlInputStream).get();
         String nameSpace = replicaSet.getMetadata().getNamespace();
@@ -90,5 +101,6 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
             System.out.println("设置ReplicaSet的replicas失败");
         }
     }
+
 
 }

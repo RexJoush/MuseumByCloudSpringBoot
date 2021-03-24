@@ -9,6 +9,7 @@ import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -43,19 +44,19 @@ public interface StatefulSetsService {
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 加载的StatefulSet
      */
-    StatefulSet loadStatefulSetFromYaml(InputStream yamlInputStream);
+    StatefulSet loadStatefulSetFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建StatefulSet
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建的StatefulSet
      */
-    StatefulSet createStatefulSetByYaml(InputStream yamlInputStream);
+    StatefulSet createStatefulSetByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新StatefulSet
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建或更新的StatefulSet
      */
-    StatefulSet createOrReplaceStatefulSet(InputStream yamlInputStream);
+    StatefulSet createOrReplaceStatefulSet(String path) throws FileNotFoundException;
 }

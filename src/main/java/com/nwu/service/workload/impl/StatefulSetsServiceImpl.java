@@ -6,8 +6,13 @@ import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -45,7 +50,9 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
     }
 
     @Override
-    public StatefulSet loadStatefulSetFromYaml(InputStream yamlInputStream){
+    public StatefulSet loadStatefulSetFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         StatefulSet statefulSet = KubernetesConfig.client.apps().statefulSets().load(yamlInputStream).get();
 
@@ -53,7 +60,9 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
     }
 
     @Override
-    public StatefulSet createStatefulSetByYaml(InputStream yamlInputStream){
+    public StatefulSet createStatefulSetByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         StatefulSet statefulSet = KubernetesConfig.client.apps().statefulSets().load(yamlInputStream).get();
         String nameSpace = statefulSet.getMetadata().getNamespace();
@@ -66,7 +75,9 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
     }
 
     @Override
-    public StatefulSet createOrReplaceStatefulSet(InputStream yamlInputStream){
+    public StatefulSet createOrReplaceStatefulSet(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         StatefulSet statefulSet = KubernetesConfig.client.apps().statefulSets().load(yamlInputStream).get();
         String nameSpace = statefulSet.getMetadata().getNamespace();

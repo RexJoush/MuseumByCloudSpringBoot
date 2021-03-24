@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -73,9 +74,9 @@ public class ReplicaSetsController {
     }
 
     @RequestMapping("/loadReplicaSetFromYaml")
-    public String loadReplicaSetFromYaml(InputStream yamlInputStream){
+    public String loadReplicaSetFromYaml(String path) throws FileNotFoundException {
 
-        ReplicaSet aReplicaSet = replicaSetsService.loadReplicaSetFromYaml(yamlInputStream);
+        ReplicaSet aReplicaSet = replicaSetsService.loadReplicaSetFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -87,9 +88,9 @@ public class ReplicaSetsController {
     }
 
     @RequestMapping("/createReplicaSetFromYaml")
-    public String createReplicaSetFromYaml(InputStream yamlInputStream){
+    public String createReplicaSetFromYaml(String path) throws FileNotFoundException {
 
-        ReplicaSet aReplicaSet = replicaSetsService.createReplicaSetByYaml(yamlInputStream);
+        ReplicaSet aReplicaSet = replicaSetsService.createReplicaSetByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -101,8 +102,8 @@ public class ReplicaSetsController {
     }
 
     @RequestMapping("/createOrReplaceReplicaSet")
-    public String createOrReplaceReplicaSet(InputStream yamlInputStream){
-        ReplicaSet aReplicaSet = replicaSetsService.createOrReplaceReplicaSet(yamlInputStream);
+    public String createOrReplaceReplicaSet(String path) throws FileNotFoundException {
+        ReplicaSet aReplicaSet = replicaSetsService.createOrReplaceReplicaSet(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -115,6 +116,7 @@ public class ReplicaSetsController {
 
     @RequestMapping("/setReplicas")
     public String setReplicas(String name, String namespace, Integer replicas){
+
         replicaSetsService.setReplicas(name, namespace, replicas);
 
         Map<String, Object> result = new HashMap<>();

@@ -6,8 +6,13 @@ import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -43,13 +48,18 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
     }
 
     @Override
-    public DaemonSet loadDaemonSetFromYaml(InputStream yamlInputStream){
+    public DaemonSet loadDaemonSetFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
+
         DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
         return daemonSet;
     }
 
     @Override
-    public DaemonSet createDaemonSetByYaml(InputStream yamlInputStream){
+    public DaemonSet createDaemonSetByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
         String nameSpace = daemonSet.getMetadata().getNamespace();
@@ -62,7 +72,10 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
     }
 
     @Override
-    public DaemonSet createOrReplaceDaemonSet(InputStream yamlInputStream){
+    public DaemonSet createOrReplaceDaemonSet(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
+
         DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
         String nameSpace = daemonSet.getMetadata().getNamespace();
 

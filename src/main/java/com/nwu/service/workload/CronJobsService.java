@@ -10,6 +10,7 @@ import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -44,19 +45,19 @@ public interface CronJobsService {
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 加载的CronJob
      */
-    CronJob loadCronJobFromYaml(InputStream yamlInputStream);
+    CronJob loadCronJobFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建CronJob
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建的Cronjob
      */
-    CronJob createCronJobByYaml(InputStream yamlInputStream);
+    CronJob createCronJobByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新CronJob
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建或更新的Cronjob
      */
-    CronJob createOrReplaceCronJob(InputStream yamlInputStream);
+    CronJob createOrReplaceCronJob(String path) throws FileNotFoundException;
 }

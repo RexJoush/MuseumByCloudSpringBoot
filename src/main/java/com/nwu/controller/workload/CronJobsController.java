@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -75,9 +76,9 @@ public class CronJobsController {
     }
 
     @RequestMapping("/loadCronJobFromYaml")
-    public String loadCronJobFromYaml(InputStream yamlInputStream){
+    public String loadCronJobFromYaml(String path) throws FileNotFoundException {
 
-        CronJob aCronJob = cronJobsService.loadCronJobFromYaml(yamlInputStream);
+        CronJob aCronJob = cronJobsService.loadCronJobFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -89,9 +90,9 @@ public class CronJobsController {
     }
 
     @RequestMapping("/createCronJobFromYaml")
-    public String createCronJobFromYaml(InputStream yamlInputStream){
+    public String createCronJobFromYaml(String path) throws FileNotFoundException {
 
-        CronJob aCronJob = cronJobsService.createCronJobByYaml(yamlInputStream);
+        CronJob aCronJob = cronJobsService.createCronJobByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -103,8 +104,8 @@ public class CronJobsController {
     }
 
     @RequestMapping("/createOrReplaceCronJob")
-    public String createOrReplaceCronJob(InputStream yamlInputStream){
-        CronJob aCronJob = cronJobsService.createOrReplaceCronJob(yamlInputStream);
+    public String createOrReplaceCronJob(String path) throws FileNotFoundException {
+        CronJob aCronJob = cronJobsService.createOrReplaceCronJob(path);
 
         Map<String, Object> result = new HashMap<>();
 

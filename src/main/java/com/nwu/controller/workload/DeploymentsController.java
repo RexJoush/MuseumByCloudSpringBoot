@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -74,9 +75,9 @@ public class DeploymentsController {
     }
 
     @RequestMapping("/loadDeploymentFromYaml")
-    public String loadDeploymentFromYaml(InputStream yamlInputStream){
+    public String loadDeploymentFromYaml(String path) throws FileNotFoundException {
 
-        Deployment aDeployment = deploymentsService.loadDeploymentFromYaml(yamlInputStream);
+        Deployment aDeployment = deploymentsService.loadDeploymentFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -88,9 +89,9 @@ public class DeploymentsController {
     }
 
     @RequestMapping("/createDeploymentByYaml")
-    public String createDeploymentByYaml(InputStream yamlInputStream){
+    public String createDeploymentByYaml(String path) throws FileNotFoundException {
 
-        Deployment aDeployment = deploymentsService.createDeploymentByYaml(yamlInputStream);
+        Deployment aDeployment = deploymentsService.createDeploymentByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -102,8 +103,8 @@ public class DeploymentsController {
     }
 
     @RequestMapping("/createOrReplaceDeployment")
-    public String createOrReplaceDeployment(InputStream yamlInputStream){
-        Deployment aDeployment = deploymentsService.createOrReplaceDeployment(yamlInputStream);
+    public String createOrReplaceDeployment(String path) throws FileNotFoundException {
+        Deployment aDeployment = deploymentsService.createOrReplaceDeployment(path);
 
         Map<String, Object> result = new HashMap<>();
 

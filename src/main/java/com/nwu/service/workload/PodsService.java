@@ -4,6 +4,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -44,21 +45,21 @@ public interface PodsService {
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 加载的Pod
      */
-    Pod loadPodFromYaml(InputStream yamlInputStream);
+    Pod loadPodFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建Pod
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建的Pod
      */
-    Pod createPodByYaml(InputStream yamlInputStream);
+    Pod createPodByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新Pod
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建或更新的Pod
      */
-    Pod createOrReplacePod(InputStream yamlInputStream);
+    Pod createOrReplacePod(String path) throws FileNotFoundException;
 
     /**
      * 通过Pod name和namespace获取Pod的日志信息
@@ -68,5 +69,6 @@ public interface PodsService {
      */
     String getPodLogByNameAndNamespace(String name, String namespace);
 
+    Pod createPod();
 
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -75,9 +76,9 @@ public class JobsController {
     }
 
     @RequestMapping("/loadJobFromYaml")
-    public String loadJobFromYaml(InputStream yamlInputStream){
+    public String loadJobFromYaml(String path) throws FileNotFoundException {
 
-        Job aJob = jobsService.loadJobFromYaml(yamlInputStream);
+        Job aJob = jobsService.loadJobFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -89,9 +90,9 @@ public class JobsController {
     }
 
     @RequestMapping("/createJobFromYaml")
-    public String createJobFromYaml(InputStream yamlInputStream){
+    public String createJobFromYaml(String path) throws FileNotFoundException {
 
-        Job aJob = jobsService.createJobByYaml(yamlInputStream);
+        Job aJob = jobsService.createJobByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -103,8 +104,8 @@ public class JobsController {
     }
 
     @RequestMapping("/createOrReplaceJob")
-    public String createOrReplaceJob(InputStream yamlInputStream){
-        Job aJob = jobsService.createOrReplaceJob(yamlInputStream);
+    public String createOrReplaceJob(String path) throws FileNotFoundException {
+        Job aJob = jobsService.createOrReplaceJob(path);
 
         Map<String, Object> result = new HashMap<>();
 

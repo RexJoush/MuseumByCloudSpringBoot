@@ -9,6 +9,7 @@ import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -43,19 +44,19 @@ public interface DaemonSetsService {
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 加载的DaemonSet
      */
-    DaemonSet loadDaemonSetFromYaml(InputStream yamlInputStream);
+    DaemonSet loadDaemonSetFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建DaemonSet
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建的DaemonSet
      */
-    DaemonSet createDaemonSetByYaml(InputStream yamlInputStream);
+    DaemonSet createDaemonSetByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新DaemonSet
      * @param yamlInputStream yaml文件输入流 InputStream
      * @return 创建或更新的DaemonSet
      */
-    DaemonSet createOrReplaceDaemonSet(InputStream yamlInputStream);
+    DaemonSet createOrReplaceDaemonSet(String path) throws FileNotFoundException;
 }

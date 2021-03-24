@@ -3,11 +3,17 @@ package com.nwu.service.workload.impl;
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesConfig;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -50,7 +56,9 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public Pod loadPodFromYaml(InputStream yamlInputStream){
+    public Pod loadPodFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Pod pod = KubernetesConfig.client.pods().load(yamlInputStream).get();
 
@@ -58,7 +66,9 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public Pod createPodByYaml(InputStream yamlInputStream){
+    public Pod createPodByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Pod pod = KubernetesConfig.client.pods().load(yamlInputStream).get();
         String nameSpace = pod.getMetadata().getNamespace();
@@ -71,7 +81,9 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public Pod createOrReplacePod(InputStream yamlInputStream){
+    public Pod createOrReplacePod(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Pod pod = KubernetesConfig.client.pods().load(yamlInputStream).get();
         String nameSpace = pod.getMetadata().getNamespace();
@@ -94,6 +106,23 @@ public class PodsServiceImpl implements PodsService {
         }
 
         return log;
+    }
+
+    // name image amount  Service annotation label:key-value namespace
+    // imagePullSecret minCPURequirement minMemoryRequirement
+    //comm
+    @Override
+    public Pod createPod(){
+        Pod pod = new PodBuilder().withNewMetadata().withName("demo-pod1").endMetadata()
+                .withNewSpec()
+                .addNewContainer()
+                .withName("nginx")
+                .withImage("nginx:1.7.9")
+                .addNewPort().withContainerPort(80).endPort()
+                .endContainer()
+                .endSpec()
+                .build();
+        return pod;
     }
 
 }
