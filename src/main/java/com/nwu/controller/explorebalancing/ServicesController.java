@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +68,39 @@ public class ServicesController {
         return JSON.toJSONString(result);
     }
 
+
+
+    @RequestMapping("loadServiceFromYaml")
+    public String loadServiceFromYaml(String path) throws FileNotFoundException {
+
+        Service service = serviceService.loadServiceFromYaml(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载 Service 成功");
+        result.put("data", service);
+
+        return JSON.toJSONString(result);
+    }
+
+
+    @RequestMapping("createServiceFromYaml")
+    public String createServiceFromYaml(String path) throws FileNotFoundException {
+
+        Service service = serviceService.createServiceByYaml(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 Service 成功");
+        result.put("data", service);
+
+        return JSON.toJSONString(result);
+    }
+
+
+
     @RequestMapping
     public String deleteServiceByNameAndNamespace(String name, String namespace){
 
@@ -83,39 +117,11 @@ public class ServicesController {
 
     }
 
-    @RequestMapping("loadServiceFromYaml")
-    public String loadServiceFromYaml(InputStream yamlInputStream){
-
-        Service service = serviceService.loadServiceFromYaml(yamlInputStream);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "加载 Service 成功");
-        result.put("data", service);
-
-        return JSON.toJSONString(result);
-    }
-
-
-    @RequestMapping("createServiceFromYaml")
-    public String createServiceFromYaml(InputStream yamlInputStream){
-
-        Service service = serviceService.createServiceByYaml(yamlInputStream);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 Service 成功");
-        result.put("data", service);
-
-        return JSON.toJSONString(result);
-    }
 
     @RequestMapping("/createOrReplaceService")
-    public String createOrReplaceService(InputStream yamlInputStream){
+    public String createOrReplaceService(String path) throws FileNotFoundException {
 
-        Service service = serviceService.createOrReplaceService(yamlInputStream);
+        Service service = serviceService.createOrReplaceService(path);
 
         Map<String, Object> result = new HashMap<>();
 

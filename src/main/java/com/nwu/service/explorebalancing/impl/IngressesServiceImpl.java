@@ -2,11 +2,16 @@ package com.nwu.service.explorebalancing.impl;
 
 import com.nwu.service.explorebalancing.IngressesService;
 import com.nwu.util.KubernetesConfig;
+import com.sun.tools.internal.ws.wsdl.document.Input;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -19,9 +24,9 @@ import java.util.List;
 @Service
 public class IngressesServiceImpl implements IngressesService {
 
-    public static void main(String[] args) {
-        System.out.println(new IngressesServiceImpl().findAllIngresses());
-    }
+//    public static void main(String[] args) {
+//        System.out.println(new IngressesServiceImpl().findAllIngresses());
+//    }
     @Override
     public List<Ingress> findAllIngresses(){
 
@@ -31,5 +36,70 @@ public class IngressesServiceImpl implements IngressesService {
 
     }
 
+    @Override
+    public List<Ingress> findIngressesByNamespace(String namespace){
+
+        List<Ingress> item = KubernetesConfig.client.extensions().ingresses().inNamespace(namespace).list().getItems();
+
+        return item;
+    }
+
+
+    @Override
+    public Ingress loadServiceFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
+
+        Ingress ingress = KubernetesConfig.client.extensions().ingresses().load(yamlInputStream).get();
+
+        return ingress;
+    }
+
+
+
+    @Override
+    public Ingress createIngressByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
+
+        Ingress createIngress = KubernetesConfig.client.extensions().ingresses().load(yamlInputStream).get();
+
+        String nameSpace = createIngress.getMetadata().getNamespace();
+        try{
+            createIngress = KubernetesConfig.client.extensions().ingresses().inNamespace(nameSpace).create(createIngress);
+        }catch (Exception e){
+            System.out.println("创建失败，在Ingress Service类的createIngressByYaml中");
+        }
+
+        return createIngress;
+    }
+
+
+    @Override
+    public Boolean deleteIngressesByNameAndNamespace(String ingressName,String namespace){
+
+        Boolean deleteIngress = KubernetesConfig.client.extensions().ingresses().inNamespace(namespace).withName(ingressName).delete();
+
+        return deleteIngress;
+    }
+
+
+    public Ingress createOrReplaceIngress(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
+
+        Ingress ingress = KubernetesConfig.client.extensions().ingresses().load(yamlInputStream).get();
+
+        String namespace = ingress.getMetadata().getNamespace();
+        try{
+            ingress = KubernetesConfig.client.extensions().ingresses().createOrReplace(ingress);
+
+        }catch (Exception e){
+            System.out.println("失败，在Ingress Service中的createOrReplaceIngress方法");
+        }
+
+        return ingress;
+
+    }
 
 }

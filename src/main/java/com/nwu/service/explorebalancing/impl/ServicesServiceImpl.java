@@ -8,8 +8,11 @@ import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.Pod;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -43,7 +46,9 @@ public class ServicesServiceImpl implements ServicesService {
     }
 
     @Override
-    public io.fabric8.kubernetes.api.model.Service loadServiceFromYaml(InputStream yamlInputStream){
+    public io.fabric8.kubernetes.api.model.Service loadServiceFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         io.fabric8.kubernetes.api.model.Service service = KubernetesConfig.client.services().load(yamlInputStream).get();
 
@@ -52,20 +57,24 @@ public class ServicesServiceImpl implements ServicesService {
 
 
     @Override
-    public io.fabric8.kubernetes.api.model.Service createServiceByYaml(InputStream yamlInputStream){
+    public io.fabric8.kubernetes.api.model.Service createServiceByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         io.fabric8.kubernetes.api.model.Service createSvc = KubernetesConfig.client.services().load(yamlInputStream).get();
         String nameSpace = createSvc.getMetadata().getNamespace();
         try {
             createSvc = KubernetesConfig.client.services().inNamespace(nameSpace).create(createSvc);
         }catch(Exception e){
-            System.out.println("创建失败,在ServicesService类的creatServiceByYaml方法中");
+            System.out.println("创建失败,在ServicesService类的createServiceByYaml方法中");
         }
         return createSvc;
     }
 
     @Override
-    public io.fabric8.kubernetes.api.model.Service createOrReplaceService(InputStream yamlInputStream){
+    public io.fabric8.kubernetes.api.model.Service createOrReplaceService(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         io.fabric8.kubernetes.api.model.Service service = KubernetesConfig.client.services().load(yamlInputStream).get();
         String namespace = service.getMetadata().getNamespace();
