@@ -3,7 +3,6 @@ package com.nwu.service.settingstorage.impl;
 import com.nwu.service.settingstorage.PersistentVolumeClaimsService;
 import com.nwu.util.KubernetesConfig;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
-import io.fabric8.kubernetes.api.model.Secret;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.stereotype.Service;
 
@@ -55,8 +54,24 @@ public class PersistentVolumeClaimsServiceImpl implements PersistentVolumeClaims
 
         PersistentVolumeClaim persistentVolumeClaim = KubernetesConfig.client.persistentVolumeClaims().load(yamlInputStream).get();
         String nameSpace = persistentVolumeClaim.getMetadata().getNamespace();
+        try {
         persistentVolumeClaim = KubernetesConfig.client.persistentVolumeClaims().inNamespace(nameSpace).create(persistentVolumeClaim);
-
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在PersistentVolumeClaimServiceImpl类的createPVCByYaml方法");
+        }
         return persistentVolumeClaim;
+    }
+
+    @Override
+    public PersistentVolumeClaim createOrReplacePVC(InputStream yamlInputStream) {
+
+        PersistentVolumeClaim pvc = KubernetesConfig.client.persistentVolumeClaims().load(yamlInputStream).get();
+        String nameSpace = pvc.getMetadata().getNamespace();
+        try {
+        pvc = KubernetesConfig.client.persistentVolumeClaims().inNamespace(nameSpace).createOrReplace(pvc);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在PersistentVolumeClaimServiceImpl类的createOrReplacePVC方法");
+        }
+        return pvc;
     }
 }

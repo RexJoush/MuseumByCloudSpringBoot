@@ -32,24 +32,30 @@ public interface SecretsService {
 
     /**
      * 通过 name 和 namespace 删除 Secret
-     * @param name
-     * @param namespace
-     * @return boolean值
+     * @param name Secret 名称
+     * @param namespace Secret所在命名空间名称默认为“default”
+     * @return 删除结果 bool型
      */
     Boolean deleteSecretByNameAndNamespace(String name,String namespace);
 
     /**
-     * 通过加载 yaml 文件
-     * @param yamlInputStream
-     * @return Secret
+     * 通过加载 yaml 文件到 Secret 实例
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 加载的 Secret
      */
     Secret loadSecretFromYaml(InputStream yamlInputStream);
 
     /**
      * 通过 yaml 文件创建 secret
-     * @param yamlInputStream
-     * @return secret
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 创建的 secret
      */
     Secret createSecretByYaml(InputStream yamlInputStream);
 
+    /**
+     * 通过yaml文件创建或更新 Secret
+     * @param yamlInputStream yaml文件输入流 InputStream
+     * @return 创建或更新的 Secret
+     */
+    Secret createOrReplaceSecret(InputStream yamlInputStream);
 }

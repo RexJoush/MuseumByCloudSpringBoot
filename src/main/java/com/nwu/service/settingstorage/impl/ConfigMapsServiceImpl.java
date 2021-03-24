@@ -37,7 +37,7 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     }
 
     @Override
-    public List<ConfigMap> findConfigMapsByNamespace(String namespace) {
+    public List<ConfigMap> findConfigMapsByNamespace(String namespace)  {
 
         List<ConfigMap> items = KubernetesConfig.client.configMaps().inNamespace(namespace).list().getItems();
 
@@ -53,24 +53,38 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     }
 
     @Override
-    public ConfigMap loadConfigMapFromYaml(InputStream yamlinputStream) {
+    public ConfigMap loadConfigMapFromYaml(InputStream yamlInputStream) {
 
-        ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlinputStream).get();
+        ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
 
         return configMap;
     }
 
     @Override
-    public ConfigMap createConfigMapByYaml(InputStream yamlinputStream) {
+    public ConfigMap createConfigMapByYaml(InputStream yamlInputStream) {
 
-        ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlinputStream).get();
+        ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
         String nameSpace = configMap.getMetadata().getNamespace();
         try{
             configMap = KubernetesConfig.client.configMaps().inNamespace(nameSpace).create(configMap);
         }catch(Exception e){
-            System.out.println("cuowu");
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ConfigMapServiceImpl类的createConfigMapByYaml方法");
         }
 
+        return configMap;
+    }
+
+    @Override
+    public ConfigMap createOrReplaceConfigMap(InputStream yamlInputStream) {
+
+        ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
+        String nameSpace = configMap.getMetadata().getNamespace();
+
+        try {
+        configMap = KubernetesConfig.client.configMaps().inNamespace(nameSpace).createOrReplace(configMap);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ConfigMapServiceImpl类的createOrReplaceConfigMap方法");
+        }
         return configMap;
     }
 

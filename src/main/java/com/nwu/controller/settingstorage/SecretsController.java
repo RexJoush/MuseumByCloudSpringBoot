@@ -98,7 +98,20 @@ public class SecretsController {
         result.put("data", secretByYaml);
 
         return JSON.toJSONString(result);
+    }
 
+    @RequestMapping("/createOrReplaceSecret")
+    public String createOrReplaceSecret(InputStream yamlInputStream){
+
+        Secret secret = secretsService.createOrReplaceSecret(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 Secret 成功");
+        result.put("data", secret);
+
+        return JSON.toJSONString(result);
     }
 
 }
