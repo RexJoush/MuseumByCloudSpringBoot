@@ -84,4 +84,16 @@ public class PodsServiceImpl implements PodsService {
         return pod;
     }
 
+    @Override
+    public String getPodLogByNameAndNamespace(String name, String namespace){
+        String log = "";
+        try{
+            log = KubernetesConfig.client.pods().inNamespace(namespace).withName(name).getLog();
+        }catch(Exception e){
+            System.out.println("未获取到Pod的日志");
+        }
+
+        return log;
+    }
+
 }

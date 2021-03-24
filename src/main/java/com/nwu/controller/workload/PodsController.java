@@ -116,4 +116,17 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("getPodLogByNameAndNamespace")
+    public String getPodLogByNameAndNamespace(String name, String namespace){
+        String str = podsService.getPodLogByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Pod日志 成功");
+        result.put("data", str);
+
+        return JSON.toJSONString(result);
+    }
+
 }

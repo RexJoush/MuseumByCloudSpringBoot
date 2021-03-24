@@ -113,4 +113,17 @@ public class DeploymentsController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("getDeploymentLogByNameAndNamespace")
+    public String getDeploymentLogByNameAndNamespace(String name, String namespace){
+        String str = deploymentsService.getDeploymentLogByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Deployment日志 成功");
+        result.put("data", str);
+
+        return JSON.toJSONString(result);
+    }
 }

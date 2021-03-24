@@ -59,4 +59,12 @@ public interface PodsService {
      * @return 创建或更新的Pod
      */
     Pod createOrReplacePod(InputStream yamlInputStream);
+
+    /**
+     * 通过Pod name和namespace获取Pod的日志信息
+     * @param name Pod名称
+     * @param namespace Pod命名空间
+     * @return
+     */
+    String getPodLogByNameAndNamespace(String name, String namespace);
 }

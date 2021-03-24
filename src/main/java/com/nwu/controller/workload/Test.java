@@ -20,13 +20,13 @@ public class Test {
         File file = new File(path);
         FileInputStream fileInputStream = new FileInputStream(file);
         System.out.println(file);
-        ReplicaSetsServiceImpl replicaSetsService = new ReplicaSetsServiceImpl();
+        PodsServiceImpl pod = new PodsServiceImpl();
         //Boolean isDeleted = replicaSetsService.deleteReplicaSetByNameAndNamespace("frontend", "default");
 
-        ReplicaSet cj = replicaSetsService.createReplicaSetByYaml(fileInputStream);
-        String nameSpace = cj.getMetadata().getNamespace();
-        System.out.println(nameSpace);
-        System.out.println(cj);
+        String str = pod.getPodLogByNameAndNamespace("coredns-58cc8c89f4-88rqs", "kube-system");
+        //String nameSpace = cj.getMetadata().getNamespace();
+        System.out.println(str);
+        //System.out.println(cj);
         fileInputStream.close();
     }
 }

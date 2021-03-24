@@ -61,4 +61,12 @@ public interface DeploymentsService {
      */
     Deployment createOrReplaceDeployment(InputStream yamlInputStream);
 
+    /**
+     * 通过Deployment name和namespace获取Deployment的日志信息
+     * @param name Deployment名称
+     * @param namespace Deployment命名空间
+     * @return 日志信息
+     */
+    String getDeploymentLogByNameAndNamespace(String name, String namespace);
+
 }
