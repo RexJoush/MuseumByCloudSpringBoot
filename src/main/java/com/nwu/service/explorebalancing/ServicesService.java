@@ -11,6 +11,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public interface ServicesService {
      * @return Services 列表
      * @throws ApiException
      */
-    List<Service> findAllServices() throws ApiException;
+    List<Service> findAllServices();
 
     /**
      * 通过namespace获取service
@@ -33,15 +34,15 @@ public interface ServicesService {
      * @return service 列表
      * @throws ApiException
      */
-    List<Service> findServicesByNamespace(String namespace) throws ApiException;
+    List<Service> findServicesByNamespace(String namespace);
 
     /**
      * 通过yaml文件加载Service
-     * @param yamlInputStream   yaml文件输入流 InputStream
+     * @param path   yaml文件输入流 InputStream
      * @return 加载的Service
      * @throws ApiException
      */
-    Service loadServiceFromYaml(InputStream yamlInputStream) throws ApiException;
+    Service loadServiceFromYaml(String path) throws FileNotFoundException;
 
 
     /**
@@ -49,7 +50,7 @@ public interface ServicesService {
      * @return 创建的Service
      * @throws ApiException
      */
-    Service createServiceByYaml(InputStream yamlInputStream) throws ApiException;
+    Service createServiceByYaml(String path) throws FileNotFoundException;
 
 
     /**
@@ -59,14 +60,14 @@ public interface ServicesService {
      * @return
      * @throws ApiException
      */
-    Boolean deleteServicesByNameAndNamespace(String serviceName,String namespace) throws ApiException;
+    Boolean deleteServicesByNameAndNamespace(String serviceName,String namespace);
 
 
     /**
      * 通过yaml文件创建或者更新Service
-     * @param yamlInputStream
+     * @param path
      * @return 创建或者更新的Service
      * @throws ApiException
      */
-    Service createOrReplaceService(InputStream yamlInputStream) throws ApiException;
+    Service createOrReplaceService(String path) throws FileNotFoundException;
 }
