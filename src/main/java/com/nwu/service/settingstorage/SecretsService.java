@@ -8,6 +8,7 @@ package com.nwu.service.settingstorage;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -32,24 +33,33 @@ public interface SecretsService {
 
     /**
      * 通过 name 和 namespace 删除 Secret
-     * @param name
-     * @param namespace
-     * @return boolean值
+     * @param name Secret 名称
+     * @param namespace Secret所在命名空间名称默认为“default”
+     * @return 删除结果 bool型
      */
     Boolean deleteSecretByNameAndNamespace(String name,String namespace);
 
     /**
-     * 通过加载 yaml 文件
-     * @param yamlInputStream
-     * @return Secret
+     * 通过加载yaml文件到 Secret 实例
+     * @param path  yaml文件的路径
+     * @return 加载的 Secret
+     * @throws FileNotFoundException
      */
-    Secret loadSecretFromYaml(InputStream yamlInputStream);
+    Secret loadSecretFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过 yaml 文件创建 secret
-     * @param yamlInputStream
-     * @return secret
+     * @param path yaml文件的路径
+     * @return 创建的 secret
+     * @throws FileNotFoundException
      */
-    Secret createSecretByYaml(InputStream yamlInputStream);
+    Secret createSecretByYaml(String path) throws FileNotFoundException;
 
+    /**
+     * 通过yaml文件创建或更新 Secret
+     * @param path yaml文件的路径
+     * @return 创建或更新的 Secret
+     * @throws FileNotFoundException
+     */
+    Secret createOrReplaceSecret(String path) throws FileNotFoundException;
 }

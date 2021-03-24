@@ -2,12 +2,17 @@ package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesConfig;
-import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.List;
+import java.util.*;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -50,7 +55,9 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public Pod loadPodFromYaml(InputStream yamlInputStream){
+    public Pod loadPodFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Pod pod = KubernetesConfig.client.pods().load(yamlInputStream).get();
 
@@ -58,7 +65,9 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public Pod createPodByYaml(InputStream yamlInputStream){
+    public Pod createPodByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Pod pod = KubernetesConfig.client.pods().load(yamlInputStream).get();
         String nameSpace = pod.getMetadata().getNamespace();
@@ -71,7 +80,9 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public Pod createOrReplacePod(InputStream yamlInputStream){
+    public Pod createOrReplacePod(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Pod pod = KubernetesConfig.client.pods().load(yamlInputStream).get();
         String nameSpace = pod.getMetadata().getNamespace();
@@ -94,6 +105,75 @@ public class PodsServiceImpl implements PodsService {
         }
 
         return log;
+    }
+
+    // name image amount  Service annotation label:key-value namespace
+    // imagePullSecret minCPURequirement minMemoryRequirement
+    //command
+    @Override
+    public List<Pod> createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
+                         String secretName, String images, String imagePullPolicy, String[] command, String[] args,
+                         String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount){
+
+        String generateName = "";
+        String containerName = name;
+        if(amount > 1) {
+            generateName = name;
+            name = "";
+        }
+
+        LocalObjectReference localObjectReference = new LocalObjectReference();
+        localObjectReference.setName(secretName);
+
+        ResourceRequirements resourceRequirements = new ResourceRequirements();
+        Quantity cpuLimitQu = new QuantityBuilder().withAmount(cpuLimit).build();
+        Quantity cpuRequestQu = new QuantityBuilder().withAmount(cpuRequest).build();
+        Quantity memoryLimitQu = new QuantityBuilder().withAmount(memoryLimit).build();
+        Quantity memoryRequestQu = new QuantityBuilder().withAmount(memoryRequest).build();
+
+        List<EnvVar> envVarList = new ArrayList<EnvVar>();
+        Set<String> keySet = envVar.keySet();
+        Iterator<String> keyIterator = keySet.iterator();
+        while(keyIterator.hasNext()){
+            String key = (String) keyIterator.next();
+            String value = envVar.get(key);
+            EnvVar tmpEnvVar = new EnvVar();
+            tmpEnvVar.setName(key);
+            tmpEnvVar.setValue(value);
+            envVarList.add(tmpEnvVar);
+        }
+
+        List<Pod> podList = new ArrayList<Pod>();
+        while(amount > 0){
+            amount -= 1;
+            Pod tmpPod = new PodBuilder()
+                    .withNewMetadata()
+                            //.withNamespace(namespace)
+                        .withGenerateName(generateName)
+                        .withName(name)
+                        .withLabels(labels)
+                        .withAnnotations(annotations)
+                    .endMetadata()
+                    .withNewSpec()
+                        .withImagePullSecrets(localObjectReference)
+                        .addNewContainer()
+                            .withName(containerName)
+                            .withImage(images)
+                            .withImagePullPolicy(imagePullPolicy)
+                            .withCommand(command)
+                            .withArgs(args)
+                            .withNewResources()
+                                .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
+                                .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
+                            .endResources()
+                            .withEnv(envVarList)
+                            //addNewPort().withContainerPort(80).endPort()
+                        .endContainer()
+                    .endSpec().build();
+            Pod pod = KubernetesConfig.client.pods().inNamespace(namespace).create(tmpPod);
+            podList.add(pod);
+        }
+        return podList;
     }
 
 }

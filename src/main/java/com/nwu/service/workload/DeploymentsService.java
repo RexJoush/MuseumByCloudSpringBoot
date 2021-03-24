@@ -10,6 +10,7 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -42,24 +43,24 @@ public interface DeploymentsService {
 
     /**
      * 从yaml文件加载一个Deployment到Deployment实例
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 加载的Deployment
      */
-    Deployment loadDeploymentFromYaml(InputStream yamlInputStream);
+    Deployment loadDeploymentFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建Deployment
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建的Deployment
      */
-    Deployment createDeploymentByYaml(InputStream yamlInputStream);
+    Deployment createDeploymentByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新Deployment
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建或更新的Deployment
      */
-    Deployment createOrReplaceDeployment(InputStream yamlInputStream);
+    Deployment createOrReplaceDeployment(String path) throws FileNotFoundException;
 
     /**
      * 通过Deployment name和namespace获取Deployment的日志信息
@@ -68,5 +69,13 @@ public interface DeploymentsService {
      * @return 日志信息
      */
     String getDeploymentLogByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 设置Deployment控制的Pod副本数量
+     * @param name Deployment名称
+     * @param namespace Deployment命名空间
+     * @param replicas Pod副本数量
+     */
+    void setReplicas(String name, String namespace, Integer replicas);
 
 }

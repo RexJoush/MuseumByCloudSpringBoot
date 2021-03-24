@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,7 @@ public class ReplicationControllersController {
     @Resource
     private ReplicationControllersServiceImpl replicationControllersService;
 
-    @RequestMapping("getAllReplicationControllers")
+    @RequestMapping("/getAllReplicationControllers")
     public String findAllReplicationControllers() throws ApiException {
 
         List<ReplicationController> replicationControllerList = replicationControllersService.findAllReplicationControllers();
@@ -45,7 +46,7 @@ public class ReplicationControllersController {
 
     }
 
-    @RequestMapping("getReplicationControllersByNamespace")
+    @RequestMapping("/getReplicationControllersByNamespace")
     public String findReplicationControllersByNamespace(String namespace) throws ApiException {
 
         List<ReplicationController> replicationControllerList = replicationControllersService.findReplicationControllersByNamespace(namespace);
@@ -60,7 +61,7 @@ public class ReplicationControllersController {
 
     }
 
-    @RequestMapping("deleteReplicationControllerByNameAndNamespace")
+    @RequestMapping("/deleteReplicationControllerByNameAndNamespace")
     public String deleteReplicationControllerByNameAndNamespace(String name, String namespace){
         Boolean delete = replicationControllersService.deleteReplicationControllerByNameAndNamespace(name, namespace);
 
@@ -73,10 +74,10 @@ public class ReplicationControllersController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadCronJobFromYaml")
-    public String loadReplicationControllerFromYaml(InputStream yamlInputStream){
+    @RequestMapping("/loadReplicationControllerFromYaml")
+    public String loadReplicationControllerFromYaml(String path) throws FileNotFoundException {
 
-        ReplicationController aReplicationController = replicationControllersService.loadReplicationControllerFromYaml(yamlInputStream);
+        ReplicationController aReplicationController = replicationControllersService.loadReplicationControllerFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -87,10 +88,10 @@ public class ReplicationControllersController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createReplicationControllerFromYaml")
-    public String createReplicationControllerFromYaml(InputStream yamlInputStream){
+    @RequestMapping("/createReplicationControllerFromYaml")
+    public String createReplicationControllerFromYaml(String path) throws FileNotFoundException {
 
-        ReplicationController aReplicationController = replicationControllersService.createReplicationControllerByYaml(yamlInputStream);
+        ReplicationController aReplicationController = replicationControllersService.createReplicationControllerByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -102,14 +103,28 @@ public class ReplicationControllersController {
     }
 
     @RequestMapping("/createOrReplaceReplicationController")
-    public String createOrReplaceReplicationController(InputStream yamlInputStream){
-        ReplicationController aReplicationController = replicationControllersService.createOrReplaceReplicationController(yamlInputStream);
+    public String createOrReplaceReplicationController(String path) throws FileNotFoundException {
+        ReplicationController aReplicationController = replicationControllersService.createOrReplaceReplicationController(path);
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
         result.put("message", "创建或更新 ReplicationController 成功");
         result.put("data", aReplicationController);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/setReplicas")
+    public String setReplicas(String name, String namespace, Integer replicas){
+
+        replicationControllersService.setReplicas(name, namespace, replicas);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 ReplicaSet 成功");
+        result.put("data", "未明确");
 
         return JSON.toJSONString(result);
     }

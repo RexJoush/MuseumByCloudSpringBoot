@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,7 @@ public class CronJobsController {
     @Resource
     private CronJobsServiceImpl cronJobsService;
 
-    @RequestMapping("getAllCronJobs")
+    @RequestMapping("/getAllCronJobs")
     public String findAllCronJobs() throws ApiException {
 
         List<CronJob> v1CronJobList = cronJobsService.findAllCronJobs();
@@ -46,7 +47,7 @@ public class CronJobsController {
 
     }
 
-    @RequestMapping("getCronJobsByNamespace")
+    @RequestMapping("/getCronJobsByNamespace")
     public String findCronJobsByNamespace(String namespace) throws ApiException {
 
         List<CronJob> v1CronJobList = cronJobsService.findCronJobsByNamespace(namespace);
@@ -61,7 +62,7 @@ public class CronJobsController {
 
     }
 
-    @RequestMapping("deleteCronJobByNameAndNamespace")
+    @RequestMapping("/deleteCronJobByNameAndNamespace")
     public String deleteCronJobByNameAndNamespace(String name, String namespace){
         Boolean delete = cronJobsService.deleteCronJobByNameAndNamespace(name, namespace);
 
@@ -74,10 +75,10 @@ public class CronJobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadCronJobFromYaml")
-    public String loadCronJobFromYaml(InputStream yamlInputStream){
+    @RequestMapping("/loadCronJobFromYaml")
+    public String loadCronJobFromYaml(String path) throws FileNotFoundException {
 
-        CronJob aCronJob = cronJobsService.loadCronJobFromYaml(yamlInputStream);
+        CronJob aCronJob = cronJobsService.loadCronJobFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -88,10 +89,10 @@ public class CronJobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createCronJobFromYaml")
-    public String createCronJobFromYaml(InputStream yamlInputStream){
+    @RequestMapping("/createCronJobFromYaml")
+    public String createCronJobFromYaml(String path) throws FileNotFoundException {
 
-        CronJob aCronJob = cronJobsService.createCronJobByYaml(yamlInputStream);
+        CronJob aCronJob = cronJobsService.createCronJobByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -103,8 +104,8 @@ public class CronJobsController {
     }
 
     @RequestMapping("/createOrReplaceCronJob")
-    public String createOrReplaceCronJob(InputStream yamlInputStream){
-        CronJob aCronJob = cronJobsService.createOrReplaceCronJob(yamlInputStream);
+    public String createOrReplaceCronJob(String path) throws FileNotFoundException {
+        CronJob aCronJob = cronJobsService.createOrReplaceCronJob(path);
 
         Map<String, Object> result = new HashMap<>();
 

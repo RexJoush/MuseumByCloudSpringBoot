@@ -10,6 +10,7 @@ import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -41,22 +42,22 @@ public interface JobsService {
 
     /**
      * 从yaml文件加载一个job到Job实例
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 加载的Job
      */
-    Job loadJobFromYaml(InputStream yamlInputStream);
+    Job loadJobFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建Job
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建的job
      */
-    Job createJobByYaml(InputStream yamlInputStream);
+    Job createJobByYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新Job
-     * @param yamlInputStream yaml文件输入流 InputStream
+     * @param path yaml文件输入路径 String
      * @return 创建或更新的job
      */
-    Job createOrReplaceJob(InputStream yamlInputStream);
+    Job createOrReplaceJob(String path) throws FileNotFoundException;
 }

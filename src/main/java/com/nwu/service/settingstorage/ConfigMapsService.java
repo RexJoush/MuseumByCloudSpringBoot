@@ -8,6 +8,7 @@ package com.nwu.service.settingstorage;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -31,31 +32,33 @@ public interface ConfigMapsService {
 
     /**
      * 通过 name 和 namespace 删除 ConfigMap
-     * @param name
-     * @param namespace
-     * @return
+     * @param name CobfigMap 名称
+     * @param namespace ConfigMap 所在命名空间名称默认为“default”
+     * @return 删除结果 bool型
      */
     Boolean deleteConfigMapByNameAndNamespace(String name,String namespace);
 
     /**
-     * 通过加载 yaml 文件
-     * @param inputStream
-     * @return
+     * 加载 yaml 文件 到 ConfigMap
+     * @param path yaml文件的路径
+     * @return 加载的 ConfigMap
+     * @throws FileNotFoundException
      */
-    ConfigMap loadConfigMapFromYaml(InputStream inputStream);
+    ConfigMap loadConfigMapFromYaml(String path) throws FileNotFoundException;
 
     /**
      * 通过 yaml 文件创建 ConfigMap
-     * @param inputStream
-     * @return
+     * @param path yaml文件的路径
+     * @return 创建的 ConfigMap
+     * @throws FileNotFoundException
      */
-    ConfigMap createConfigMapByYaml(InputStream inputStream);
+    ConfigMap createConfigMapByYaml(String path) throws FileNotFoundException;
 
     /**
-     * 修改 ConfigMap 文件
-     * @param name
-     * @param namespace
-     * @return
+     * 通过yaml文件创建或更新ConfigMap
+     * @param path yaml文件的路径
+     * @return 创建或更新的ConfigMap
+     * @throws FileNotFoundException
      */
-    //ConfigMap updateConfigMap(String name,String namespace);
+    ConfigMap createOrReplaceConfigMap(String path) throws FileNotFoundException;
 }

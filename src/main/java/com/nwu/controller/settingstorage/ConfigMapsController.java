@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -73,9 +74,9 @@ public class ConfigMapsController {
     }
 
     @RequestMapping("/loadConfigMap")
-    public String loadConfigMapFromYaml(InputStream yamlinputStream){
+    public String loadConfigMapFromYaml(String path) throws FileNotFoundException {
 
-        ConfigMap configMap = configMapsService.loadConfigMapFromYaml(yamlinputStream);
+        ConfigMap configMap = configMapsService.loadConfigMapFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -87,9 +88,9 @@ public class ConfigMapsController {
     }
 
     @RequestMapping("/createConfigMap")
-    public String createConfigMapByYaml(InputStream yamlinputStream){
+    public String createConfigMapByYaml(String path) throws FileNotFoundException {
 
-        ConfigMap configMapByYaml = configMapsService.createConfigMapByYaml(yamlinputStream);
+        ConfigMap configMapByYaml = configMapsService.createConfigMapByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -100,4 +101,17 @@ public class ConfigMapsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/createOrReplaceConfigMap")
+    public String createOrReplaceConfigMap(String path) throws FileNotFoundException {
+
+        ConfigMap replaceConfigMap = configMapsService.createOrReplaceConfigMap(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 ConfigMap 成功");
+        result.put("data", replaceConfigMap);
+
+        return JSON.toJSONString(result);
+    }
 }

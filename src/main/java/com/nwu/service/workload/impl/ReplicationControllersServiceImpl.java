@@ -6,8 +6,13 @@ import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -46,7 +51,9 @@ public class ReplicationControllersServiceImpl implements ReplicationControllers
     }
 
     @Override
-    public ReplicationController loadReplicationControllerFromYaml(InputStream yamlInputStream){
+    public ReplicationController loadReplicationControllerFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ReplicationController replicationController = KubernetesConfig.client.replicationControllers().load(yamlInputStream).get();
 
@@ -54,7 +61,9 @@ public class ReplicationControllersServiceImpl implements ReplicationControllers
     }
 
     @Override
-    public ReplicationController createReplicationControllerByYaml(InputStream yamlInputStream){
+    public ReplicationController createReplicationControllerByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ReplicationController replicationController = KubernetesConfig.client.replicationControllers().load(yamlInputStream).get();
         String nameSpace = replicationController.getMetadata().getNamespace();
@@ -67,7 +76,9 @@ public class ReplicationControllersServiceImpl implements ReplicationControllers
     }
 
     @Override
-    public ReplicationController createOrReplaceReplicationController(InputStream yamlInputStream){
+    public ReplicationController createOrReplaceReplicationController(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         ReplicationController replicationController = KubernetesConfig.client.replicationControllers().load(yamlInputStream).get();
         String nameSpace = replicationController.getMetadata().getNamespace();
@@ -80,4 +91,13 @@ public class ReplicationControllersServiceImpl implements ReplicationControllers
         return replicationController;
     }
 
+
+    @Override
+    public void setReplicas(String name, String namespace, Integer replicas){
+        try {
+            KubernetesConfig.client.replicationControllers().inNamespace(namespace).withName(name).edit().getSpec().setReplicas(replicas);
+        }catch (Exception e){
+            System.out.println("设置ReplicationController的replicas失败");
+        }
+    }
 }

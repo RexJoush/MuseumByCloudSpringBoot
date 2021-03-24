@@ -7,8 +7,13 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+
+import static com.nwu.service.getYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -46,7 +51,9 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     }
 
     @Override
-    public Deployment loadDeploymentFromYaml(InputStream yamlInputStream){
+    public Deployment loadDeploymentFromYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Deployment deployment = KubernetesConfig.client.apps().deployments().load(yamlInputStream).get();
 
@@ -54,7 +61,9 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     }
 
     @Override
-    public Deployment createDeploymentByYaml(InputStream yamlInputStream){
+    public Deployment createDeploymentByYaml(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Deployment deployment = KubernetesConfig.client.apps().deployments().load(yamlInputStream).get();
         String nameSpace = deployment.getMetadata().getNamespace();
@@ -67,7 +76,9 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     }
 
     @Override
-    public Deployment createOrReplaceDeployment(InputStream yamlInputStream){
+    public Deployment createOrReplaceDeployment(String path) throws FileNotFoundException {
+
+        InputStream yamlInputStream = byPath(path);
 
         Deployment deployment = KubernetesConfig.client.apps().deployments().load(yamlInputStream).get();
         String nameSpace = deployment.getMetadata().getNamespace();
@@ -92,4 +103,16 @@ public class DeploymentsServiceImpl implements DeploymentsService {
 
         return log;
     }
+
+    @Override
+    public void setReplicas(String name, String namespace, Integer replicas){
+        try{
+            KubernetesConfig.client.apps().deployments().inNamespace(namespace)
+                    .withName(name).edit().getSpec().setReplicas(replicas);
+        }catch(Exception e){
+            System.out.println("设置Deployment的replicas失败");
+        }
+    }
+
+
 }

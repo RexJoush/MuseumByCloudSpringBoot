@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,7 @@ public class JobsController {
     @Resource
     private JobsServiceImpl jobsService;
 
-    @RequestMapping("getAllJobs")
+    @RequestMapping("/getAllJobs")
     public String findAllJobs() throws ApiException {
 
         List<Job> jobs = jobsService.findAllJobs();
@@ -46,7 +47,7 @@ public class JobsController {
 
     }
 
-    @RequestMapping("getJobsByNamespace")
+    @RequestMapping("/getJobsByNamespace")
     public String findJobsByNamespace(String namespace) throws ApiException {
 
         List<Job> v1JobList = jobsService.findJobsByNamespace(namespace);
@@ -61,7 +62,7 @@ public class JobsController {
 
     }
 
-    @RequestMapping("deleteJobByNameAndNamespace")
+    @RequestMapping("/deleteJobByNameAndNamespace")
     public String deleteJobByNameAndNamespace(String name, String namespace){
         Boolean delete = jobsService.deleteJobByNameAndNamespace(name, namespace);
 
@@ -74,10 +75,10 @@ public class JobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadJobFromYaml")
-    public String loadJobFromYaml(InputStream yamlInputStream){
+    @RequestMapping("/loadJobFromYaml")
+    public String loadJobFromYaml(String path) throws FileNotFoundException {
 
-        Job aJob = jobsService.loadJobFromYaml(yamlInputStream);
+        Job aJob = jobsService.loadJobFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -88,10 +89,10 @@ public class JobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createJobFromYaml")
-    public String createJobFromYaml(InputStream yamlInputStream){
+    @RequestMapping("/createJobFromYaml")
+    public String createJobFromYaml(String path) throws FileNotFoundException {
 
-        Job aJob = jobsService.createJobByYaml(yamlInputStream);
+        Job aJob = jobsService.createJobByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -103,8 +104,8 @@ public class JobsController {
     }
 
     @RequestMapping("/createOrReplaceJob")
-    public String createOrReplaceJob(InputStream yamlInputStream){
-        Job aJob = jobsService.createOrReplaceJob(yamlInputStream);
+    public String createOrReplaceJob(String path) throws FileNotFoundException {
+        Job aJob = jobsService.createOrReplaceJob(path);
 
         Map<String, Object> result = new HashMap<>();
 

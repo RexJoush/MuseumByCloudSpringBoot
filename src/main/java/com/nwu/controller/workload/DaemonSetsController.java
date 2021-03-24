@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ public class DaemonSetsController {
     @Resource
     private DaemonSetsServiceImpl daemonSetsService;
 
-    @RequestMapping("getAllDaemonSets")
+    @RequestMapping("/getAllDaemonSets")
     public String findAllDaemonSets() throws ApiException {
 
         List<DaemonSet> daemonSets = daemonSetsService.findAllDaemonSets();
@@ -44,7 +45,7 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("getDaemonSetsByNamespace")
+    @RequestMapping("/getDaemonSetsByNamespace")
     public String findDaemonSetsByNamespace(String namespace) throws ApiException {
 
         List<DaemonSet> v1DaemonSetList = daemonSetsService.findDaemonSetsByNamespace(namespace);
@@ -59,7 +60,7 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("deleteDaemonSetByNameAndNamespace")
+    @RequestMapping("/deleteDaemonSetByNameAndNamespace")
     public String deleteDaemonSetByNameAndNamespace(String name, String namespace) throws ApiException {
 
         Boolean delete = daemonSetsService.deleteDaemonSetByNameAndNamespace(name, namespace);
@@ -74,10 +75,10 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("loadDaemonSetFromYaml")
-    public String loadDaemonSetFromYaml(InputStream yamlInputStream) throws ApiException {
+    @RequestMapping("/loadDaemonSetFromYaml")
+    public String loadDaemonSetFromYaml(String path) throws ApiException, FileNotFoundException {
 
-        DaemonSet daemonSet = daemonSetsService.loadDaemonSetFromYaml(yamlInputStream);
+        DaemonSet daemonSet = daemonSetsService.loadDaemonSetFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -89,10 +90,10 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("createDaemonSetByYaml")
-    public String createDaemonSetByYaml(InputStream yamlInputStream) throws ApiException {
+    @RequestMapping("/createDaemonSetByYaml")
+    public String createDaemonSetByYaml(String path) throws ApiException, FileNotFoundException {
 
-        DaemonSet daemonSet = daemonSetsService.createDaemonSetByYaml(yamlInputStream);
+        DaemonSet daemonSet = daemonSetsService.createDaemonSetByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -104,8 +105,8 @@ public class DaemonSetsController {
     }
 
     @RequestMapping("/createOrReplaceDaemonSet")
-    public String createOrReplaceDaemonSet(InputStream yamlInputStream){
-        DaemonSet aDaemonSet = daemonSetsService.createOrReplaceDaemonSet(yamlInputStream);
+    public String createOrReplaceDaemonSet(String path) throws FileNotFoundException {
+        DaemonSet aDaemonSet = daemonSetsService.createOrReplaceDaemonSet(path);
 
         Map<String, Object> result = new HashMap<>();
 
