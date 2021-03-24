@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -73,9 +74,9 @@ public class SecretsController {
     }
 
     @RequestMapping("/loadSecret")
-    public String loadSecretFromYaml(InputStream yamlInputStream){
+    public String loadSecretFromYaml(String path) throws FileNotFoundException {
 
-        Secret secret = secretsService.loadSecretFromYaml(yamlInputStream);
+        Secret secret = secretsService.loadSecretFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -87,9 +88,9 @@ public class SecretsController {
     }
 
     @RequestMapping("/createSecret")
-    public String createSecretByYaml(InputStream yamlInputStream){
+    public String createSecretByYaml(String path) throws FileNotFoundException {
 
-        Secret secretByYaml = secretsService.createSecretByYaml(yamlInputStream);
+        Secret secretByYaml = secretsService.createSecretByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -101,9 +102,9 @@ public class SecretsController {
     }
 
     @RequestMapping("/createOrReplaceSecret")
-    public String createOrReplaceSecret(InputStream yamlInputStream){
+    public String createOrReplaceSecret(String path) throws FileNotFoundException {
 
-        Secret secret = secretsService.createOrReplaceSecret(yamlInputStream);
+        Secret secret = secretsService.createOrReplaceSecret(path);
 
         Map<String, Object> result = new HashMap<>();
 
