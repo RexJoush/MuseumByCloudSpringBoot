@@ -5,6 +5,7 @@ import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.KubernetesConfig;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.kubernetes.client.openapi.ApiException;
+import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -21,9 +22,9 @@ import java.util.List;
 @Service
 public class SecretsServiceImpl implements SecretsService {
 
-//    public static void main(String[] args) throws ApiException {
-//        System.out.println(new SecretsServiceImpl().findAllSecrets());
-//    }
+    public static void main(String[] args) throws ApiException {
+        System.out.println(new SecretsServiceImpl().findSecretsByNamespace("default"));
+    }
 
 
     @Override
@@ -63,8 +64,25 @@ public class SecretsServiceImpl implements SecretsService {
 
         Secret secret = KubernetesConfig.client.secrets().load(yamlInputStream).get();
         String nameSpace = secret.getMetadata().getNamespace();
+        try {
         secret = KubernetesConfig.client.secrets().inNamespace(nameSpace).create(secret);
+        }catch(Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在SecretServiceImpl类的createSecretByYaml方法");
+        }
+        return secret;
+    }
 
+    @Override
+    public Secret createOrReplaceSecret(InputStream yamlInputStream) {
+
+        Secret secret = KubernetesConfig.client.secrets().load(yamlInputStream).get();
+        String nameSpace = secret.getMetadata().getNamespace();
+
+        try {
+            secret = KubernetesConfig.client.secrets().inNamespace(nameSpace).createOrReplace(secret);
+        }catch (Exception e){
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在SecretServiceImpl类的createOrReplaceSecret方法");
+        }
         return secret;
     }
 

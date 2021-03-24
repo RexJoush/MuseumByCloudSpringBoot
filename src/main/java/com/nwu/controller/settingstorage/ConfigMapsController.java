@@ -73,9 +73,9 @@ public class ConfigMapsController {
     }
 
     @RequestMapping("/loadConfigMap")
-    public String loadConfigMapFromYaml(InputStream yamlinputStream){
+    public String loadConfigMapFromYaml(InputStream yamlInputStream){
 
-        ConfigMap configMap = configMapsService.loadConfigMapFromYaml(yamlinputStream);
+        ConfigMap configMap = configMapsService.loadConfigMapFromYaml(yamlInputStream);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -87,9 +87,9 @@ public class ConfigMapsController {
     }
 
     @RequestMapping("/createConfigMap")
-    public String createConfigMapByYaml(InputStream yamlinputStream){
+    public String createConfigMapByYaml(InputStream yamlInputStream){
 
-        ConfigMap configMapByYaml = configMapsService.createConfigMapByYaml(yamlinputStream);
+        ConfigMap configMapByYaml = configMapsService.createConfigMapByYaml(yamlInputStream);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -100,4 +100,17 @@ public class ConfigMapsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/createOrReplaceConfigMap")
+    public String createOrReplaceConfigMap(InputStream yamlInputStream){
+
+        ConfigMap replaceConfigMap = configMapsService.createOrReplaceConfigMap(yamlInputStream);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 ConfigMap 成功");
+        result.put("data", replaceConfigMap);
+
+        return JSON.toJSONString(result);
+    }
 }
