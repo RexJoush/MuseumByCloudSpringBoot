@@ -83,7 +83,7 @@ public interface PodsService {
      * @param args Pod里容器的启动命令参数列表 String[]
      * @param cpuLimit Pod里容器Cpu的限制，单位为core数 String
      * @param cpuRequest Pod里容器Cpu请求，容器启动的初始可用数量 String
-     * @param memoryLimit Pod里容内存限制，单位可以为Mib/Gib String
+     * @param memoryLimit Pod里容内存限制，单位可能为Mib/Gib或者Mi/Gi  String
      * @param memoryRequest Pod里容器内存请求,容器启动的初始可用数量 String
      * @param envVar Pod里容器环境变量名称和值 Map<String, String>
      * @param amount Pod副本数量 Integer
