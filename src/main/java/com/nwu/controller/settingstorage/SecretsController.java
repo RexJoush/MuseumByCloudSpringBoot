@@ -44,7 +44,7 @@ public class SecretsController {
 
     }
 
-    @RequestMapping("getSecretsByNamespace")
+    @RequestMapping("/getSecretsByNamespace")
     public String findSecretsByNamespace(String namespace) throws ApiException {
 
         List<Secret> v1SecretList = secretsService.findSecretsByNamespace(namespace);

@@ -1,4 +1,4 @@
-package com.nwu.util;
+package com.nwu.security;
 
 /**
  * @author Rex Joush

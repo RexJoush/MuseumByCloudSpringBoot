@@ -5,9 +5,6 @@ package com.nwu.service.explorebalancing;
  * @time 2021.03.22
  */
 
-import com.google.protobuf.Api;
-import com.nwu.util.KubernetesConfig;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
 

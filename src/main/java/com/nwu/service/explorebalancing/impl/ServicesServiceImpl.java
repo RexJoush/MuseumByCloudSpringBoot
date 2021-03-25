@@ -1,18 +1,14 @@
 package com.nwu.service.explorebalancing.impl;
 
 import com.nwu.service.explorebalancing.ServicesService;
-import com.nwu.service.workload.impl.PodsServiceImpl;
-import com.nwu.util.KubernetesConfig;
-import io.fabric8.kubernetes.api.model.Cluster;
-import io.fabric8.kubernetes.api.model.KubernetesList;
-import io.fabric8.kubernetes.api.model.Pod;
+import com.nwu.util.KubernetesUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.nwu.service.getYamlInputStream.byPath;
+import static com.nwu.util.GetYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -29,7 +25,7 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public List<io.fabric8.kubernetes.api.model.Service> findAllServices(){
 
-        List<io.fabric8.kubernetes.api.model.Service> items = KubernetesConfig.client.services().list().getItems();
+        List<io.fabric8.kubernetes.api.model.Service> items = KubernetesUtils.client.services().list().getItems();
 
         return items;
 
@@ -39,7 +35,7 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public List<io.fabric8.kubernetes.api.model.Service> findServicesByNamespace(String namespace){
 
-        List<io.fabric8.kubernetes.api.model.Service> item = KubernetesConfig.client.services().inNamespace(namespace).list().getItems();
+        List<io.fabric8.kubernetes.api.model.Service> item = KubernetesUtils.client.services().inNamespace(namespace).list().getItems();
 
         return item;
 
@@ -50,7 +46,7 @@ public class ServicesServiceImpl implements ServicesService {
 
         InputStream yamlInputStream = byPath(path);
 
-        io.fabric8.kubernetes.api.model.Service service = KubernetesConfig.client.services().load(yamlInputStream).get();
+        io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().load(yamlInputStream).get();
 
         return service;
     }
@@ -61,10 +57,10 @@ public class ServicesServiceImpl implements ServicesService {
 
         InputStream yamlInputStream = byPath(path);
 
-        io.fabric8.kubernetes.api.model.Service createSvc = KubernetesConfig.client.services().load(yamlInputStream).get();
+        io.fabric8.kubernetes.api.model.Service createSvc = KubernetesUtils.client.services().load(yamlInputStream).get();
         String nameSpace = createSvc.getMetadata().getNamespace();
         try {
-            createSvc = KubernetesConfig.client.services().inNamespace(nameSpace).create(createSvc);
+            createSvc = KubernetesUtils.client.services().inNamespace(nameSpace).create(createSvc);
         }catch(Exception e){
             System.out.println("创建失败,在ServicesService类的createServiceByYaml方法中");
         }
@@ -76,10 +72,10 @@ public class ServicesServiceImpl implements ServicesService {
 
         InputStream yamlInputStream = byPath(path);
 
-        io.fabric8.kubernetes.api.model.Service service = KubernetesConfig.client.services().load(yamlInputStream).get();
+        io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().load(yamlInputStream).get();
         String namespace = service.getMetadata().getNamespace();
         try{
-            service = KubernetesConfig.client.services().inNamespace(namespace).createOrReplace(service);
+            service = KubernetesUtils.client.services().inNamespace(namespace).createOrReplace(service);
         }catch (Exception e){
             System.out.println("失败，问题在ServicesService类中的creatOrReplaceService方法中");
         }
@@ -90,7 +86,7 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public Boolean deleteServicesByNameAndNamespace(String serviceName,String namespace){
 
-        Boolean deleteSvc = KubernetesConfig.client.services().inNamespace(namespace).withName(serviceName).delete();
+        Boolean deleteSvc = KubernetesUtils.client.services().inNamespace(namespace).withName(serviceName).delete();
 
         return deleteSvc;
     }

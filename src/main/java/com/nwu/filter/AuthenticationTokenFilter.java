@@ -1,10 +1,7 @@
 package com.nwu.filter;
 
-import com.nwu.util.TokenUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+import com.nwu.security.TokenUtils;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +21,7 @@ import java.io.IOException;
  * @author Rex Joush
  * @time 2021.03.20
  */
-
+//@Configuration
 public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFilter {
 
     /**
@@ -53,8 +50,11 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
 
         String requestURI = httpRequest.getRequestURI();
 
+        System.out.println("login 111");
+
         // 非 login 请求，进入过滤器
         if (!requestURI.contains("login")) {
+            System.out.println("no login111");
 
             // 尝试获取请求头的 token
             String authToken = httpRequest.getHeader(tokenHeader);
@@ -66,35 +66,40 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
             if (username == null) {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().print("{\"code\":\"452\",\"data\":\"\",\"message\":\"token 已过期\"}");
+                response.getWriter().print("{\"code\":\"1252\",\"data\":\"\",\"message\":\"无效的 token\"}");
                 return;
             }
-            // System.out.println(username);
+             System.out.println(username);
 
 
             // 如果上面解析 token 成功并且拿到了 username 并且本次会话的权限还未被写入
-//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//            // 用 UserDetailsService 从数据库中拿到用户的 UserDetails 类
-//            // UserDetails 类是 Spring Security 用于保存用户权限的实体类
-//            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-//            // 检查用户带来的 token 是否有效
-//            // 包括 token 和 userDetails 中用户名是否一样， token 是否过期， token 生成时间是否在最后一次密码修改时间之前
-//            // 若是检查通过
-////            if (this.tokenUtils.validateToken(authToken, userDetails)) {
-////                // 生成通过认证
-////                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-////                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
-////                // 将权限写入本次会话
-////                SecurityContextHolder.getContext().setAuthentication(authentication);
-////            }
-//
-//            if (!userDetails.isEnabled()){
-//                response.setCharacterEncoding("UTF-8");
-//                response.setContentType("application/json;charset=UTF-8");
-//                response.getWriter().print("{\"code\":\"452\",\"data\":\"\",\"message\":\"账号处于黑名单\"}");
-//                return;
-//            }
-//        }
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                System.out.println("null");
+
+                // 用 UserDetailsService 从数据库中拿到用户的 UserDetails 类
+                // UserDetails 类是 Spring Security 用于保存用户权限的实体类
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                // 检查用户带来的 token 是否有效
+                // 包括 token 和 userDetails 中用户名是否一样， token 是否过期， token 生成时间是否在最后一次密码修改时间之前
+                // 若是检查通过
+                if (this.tokenUtils.validateToken(authToken, userDetails)) {
+                    // 生成通过认证
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+                    // 将权限写入本次会话
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+
+                if (!userDetails.isEnabled()){
+                    response.setCharacterEncoding("UTF-8");
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().print("{\"code\":\"452\",\"data\":\"\",\"message\":\"账号处于黑名单\"}");
+                    return;
+                }
+            }
+            System.out.println("test: ");
+            System.out.println(SecurityContextHolder.getContext().getAuthentication());
         }
 
 

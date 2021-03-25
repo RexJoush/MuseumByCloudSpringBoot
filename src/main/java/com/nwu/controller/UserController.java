@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.nwu.entity.QueryInfo;
 import com.nwu.entity.User;
 import com.nwu.service.UserService;
-import com.nwu.util.TokenUtils;
+import com.nwu.security.TokenUtils;
 import com.nwu.util.impl.TokenDetailImpl;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;

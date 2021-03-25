@@ -27,6 +27,12 @@ public interface UserService {
     List<User> findAll(int pageStart, int pageSize);
 
     /**
+     * 根据用户名查询用户
+     * @return 用户
+     */
+    User findByUsername(String username);
+
+    /**
      * 获取用户的数量
      * @return 用户数量
      */

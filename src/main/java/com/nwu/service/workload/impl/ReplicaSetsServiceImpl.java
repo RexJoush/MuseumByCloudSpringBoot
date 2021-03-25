@@ -1,18 +1,15 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.ReplicaSetsService;
-import com.nwu.util.KubernetesConfig;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.nwu.service.getYamlInputStream.byPath;
+import static com.nwu.util.GetYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -28,7 +25,7 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
     @Override
     public List<ReplicaSet> findAllReplicaSets(){
 
-        List<ReplicaSet> items = KubernetesConfig.client.apps().replicaSets().inAnyNamespace().list().getItems();
+        List<ReplicaSet> items = KubernetesUtils.client.apps().replicaSets().inAnyNamespace().list().getItems();
 
         return items;
 
@@ -37,7 +34,7 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
     @Override
     public List<ReplicaSet> findReplicaSetsByNamespace(String namespace) {
 
-        List<ReplicaSet> items = KubernetesConfig.client.apps().replicaSets().inNamespace(namespace).list().getItems();
+        List<ReplicaSet> items = KubernetesUtils.client.apps().replicaSets().inNamespace(namespace).list().getItems();
 
         return items;
     }
@@ -45,7 +42,7 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
     @Override
     public Boolean deleteReplicaSetByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = KubernetesConfig.client.apps().replicaSets().inNamespace(namespace).withName(name).delete();
+        Boolean delete = KubernetesUtils.client.apps().replicaSets().inNamespace(namespace).withName(name).delete();
 
         return delete;
     }
@@ -55,7 +52,7 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        ReplicaSet replicaSet = KubernetesConfig.client.apps().replicaSets().load(yamlInputStream).get();
+        ReplicaSet replicaSet = KubernetesUtils.client.apps().replicaSets().load(yamlInputStream).get();
 
         return replicaSet;
     }
@@ -65,11 +62,11 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        ReplicaSet replicaSet = KubernetesConfig.client.apps().replicaSets().load(yamlInputStream).get();
+        ReplicaSet replicaSet = KubernetesUtils.client.apps().replicaSets().load(yamlInputStream).get();
         String nameSpace = replicaSet.getMetadata().getNamespace();
         System.out.println(nameSpace);
         try{
-            replicaSet = KubernetesConfig.client.apps().replicaSets().inNamespace(nameSpace).create(replicaSet);
+            replicaSet = KubernetesUtils.client.apps().replicaSets().inNamespace(nameSpace).create(replicaSet);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ReplicaSetsServiceImpl类的createReplicaSetByYaml方法");
         }
@@ -82,11 +79,11 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        ReplicaSet replicaSet = KubernetesConfig.client.apps().replicaSets().load(yamlInputStream).get();
+        ReplicaSet replicaSet = KubernetesUtils.client.apps().replicaSets().load(yamlInputStream).get();
         String nameSpace = replicaSet.getMetadata().getNamespace();
 
         try {
-            replicaSet = KubernetesConfig.client.apps().replicaSets().inNamespace(nameSpace).createOrReplace(replicaSet);
+            replicaSet = KubernetesUtils.client.apps().replicaSets().inNamespace(nameSpace).createOrReplace(replicaSet);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ReplicaSetsServiceImpl类的createOrReplaceReplicaSet方法");
         }
@@ -96,7 +93,7 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
     @Override
     public void setReplicas(String name, String namespace, Integer replicas){
         try {
-            KubernetesConfig.client.apps().replicaSets().inNamespace(namespace).withName(name).edit().getSpec().setReplicas(replicas);
+            KubernetesUtils.client.apps().replicaSets().inNamespace(namespace).withName(name).edit().getSpec().setReplicas(replicas);
         }catch (Exception e){
             System.out.println("设置ReplicaSet的replicas失败");
         }

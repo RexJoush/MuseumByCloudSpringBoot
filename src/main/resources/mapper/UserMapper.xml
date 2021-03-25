@@ -16,6 +16,12 @@
         FROM user LIMIT #{pageStart}, #{pageSize}
     </select>
 
+    <select id="findByUsername" resultType="user">
+        SELECT *
+        FROM user
+        WHERE username = #{username}
+    </select>
+
     <select id="getUserAmount" resultType="int">
         SELECT count(id)
         FROM user

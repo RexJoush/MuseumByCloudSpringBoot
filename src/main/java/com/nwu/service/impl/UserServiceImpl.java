@@ -18,10 +18,6 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserDao userDao;
 
-    /**
-     * 用户登录接口
-     * @return 查询登录的用户
-     */
     public User login(String username, String password){
         return userDao.login(username, password);
     }
@@ -32,7 +28,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByUsername(String username) {
+        return userDao.findByUsername(username);
+    }
+
+    @Override
     public int getUserAmount() {
         return userDao.getUserAmount();
     }
+
 }

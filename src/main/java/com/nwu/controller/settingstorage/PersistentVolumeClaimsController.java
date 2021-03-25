@@ -44,7 +44,7 @@ public class PersistentVolumeClaimsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("getPVCByNamespace")
+    @RequestMapping("/getPVCByNamespace")
     public String findPVCByNamespace(String namespace) throws ApiException {
 
         List<PersistentVolumeClaim> v1PVC = persistentVolumeClaimsService.findPVCByNamespace(namespace);

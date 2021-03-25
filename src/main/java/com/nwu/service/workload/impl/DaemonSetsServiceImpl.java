@@ -1,18 +1,15 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.DaemonSetsService;
-import com.nwu.util.KubernetesConfig;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.nwu.service.getYamlInputStream.byPath;
+import static com.nwu.util.GetYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -27,7 +24,7 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
     @Override
     public List<DaemonSet> findAllDaemonSets(){
 
-        List<DaemonSet> items = KubernetesConfig.client.apps().daemonSets().inAnyNamespace().list().getItems();
+        List<DaemonSet> items = KubernetesUtils.client.apps().daemonSets().inAnyNamespace().list().getItems();
 
         return items;
 
@@ -36,14 +33,14 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
     @Override
     public List<DaemonSet> findDaemonSetsByNamespace(String namespace) {
 
-        List<DaemonSet> items = KubernetesConfig.client.apps().daemonSets().inNamespace(namespace).list().getItems();
+        List<DaemonSet> items = KubernetesUtils.client.apps().daemonSets().inNamespace(namespace).list().getItems();
 
         return items;
     }
 
     @Override
     public Boolean deleteDaemonSetByNameAndNamespace(String name, String namespace){
-        Boolean delete = KubernetesConfig.client.apps().daemonSets().inNamespace(namespace).withName(name).delete();
+        Boolean delete = KubernetesUtils.client.apps().daemonSets().inNamespace(namespace).withName(name).delete();
         return delete;
     }
 
@@ -52,7 +49,7 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
+        DaemonSet daemonSet = KubernetesUtils.client.apps().daemonSets().load(yamlInputStream).get();
         return daemonSet;
     }
 
@@ -61,10 +58,10 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
+        DaemonSet daemonSet = KubernetesUtils.client.apps().daemonSets().load(yamlInputStream).get();
         String nameSpace = daemonSet.getMetadata().getNamespace();
         try {
-            daemonSet = KubernetesConfig.client.apps().daemonSets().inNamespace(nameSpace).create(daemonSet);
+            daemonSet = KubernetesUtils.client.apps().daemonSets().inNamespace(nameSpace).create(daemonSet);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DaemonSetsServiceImpl类的createDaemonSetByYaml方法");
         }
@@ -76,11 +73,11 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        DaemonSet daemonSet = KubernetesConfig.client.apps().daemonSets().load(yamlInputStream).get();
+        DaemonSet daemonSet = KubernetesUtils.client.apps().daemonSets().load(yamlInputStream).get();
         String nameSpace = daemonSet.getMetadata().getNamespace();
 
         try {
-            daemonSet = KubernetesConfig.client.apps().daemonSets().inNamespace(nameSpace).createOrReplace(daemonSet);
+            daemonSet = KubernetesUtils.client.apps().daemonSets().inNamespace(nameSpace).createOrReplace(daemonSet);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DaemonSetsServiceImpl类的createOrReplaceDaemonSet方法");
         }

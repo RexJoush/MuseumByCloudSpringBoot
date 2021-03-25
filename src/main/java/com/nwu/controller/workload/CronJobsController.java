@@ -2,8 +2,6 @@ package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
-import com.nwu.util.KubernetesConfig;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;

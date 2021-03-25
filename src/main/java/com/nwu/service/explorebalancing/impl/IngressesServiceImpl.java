@@ -1,9 +1,7 @@
 package com.nwu.service.explorebalancing.impl;
 
 import com.nwu.service.explorebalancing.IngressesService;
-import com.nwu.util.KubernetesConfig;
-import com.sun.tools.internal.ws.wsdl.document.Input;
-import io.fabric8.kubernetes.api.model.Pod;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.nwu.service.getYamlInputStream.byPath;
+import static com.nwu.util.GetYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -30,7 +28,7 @@ public class IngressesServiceImpl implements IngressesService {
     @Override
     public List<Ingress> findAllIngresses(){
 
-        List<Ingress> items = KubernetesConfig.client.extensions().ingresses().list().getItems();
+        List<Ingress> items = KubernetesUtils.client.extensions().ingresses().list().getItems();
 
         return items;
 
@@ -39,7 +37,7 @@ public class IngressesServiceImpl implements IngressesService {
     @Override
     public List<Ingress> findIngressesByNamespace(String namespace){
 
-        List<Ingress> item = KubernetesConfig.client.extensions().ingresses().inNamespace(namespace).list().getItems();
+        List<Ingress> item = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace).list().getItems();
 
         return item;
     }
@@ -50,7 +48,7 @@ public class IngressesServiceImpl implements IngressesService {
 
         InputStream yamlInputStream = byPath(path);
 
-        Ingress ingress = KubernetesConfig.client.extensions().ingresses().load(yamlInputStream).get();
+        Ingress ingress = KubernetesUtils.client.extensions().ingresses().load(yamlInputStream).get();
 
         return ingress;
     }
@@ -62,11 +60,11 @@ public class IngressesServiceImpl implements IngressesService {
 
         InputStream yamlInputStream = byPath(path);
 
-        Ingress createIngress = KubernetesConfig.client.extensions().ingresses().load(yamlInputStream).get();
+        Ingress createIngress = KubernetesUtils.client.extensions().ingresses().load(yamlInputStream).get();
 
         String nameSpace = createIngress.getMetadata().getNamespace();
         try{
-            createIngress = KubernetesConfig.client.extensions().ingresses().inNamespace(nameSpace).create(createIngress);
+            createIngress = KubernetesUtils.client.extensions().ingresses().inNamespace(nameSpace).create(createIngress);
         }catch (Exception e){
             System.out.println("创建失败，在Ingress Service类的createIngressByYaml中");
         }
@@ -78,7 +76,7 @@ public class IngressesServiceImpl implements IngressesService {
     @Override
     public Boolean deleteIngressesByNameAndNamespace(String ingressName,String namespace){
 
-        Boolean deleteIngress = KubernetesConfig.client.extensions().ingresses().inNamespace(namespace).withName(ingressName).delete();
+        Boolean deleteIngress = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace).withName(ingressName).delete();
 
         return deleteIngress;
     }
@@ -88,11 +86,11 @@ public class IngressesServiceImpl implements IngressesService {
 
         InputStream yamlInputStream = byPath(path);
 
-        Ingress ingress = KubernetesConfig.client.extensions().ingresses().load(yamlInputStream).get();
+        Ingress ingress = KubernetesUtils.client.extensions().ingresses().load(yamlInputStream).get();
 
         String namespace = ingress.getMetadata().getNamespace();
         try{
-            ingress = KubernetesConfig.client.extensions().ingresses().createOrReplace(ingress);
+            ingress = KubernetesUtils.client.extensions().ingresses().createOrReplace(ingress);
 
         }catch (Exception e){
             System.out.println("失败，在Ingress Service中的createOrReplaceIngress方法");

@@ -31,7 +31,7 @@ public class IngressesController {
     @Resource
     private IngressesServiceImpl ingressesService;
 
-    @RequestMapping("getAllIngresses")
+    @RequestMapping("/getAllIngresses")
     public String findAllIngresses() throws ApiException {
 
         List<Ingress> ingresses = ingressesService.findAllIngresses();
@@ -47,7 +47,7 @@ public class IngressesController {
 
     }
 
-    @RequestMapping("getServiceByNamespace")
+    @RequestMapping("/getServiceByNamespace")
     public String findServiceByNamespace(String namespace){
 
         List<Ingress> v1IngressesList = ingressesService.findIngressesByNamespace(namespace);
@@ -61,7 +61,7 @@ public class IngressesController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("loadServiceFromYaml")
+    @RequestMapping("/loadServiceFromYaml")
     public String loadServiceFromYaml(String path) throws FileNotFoundException {
 
         Ingress ingress = ingressesService.loadServiceFromYaml(path);
@@ -75,7 +75,7 @@ public class IngressesController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("createIngressesFromYaml")
+    @RequestMapping("/createIngressesFromYaml")
     public String createIngressesFromYaml(String path) throws FileNotFoundException {
 
         Ingress ingress = ingressesService.createOrReplaceIngress(path);
@@ -90,7 +90,7 @@ public class IngressesController {
     }
 
 
-    @RequestMapping("/createOrReplaceService")
+    @RequestMapping("/deleteIngressByNameAndNamespace")
     public String deleteIngressByNameAndNamespace(String name, String namespace){
 
         Boolean deleteIngress = ingressesService.deleteIngressesByNameAndNamespace(name,namespace);
@@ -105,7 +105,7 @@ public class IngressesController {
 
     }
 
-
+    @RequestMapping("/createOrReplaceIngress")
     public String createOrReplaceIngress(String path) throws FileNotFoundException {
 
         Ingress ingress = ingressesService.createOrReplaceIngress(path);

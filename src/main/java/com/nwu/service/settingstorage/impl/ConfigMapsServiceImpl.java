@@ -1,17 +1,16 @@
 package com.nwu.service.settingstorage.impl;
 
 import com.nwu.service.settingstorage.ConfigMapsService;
-import com.nwu.util.KubernetesConfig;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.kubernetes.client.openapi.ApiException;
-import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.nwu.service.getYamlInputStream.byPath;
+import static com.nwu.util.GetYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -33,7 +32,7 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     @Override
     public List<ConfigMap> findAllConfigMaps() throws ApiException {
 
-        List<ConfigMap> items = KubernetesConfig.client.configMaps().inAnyNamespace().list().getItems();
+        List<ConfigMap> items = KubernetesUtils.client.configMaps().inAnyNamespace().list().getItems();
 
         return items;
 
@@ -42,7 +41,7 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     @Override
     public List<ConfigMap> findConfigMapsByNamespace(String namespace)  {
 
-        List<ConfigMap> items = KubernetesConfig.client.configMaps().inNamespace(namespace).list().getItems();
+        List<ConfigMap> items = KubernetesUtils.client.configMaps().inNamespace(namespace).list().getItems();
 
         return items;
     }
@@ -50,7 +49,7 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     @Override
     public Boolean deleteConfigMapByNameAndNamespace(String name, String namespace) {
 
-        Boolean delete = KubernetesConfig.client.secrets().inNamespace(namespace).withName(name).delete();
+        Boolean delete = KubernetesUtils.client.secrets().inNamespace(namespace).withName(name).delete();
 
         return delete;
     }
@@ -60,7 +59,7 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
+        ConfigMap configMap = KubernetesUtils.client.configMaps().load(yamlInputStream).get();
 
         return configMap;
     }
@@ -70,10 +69,10 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
+        ConfigMap configMap = KubernetesUtils.client.configMaps().load(yamlInputStream).get();
         String nameSpace = configMap.getMetadata().getNamespace();
         try{
-            configMap = KubernetesConfig.client.configMaps().inNamespace(nameSpace).create(configMap);
+            configMap = KubernetesUtils.client.configMaps().inNamespace(nameSpace).create(configMap);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ConfigMapServiceImpl类的createConfigMapByYaml方法");
         }
@@ -86,11 +85,11 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        ConfigMap configMap = KubernetesConfig.client.configMaps().load(yamlInputStream).get();
+        ConfigMap configMap = KubernetesUtils.client.configMaps().load(yamlInputStream).get();
         String nameSpace = configMap.getMetadata().getNamespace();
 
         try {
-            configMap = KubernetesConfig.client.configMaps().inNamespace(nameSpace).createOrReplace(configMap);
+            configMap = KubernetesUtils.client.configMaps().inNamespace(nameSpace).createOrReplace(configMap);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在ConfigMapServiceImpl类的createOrReplaceConfigMap方法");
         }
@@ -100,7 +99,7 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     //@Override
 //    public ConfigMap updateConfigMap(String name, String namespace) {
 //
-//        ConfigMap configMap = KubernetesConfig.client.configMaps().inNamespace(namespace).withName(name).edit()
+//        ConfigMap configMap = KubernetesUtils.client.configMaps().inNamespace(namespace).withName(name).edit()
 //        //ConfigMap configMap1 = client.configMaps().inNamespace(currentNamespace).withName("configmap1").edit()
 //          //      .addToData("4", "four").done();
 //    }

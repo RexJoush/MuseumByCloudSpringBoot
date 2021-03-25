@@ -1,18 +1,15 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.StatefulSetsService;
-import com.nwu.util.KubernetesConfig;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.nwu.service.getYamlInputStream.byPath;
+import static com.nwu.util.GetYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -27,7 +24,7 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
     @Override
     public List<StatefulSet> findAllStatefulSets(){
 
-        List<StatefulSet> items = KubernetesConfig.client.apps().statefulSets().inAnyNamespace().list().getItems();
+        List<StatefulSet> items = KubernetesUtils.client.apps().statefulSets().inAnyNamespace().list().getItems();
 
         return items;
 
@@ -36,7 +33,7 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
     @Override
     public List<StatefulSet> findStatefulSetsByNamespace(String namespace) {
 
-        List<StatefulSet> items = KubernetesConfig.client.apps().statefulSets().inNamespace(namespace).list().getItems();
+        List<StatefulSet> items = KubernetesUtils.client.apps().statefulSets().inNamespace(namespace).list().getItems();
 
         return items;
     }
@@ -44,7 +41,7 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
     @Override
     public Boolean deleteStatefulSetByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = KubernetesConfig.client.apps().statefulSets().inNamespace(namespace).withName(name).delete();
+        Boolean delete = KubernetesUtils.client.apps().statefulSets().inNamespace(namespace).withName(name).delete();
 
         return delete;
     }
@@ -54,7 +51,7 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        StatefulSet statefulSet = KubernetesConfig.client.apps().statefulSets().load(yamlInputStream).get();
+        StatefulSet statefulSet = KubernetesUtils.client.apps().statefulSets().load(yamlInputStream).get();
 
         return statefulSet;
     }
@@ -64,10 +61,10 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        StatefulSet statefulSet = KubernetesConfig.client.apps().statefulSets().load(yamlInputStream).get();
+        StatefulSet statefulSet = KubernetesUtils.client.apps().statefulSets().load(yamlInputStream).get();
         String nameSpace = statefulSet.getMetadata().getNamespace();
         try {
-            statefulSet = KubernetesConfig.client.apps().statefulSets().inNamespace(nameSpace).create(statefulSet);
+            statefulSet = KubernetesUtils.client.apps().statefulSets().inNamespace(nameSpace).create(statefulSet);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在StatefulSetsServiceImpl类的createStatefulSetByYaml方法");
         }
@@ -79,11 +76,11 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        StatefulSet statefulSet = KubernetesConfig.client.apps().statefulSets().load(yamlInputStream).get();
+        StatefulSet statefulSet = KubernetesUtils.client.apps().statefulSets().load(yamlInputStream).get();
         String nameSpace = statefulSet.getMetadata().getNamespace();
 
         try {
-            statefulSet = KubernetesConfig.client.apps().statefulSets().inNamespace(nameSpace).createOrReplace(statefulSet);
+            statefulSet = KubernetesUtils.client.apps().statefulSets().inNamespace(nameSpace).createOrReplace(statefulSet);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在StatefulSetsServiceImpl类的createOrReplaceStatefulSet方法");
         }

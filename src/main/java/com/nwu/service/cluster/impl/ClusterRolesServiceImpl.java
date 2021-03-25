@@ -1,7 +1,7 @@
 package com.nwu.service.cluster.impl;
 
 import com.nwu.service.cluster.ClusterRolesService;
-import com.nwu.util.KubernetesConfig;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class ClusterRolesServiceImpl implements ClusterRolesService {
     @Override
     public List<ClusterRole> getAllClusterRoles(){
 
-        List<ClusterRole> items = KubernetesConfig.client.rbac().clusterRoles().list().getItems();
+        List<ClusterRole> items = KubernetesUtils.client.rbac().clusterRoles().list().getItems();
 
         return items;
     }

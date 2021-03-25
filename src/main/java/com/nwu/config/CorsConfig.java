@@ -1,4 +1,4 @@
-package com.nwu.util;
+package com.nwu.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

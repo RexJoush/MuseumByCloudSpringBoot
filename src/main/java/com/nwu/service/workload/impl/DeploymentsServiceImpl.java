@@ -1,19 +1,15 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.DeploymentsService;
-import com.nwu.util.KubernetesConfig;
-import io.fabric8.kubernetes.api.model.apps.DaemonSet;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
-import static com.nwu.service.getYamlInputStream.byPath;
+import static com.nwu.util.GetYamlInputStream.byPath;
 
 /**
  * @author Rex Joush
@@ -28,7 +24,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     @Override
     public List<Deployment> findAllDeployments(){
 
-        List<Deployment> items = KubernetesConfig.client.apps().deployments().inAnyNamespace().list().getItems();
+        List<Deployment> items = KubernetesUtils.client.apps().deployments().inAnyNamespace().list().getItems();
 
         return items;
 
@@ -37,7 +33,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     @Override
     public List<Deployment> findDeploymentsByNamespace(String namespace) {
 
-        List<Deployment> items = KubernetesConfig.client.apps().deployments().inNamespace(namespace).list().getItems();
+        List<Deployment> items = KubernetesUtils.client.apps().deployments().inNamespace(namespace).list().getItems();
         return items;
 
     }
@@ -45,7 +41,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     @Override
     public Boolean deleteDeploymentByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = KubernetesConfig.client.apps().deployments().inNamespace(namespace).withName(name).delete();
+        Boolean delete = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).delete();
 
         return delete;
     }
@@ -55,7 +51,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        Deployment deployment = KubernetesConfig.client.apps().deployments().load(yamlInputStream).get();
+        Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
 
         return deployment;
     }
@@ -65,10 +61,10 @@ public class DeploymentsServiceImpl implements DeploymentsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        Deployment deployment = KubernetesConfig.client.apps().deployments().load(yamlInputStream).get();
+        Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
         String nameSpace = deployment.getMetadata().getNamespace();
         try {
-            deployment = KubernetesConfig.client.apps().deployments().inNamespace(nameSpace).create(deployment);
+            deployment = KubernetesUtils.client.apps().deployments().inNamespace(nameSpace).create(deployment);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DeploymentsServiceImpl类的createDeploymentByYaml方法");
         }
@@ -80,11 +76,11 @@ public class DeploymentsServiceImpl implements DeploymentsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        Deployment deployment = KubernetesConfig.client.apps().deployments().load(yamlInputStream).get();
+        Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
         String nameSpace = deployment.getMetadata().getNamespace();
 
         try {
-            deployment = KubernetesConfig.client.apps().deployments().inNamespace(nameSpace).createOrReplace(deployment);
+            deployment = KubernetesUtils.client.apps().deployments().inNamespace(nameSpace).createOrReplace(deployment);
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DeploymentsServiceImpl类的createOrReplaceDeployment方法");
         }
@@ -96,7 +92,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     public String getDeploymentLogByNameAndNamespace(String name, String namespace){
         String log = "";
         try{
-            log = KubernetesConfig.client.apps().deployments().inNamespace(namespace).withName(name).getLog();
+            log = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).getLog();
         }catch(Exception e){
             System.out.println("未获取到Deployment的日志");
         }
@@ -107,7 +103,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     @Override
     public void setReplicas(String name, String namespace, Integer replicas){
         try{
-            KubernetesConfig.client.apps().deployments().inNamespace(namespace)
+            KubernetesUtils.client.apps().deployments().inNamespace(namespace)
                     .withName(name).edit().getSpec().setReplicas(replicas);
         }catch(Exception e){
             System.out.println("设置Deployment的replicas失败");

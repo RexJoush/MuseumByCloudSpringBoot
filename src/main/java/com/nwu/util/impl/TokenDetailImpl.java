@@ -1,6 +1,6 @@
 package com.nwu.util.impl;
 
-import com.nwu.util.TokenDetail;
+import com.nwu.security.TokenDetail;
 
 /**
  * @author Rex Joush
