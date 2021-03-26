@@ -3,8 +3,12 @@ kind: Service
 metadata:
   name: kube-node
   namespace: default
+  labels:
+    component: apiserver
 spec:
   type: ClusterIP
+  selector:
+    k8s-app: test
   ports:
     - protocol: TCP
       port: 8080

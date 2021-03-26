@@ -22,7 +22,7 @@ import java.util.Map;
  * Services 的 controller 层
  */
 @RestController
-@RequestMapping("/services")
+@RequestMapping("/service")
 public class ServicesController {
 
     @Resource
