@@ -34,6 +34,13 @@ public interface PodsService {
     List<Pod> findPodsByNamespace(String namespace);
 
     /**
+     * 根据 node 获取当前节点下的 pod 列表
+     * @param nodeName 当前节点名称
+     * @return pod 列表
+     */
+    List<Pod> findPodsByNode(String nodeName);
+
+    /**
      * 通过名称删除Pod
      * @param name Pod名称
      * @param namespace Pod所在命名空间名称默认为“default”

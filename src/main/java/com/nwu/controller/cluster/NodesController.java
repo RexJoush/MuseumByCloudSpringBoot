@@ -28,6 +28,7 @@ public class NodesController {
     @RequestMapping("/getAllNodes")
     public String getAllNodes() throws ApiException {
 
+        // List<Map<String, Object>> nodeList = nodesService.getAllNodes();
         List<Node> nodeList = nodesService.getAllNodes();
 
         Map<String, Object> result = new HashMap<>();
