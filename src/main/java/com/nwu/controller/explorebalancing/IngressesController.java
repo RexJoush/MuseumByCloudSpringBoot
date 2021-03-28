@@ -7,9 +7,6 @@ package com.nwu.controller.explorebalancing;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.service.explorebalancing.impl.IngressesServiceImpl;
-import com.nwu.service.workload.impl.PodsServiceImpl;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;

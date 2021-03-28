@@ -55,14 +55,19 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public io.fabric8.kubernetes.api.model.Service createServiceByYaml(String path) throws FileNotFoundException {
 
-        InputStream yamlInputStream = byPath(path);
+        InputStream yamlInputStream = null;
+        try {
+            yamlInputStream = byPath(path);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         io.fabric8.kubernetes.api.model.Service createSvc = KubernetesUtils.client.services().load(yamlInputStream).get();
         String nameSpace = createSvc.getMetadata().getNamespace();
         try {
             createSvc = KubernetesUtils.client.services().inNamespace(nameSpace).create(createSvc);
         }catch(Exception e){
-            System.out.println("创建失败,在ServicesService类的createServiceByYaml方法中");
+            throw new FileNotFoundException("创建失败,在ServicesService类的createServiceByYaml方法中");
         }
         return createSvc;
     }

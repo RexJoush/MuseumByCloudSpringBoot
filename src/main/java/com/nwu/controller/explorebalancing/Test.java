@@ -16,16 +16,17 @@ public class Test {
 
     public static void main(String[] args) throws ApiException, IOException {
 
-//        String path = com.nwu.service.explorebalancing.ServicesService.class.getClassLoader().getResource("service.yaml").getPath();
-//        File file = new File(path);
-//        FileInputStream fileInputStream = new FileInputStream(file);
-//
-//        ServicesServiceImpl servicesServiceImpl = new ServicesServiceImpl();
-////
-////        Service serviceYaml = servicesServiceImpl.createServiceByYaml(fileInputStream);
+
+
+        String path = com.nwu.service.explorebalancing.ServicesService.class.getClassLoader().getResource("service.yaml").getPath();
+
+
+        ServicesServiceImpl servicesServiceImpl = new ServicesServiceImpl();
+
+        Service serviceYaml = servicesServiceImpl.createOrReplaceService(path);
 //        List<Service> allService = servicesServiceImpl.findAllServices();
 //        System.out.println(allService);
-//        System.out.println(serviceYaml);
+        System.out.println(serviceYaml);
 
     }
 }
