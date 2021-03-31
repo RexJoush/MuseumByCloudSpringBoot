@@ -21,9 +21,6 @@ import static com.nwu.util.GetYamlInputStream.byPath;
  */
 @Service
 public class PodsServiceImpl implements PodsService {
-    public static void main(String[] args) {
-        System.out.println(new PodsServiceImpl().findAllPods());
-    }
 
 
     @Override
@@ -41,6 +38,11 @@ public class PodsServiceImpl implements PodsService {
         List<Pod> items = KubernetesUtils.client.pods().inNamespace(namespace).list().getItems();
 
         return items;
+    }
+
+    @Override
+    public List<Pod> findPodsByNode(String nodeName) {
+        return KubernetesUtils.client.pods().inAnyNamespace().withField("spec.nodeName", nodeName).list().getItems();
     }
 
     @Override

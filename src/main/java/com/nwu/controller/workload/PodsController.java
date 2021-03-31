@@ -34,7 +34,7 @@ public class PodsController {
     private PodsServiceImpl podsService;
 
     @RequestMapping("/getAllPods")
-    public String findAllPods() throws ApiException {
+    public String findAllPods() {
 
         List<Pod> pods = podsService.findAllPods();
 
@@ -46,6 +46,19 @@ public class PodsController {
 
         return JSON.toJSONString(result);
 
+    }
+
+    @RequestMapping("/getPodsByNode")
+    public String findPodsByNode(String nodeName) {
+        List<Pod> pods = podsService.findPodsByNode(nodeName);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Pod 列表成功");
+        result.put("data", pods);
+
+        return JSON.toJSONString(result);
     }
 
     @RequestMapping("/getPodsByNamespace")

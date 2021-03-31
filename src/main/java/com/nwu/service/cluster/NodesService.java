@@ -3,6 +3,7 @@ package com.nwu.service.cluster;
 import io.fabric8.kubernetes.api.model.Node;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zqy
@@ -11,6 +12,7 @@ import java.util.List;
 
 public interface NodesService {
 
+    //List<Map<String, Object>> getAllNodes();
     List<Node> getAllNodes();
 
 }
