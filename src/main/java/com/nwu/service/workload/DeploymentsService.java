@@ -32,6 +32,13 @@ public interface DeploymentsService {
      */
     List<Deployment> findDeploymentsByNamespace(String namespace);
 
+    /**
+     * 通过 name 和 namespace 获取 deployments
+     * @param name 名字
+     * @param namespace 命名空间
+     */
+    Deployment getDeploymentByNameAndNamespace(String name, String namespace);
+
 
     /**
      *

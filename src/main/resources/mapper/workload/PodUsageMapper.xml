@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nwu.dao.workload.PodUsageDao">
+    <select id="findAll" resultType="podUsage">
+        SELECT *
+        FROM pod_usage
+        WHERE pod_name = #{podName}
+        AND namespace = #{namespace}
+        ORDER BY time
+    </select>
+
+    <select id="findLast" resultType="podUsage">
+        SELECT *
+        FROM pod_usage
+        WHERE pod_name = #{podName}
+        AND namespace = #{namespace}
+        ORDER BY time DESC
+        LIMIT 1
+    </select>
+
+    <select id="findRecentTwenty" resultType="podUsage">
+        SELECT *
+        FROM pod_usage
+        WHERE pod_name = #{podName}
+          AND namespace = #{namespace}
+        AND time > #{time}
+        ORDER BY time DESC
+    </select>
+
+    <select id="findRecentOneDay" resultType="podUsage">
+        SELECT *
+        FROM pod_usage
+        WHERE pod_name = #{podName}
+        AND namespace = #{namespace}
+        ORDER BY time DESC
+    </select>
+
+    <insert id="addPodUsage">
+        INSERT INTO pod_usage (pod_name, namespace, cpu, memory, time)
+        VALUES (#{podUsage.podName}, #{podUsage.namespace}, #{podUsage.cpu}, #{podUsage.memory}, #{podUsage.time})
+    </insert>
+
+</mapper>
