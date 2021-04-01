@@ -1,6 +1,7 @@
 package com.nwu.controller.cluster;
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.cluster.NodeUsage;
 import com.nwu.service.cluster.impl.NodesServiceImpl;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
@@ -28,8 +29,7 @@ public class NodesController {
     @RequestMapping("/getAllNodes")
     public String getAllNodes() throws ApiException {
 
-        // List<Map<String, Object>> nodeList = nodesService.getAllNodes();
-        List<Node> nodeList = nodesService.getAllNodes();
+        List<Map<String, Object>> nodeList = nodesService.findAllNodes();
 
         Map<String, Object> result = new HashMap<>();
 
@@ -39,4 +39,29 @@ public class NodesController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/getNodeByName")
+    public String getNodeByName(String nodeName){
+        Node node = nodesService.findNodeByName(nodeName);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 node 信息成功");
+        result.put("data", node);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getUsageRecentTwenty")
+    public String getUsageRecentTwenty(String nodeName){
+        List<NodeUsage> usages = nodesService.findRecentTwenty(nodeName);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取近 20 分钟利用率成功");
+        result.put("data", usages);
+
+        return JSON.toJSONString(result);
+    }
+
 }

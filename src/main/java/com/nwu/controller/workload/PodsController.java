@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +35,15 @@ public class PodsController {
     private PodsServiceImpl podsService;
 
     @RequestMapping("/getAllPods")
-    public String findAllPods() {
+    public String findAllPods(String namespace) {
 
-        List<Pod> pods = podsService.findAllPods();
+        List<Map<String, Object>> pods = new ArrayList<>();
+        if ("all".equals(namespace)){
+            pods = podsService.findAllPods();
+        } else {
+            pods = podsService.findPodsByNamespace(namespace);
+        }
+
 
         Map<String, Object> result = new HashMap<>();
 
@@ -50,7 +57,8 @@ public class PodsController {
 
     @RequestMapping("/getPodsByNode")
     public String findPodsByNode(String nodeName) {
-        List<Pod> pods = podsService.findPodsByNode(nodeName);
+
+        List<Map<String, Object>> pods = podsService.findPodsByNode(nodeName);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -64,7 +72,7 @@ public class PodsController {
     @RequestMapping("/getPodsByNamespace")
     public String findPodsByNamespace(String namespace) throws ApiException {
 
-        List<Pod> v1PodList = podsService.findPodsByNamespace(namespace);
+        List<Map<String, Object>> v1PodList = podsService.findPodsByNamespace(namespace);
 
         Map<String, Object> result = new HashMap<>();
 

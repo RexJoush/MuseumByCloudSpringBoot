@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nwu.dao.cluster.NodeUsageDao">
+    <select id="findAll" resultType="nodeUsage">
+        SELECT *
+        FROM node_usage
+        WHERE node_name = #{nodeName}
+        ORDER BY time
+    </select>
+
+    <select id="findLast" resultType="nodeUsage">
+        SELECT *
+        FROM node_usage
+        WHERE node_name = #{nodeName}
+        ORDER BY time DESC
+        LIMIT 1
+    </select>
+
+    <select id="findRecentTwenty" resultType="nodeUsage">
+        SELECT *
+        FROM node_usage
+        WHERE node_name = #{nodeName}
+        AND time > #{time}
+        ORDER BY time DESC
+    </select>
+
+    <select id="findRecentOneDay" resultType="nodeUsage">
+        SELECT *
+        FROM node_usage
+        WHERE node_name = #{nodeName}
+        ORDER BY time DESC
+    </select>
+
+    <insert id="addNodeUsage">
+        INSERT INTO node_usage (node_name, cpu, memory, time)
+        VALUES (#{nodeUsage.nodeName}, #{nodeUsage.cpu}, #{nodeUsage.memory}, #{nodeUsage.time})
+    </insert>
+
+</mapper>

@@ -1,10 +1,12 @@
 package com.nwu.service.cluster.impl;
 
+import com.nwu.entity.cluster.NamespaceName;
 import com.nwu.service.cluster.NamespacesService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Namespace;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +23,19 @@ public class NamespacesServiceImpl implements NamespacesService {
         List<Namespace> items = KubernetesUtils.client.namespaces().list().getItems();
 
         return items;
+
+    }
+
+    @Override
+    public List<NamespaceName> getAllNamespaceName() {
+        List<Namespace> items = KubernetesUtils.client.namespaces().list().getItems();
+        List<NamespaceName> namespaceNameList = new ArrayList<>();
+        namespaceNameList.add(new NamespaceName("所有命名空间", "all"));
+        for (Namespace item : items) {
+            namespaceNameList.add(new NamespaceName(item.getMetadata().getName(), item.getMetadata().getName()));
+        }
+
+        return namespaceNameList;
 
     }
 

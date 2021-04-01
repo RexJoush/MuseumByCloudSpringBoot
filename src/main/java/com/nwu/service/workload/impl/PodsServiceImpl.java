@@ -1,10 +1,16 @@
 package com.nwu.service.workload.impl;
 
+import com.nwu.dao.workload.PodUsageDao;
+import com.nwu.entity.workload.PodUsage;
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesUtils;
+import com.nwu.util.TimeUtils;
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
@@ -22,35 +28,118 @@ import static com.nwu.util.GetYamlInputStream.byPath;
 @Service
 public class PodsServiceImpl implements PodsService {
 
+    @Resource
+    private PodUsageDao podUsageDao;
+
+    public static void main(String[] args) {
+        List<PodMetrics> items = KubernetesUtils.client.top().pods().metrics().getItems();
+
+        for (PodMetrics item : items) {
+            System.out.println(item.getMetadata().getName());
+            System.out.println(item.getContainers().get(0).getUsage().get("cpu").getAmount());
+            System.out.println(item.getContainers().get(0).getUsage().get("memory").getAmount());
+            System.out.println("===========================");
+        }
+
+    }
+
+    /**
+     * 封装获取的 pod 列表，包含利用率信息和 pod 信息
+     * @return 封装好的列表
+     */
+    public List<Map<String, Object>> formatPodList(List<Pod> items){
+
+        // 返回结果列表
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        // 封装 pod 列表
+        for (Pod item : items) {
+            // 获取最近一条数据
+            PodUsage usage = podUsageDao.findLast(item.getMetadata().getName(), item.getMetadata().getNamespace());
+            Map<String, Object> map = new HashMap<>();
+            // 放入节点信息
+            map.put("pod", item);
+            // 放入利用率信息
+            map.put("usage",usage);
+            // 添加进结果集合
+            result.add(map);
+        }
+
+        return result;
+    }
 
     @Override
-    public List<Pod> findAllPods(){
+    public List<Map<String, Object>> findAllPods(){
 
+        // 获取当前 pod 节点信息
         List<Pod> items = KubernetesUtils.client.pods().inAnyNamespace().list().getItems();
-
-        return items;
+        // 封装返回结果
+        return formatPodList(items);
 
     }
 
     @Override
-    public List<Pod> findPodsByNamespace(String namespace) {
+    public List<Map<String, Object>> findPodsByNamespace(String namespace) {
 
+        // 获取当前 pod 节点信息
         List<Pod> items = KubernetesUtils.client.pods().inNamespace(namespace).list().getItems();
 
-        return items;
+        return formatPodList(items);
     }
 
     @Override
-    public List<Pod> findPodsByNode(String nodeName) {
-        return KubernetesUtils.client.pods().inAnyNamespace().withField("spec.nodeName", nodeName).list().getItems();
+    public List<Map<String, Object>> findPodsByNode(String nodeName) {
+
+        // 获取当前 pod 节点信息
+        List<Pod> items = KubernetesUtils.client.pods().inAnyNamespace().withField("spec.nodeName", nodeName).list().getItems();
+
+        return formatPodList(items);
+    }
+
+    /**
+     * 获取 pod 的利用率情况，并存储数据库
+     * @throws InterruptedException
+     */
+    @Async
+    @Override
+    public void savePodUsage() throws InterruptedException {
+
+        while (true) {
+            List<PodMetrics> items = KubernetesUtils.client.top().pods().metrics().getItems();
+            for (PodMetrics item : items) {
+
+                if (item.getContainers().size() != 0) {
+                    PodUsage podUsage = new PodUsage();
+
+                    // 设置 pod 名称
+                    podUsage.setPodName(item.getMetadata().getName());
+
+                    // 设置命名空间
+                    podUsage.setNamespace(item.getMetadata().getNamespace());
+
+                    // 设置 cpu 使用数
+                    podUsage.setCpu(item.getContainers().get(0).getUsage().get("cpu").getAmount());
+
+                    // 设置内存使用数
+                    podUsage.setMemory(item.getContainers().get(0).getUsage().get("memory").getAmount());
+
+                    // 设置时间
+                    podUsage.setTime(TimeUtils.sdf.format(new Date()));
+
+                    podUsageDao.addPodUsage(podUsage);
+                }
+
+            }
+
+            // 每隔 60 秒保存一次
+            Thread.sleep(1000*60);
+        }
     }
 
     @Override
     public Boolean deletePodByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).delete();
-
-        return delete;
+        return KubernetesUtils.client.pods().inNamespace(namespace).withName(name).delete();
     }
 
     @Override
@@ -58,9 +147,7 @@ public class PodsServiceImpl implements PodsService {
 
         InputStream yamlInputStream = byPath(path);
 
-        Pod pod = KubernetesUtils.client.pods().load(yamlInputStream).get();
-
-        return pod;
+        return KubernetesUtils.client.pods().load(yamlInputStream).get();
     }
 
     @Override
@@ -132,9 +219,8 @@ public class PodsServiceImpl implements PodsService {
 
         List<EnvVar> envVarList = new ArrayList<EnvVar>();
         Set<String> keySet = envVar.keySet();
-        Iterator<String> keyIterator = keySet.iterator();
-        while(keyIterator.hasNext()){
-            String key = (String) keyIterator.next();
+
+        for (String key : keySet) {
             String value = envVar.get(key);
             EnvVar tmpEnvVar = new EnvVar();
             tmpEnvVar.setName(key);
@@ -174,5 +260,7 @@ public class PodsServiceImpl implements PodsService {
         }
         return podList;
     }
+
+
 
 }

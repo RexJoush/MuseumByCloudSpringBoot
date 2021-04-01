@@ -33,9 +33,13 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     @Override
     public List<Deployment> findDeploymentsByNamespace(String namespace) {
 
-        List<Deployment> items = KubernetesUtils.client.apps().deployments().inNamespace(namespace).list().getItems();
-        return items;
+        return KubernetesUtils.client.apps().deployments().inNamespace(namespace).list().getItems();
 
+    }
+
+    @Override
+    public Deployment getDeploymentByNameAndNamespace(String name, String namespace) {
+        return KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).get();
     }
 
     @Override

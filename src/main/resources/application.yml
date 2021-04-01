@@ -10,7 +10,7 @@ spring:
 # mybatis 信息
 mybatis:
   # 加载 Mybatis 映射文件
-  mapper-locations: classpath:mapper/*Mapper.xml
+  mapper-locations: classpath:mapper/**/*Mapper.xml
   # 配置 pojo 别名
   type-aliases-package: com.nwu.entity
 

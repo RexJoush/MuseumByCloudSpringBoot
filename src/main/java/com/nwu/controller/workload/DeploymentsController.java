@@ -58,7 +58,20 @@ public class DeploymentsController {
         result.put("data", v1DeploymentList);
 
         return JSON.toJSONString(result);
+    }
 
+    @RequestMapping("/getDeploymentByNameAndNamespace")
+    public String getDeploymentByNameAndNamespace(String name, String namespace){
+
+        Deployment deployment = deploymentsService.getDeploymentByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过 name namespace 获取 Deployment 成功");
+        result.put("data", deployment);
+
+        return JSON.toJSONString(result);
     }
 
     @RequestMapping("/deleteDeploymentByNameAndNamespace")

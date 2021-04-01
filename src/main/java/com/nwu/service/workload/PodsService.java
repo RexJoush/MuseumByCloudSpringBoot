@@ -1,11 +1,9 @@
 package com.nwu.service.workload;
 
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +21,7 @@ public interface PodsService {
      * 获取 Pod 列表
      * @return pod 列表
      */
-    List<Pod> findAllPods() throws ApiException;
+    List<Map<String, Object>> findAllPods() throws ApiException;
 
 
     /**
@@ -31,14 +29,19 @@ public interface PodsService {
      * @param namespace namespace 名称
      * @return pod 列表
      */
-    List<Pod> findPodsByNamespace(String namespace);
+    List<Map<String, Object>> findPodsByNamespace(String namespace);
 
     /**
      * 根据 node 获取当前节点下的 pod 列表
      * @param nodeName 当前节点名称
      * @return pod 列表
      */
-    List<Pod> findPodsByNode(String nodeName);
+    List<Map<String, Object>> findPodsByNode(String nodeName);
+
+    /**
+     * 保存 pod 节点的资源利用率信息
+     */
+    void savePodUsage() throws InterruptedException;
 
     /**
      * 通过名称删除Pod
@@ -73,7 +76,7 @@ public interface PodsService {
      * 通过Pod name和namespace获取Pod的日志信息
      * @param name Pod名称
      * @param namespace Pod命名空间
-     * @return
+     * @return 日志信息
      */
     String getPodLogByNameAndNamespace(String name, String namespace);
 
