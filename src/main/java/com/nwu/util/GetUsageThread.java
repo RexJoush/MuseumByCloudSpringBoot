@@ -1,6 +1,7 @@
 package com.nwu.util;
 
 import com.nwu.service.cluster.impl.NodesServiceImpl;
+import com.nwu.service.workload.impl.PodsServiceImpl;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,12 @@ public class GetUsageThread implements CommandLineRunner {
     @Resource
     private NodesServiceImpl nodesService;
 
+    @Resource
+    private PodsServiceImpl podsService;
+
     @Override
     public void run(String... args) throws Exception {
         nodesService.saveNodeUsage();
+        podsService.savePodUsage();
     }
 }

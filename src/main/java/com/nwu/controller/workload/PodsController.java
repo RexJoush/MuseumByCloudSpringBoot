@@ -37,7 +37,7 @@ public class PodsController {
     @RequestMapping("/getAllPods")
     public String findAllPods(String namespace) {
 
-        List<Map<String, Object>> pods = new ArrayList<>();
+        List<Map<String, Object>> pods;
         if ("all".equals(namespace)){
             pods = podsService.findAllPods();
         } else {
