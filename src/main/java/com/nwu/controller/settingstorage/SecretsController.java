@@ -115,4 +115,18 @@ public class SecretsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getSecretByNameAndNamespace")
+    public String getSecretByNameAndNamespace(String name, String namespace){
+
+        Secret secret = secretsService.getSecretByNameAndNamespace(name,namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过 name namespace 获取 Secret 成功");
+        result.put("data", secret);
+
+        return JSON.toJSONString(result);
+    }
+
 }
