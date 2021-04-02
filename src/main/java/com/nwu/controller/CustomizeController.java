@@ -90,17 +90,17 @@ public class CustomizeController {
 
         return JSON.toJSONString(result);
     }
-    @RequestMapping("/geteCustomResourceDefinitionObject")
-    public String geteCustomResourceDefinitionObject(String devicename) throws ApiException, FileNotFoundException {
+    @RequestMapping("/getCustomResourceDefinitionObject")
+    public String getCustomResourceDefinitionObject(String deviceName) throws ApiException, FileNotFoundException {
 
 
-        Map<String,Object> deviceobject= customizeService.geteCustomResourceDefinitionObject(devicename);
+        Map<String,Object> deviceObject= customizeService.getCustomResourceDefinitionObject(deviceName);
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
         result.put("message", "加载boolean成功");
-        result.put("data", deviceobject);
+        result.put("data", deviceObject);
 
         return JSON.toJSONString(result);
     }

@@ -60,7 +60,7 @@ public class CustomizeServiceImpl implements CustomizeService {
         return deleted;
     }
     @Override
-    public Map<String,Object> geteCustomResourceDefinitionObject(String devicename) {
+    public Map<String,Object> getCustomResourceDefinitionObject(String deviceName) {
         CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
                 .Builder()
                 .withGroup("devices.kubeedge.io")
@@ -72,10 +72,10 @@ public class CustomizeServiceImpl implements CustomizeService {
                 .build();
 //        Map<String, Object> dummyObject = KubernetesUtils.client.customResource(context)
 //                .load(deleteCustomResourceDefinition().class.getResourceAsStream("/test-customresource.yaml"));
-        return  KubernetesUtils.client.customResource(context).get("default",devicename);
+        return  KubernetesUtils.client.customResource(context).get("default",deviceName);
     }
 
     public static void main(String[] args) {
-        System.out.println(new CustomizeServiceImpl().geteCustomResourceDefinitionObject("counter"));
+        System.out.println(new CustomizeServiceImpl().getCustomResourceDefinitionObject("counter"));
     }
 }
