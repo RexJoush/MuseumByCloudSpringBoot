@@ -25,7 +25,7 @@ public interface CustomizeService {
 
      * @return CustomResourceDefinition列表
      */
-    public List<CustomResourceDefinition> getCustomResourceDefinition() ;
+    List<CustomResourceDefinition> getCustomResourceDefinition() ;
 
     /**
      * 删除CustomResourceDefinition
@@ -47,5 +47,5 @@ public interface CustomizeService {
      * @return CustomResourceDefinition列表
      */
     CustomResourceDefinition createCustomResourceDefinition(String path)throws FileNotFoundException;
-    public Map<String,Object> geteCustomResourceDefinitionObject(String devicename);
+    Map<String,Object> getCustomResourceDefinitionObject(String deviceName);
 }

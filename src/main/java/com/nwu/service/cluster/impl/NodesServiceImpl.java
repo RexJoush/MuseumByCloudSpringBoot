@@ -31,8 +31,12 @@ public class NodesServiceImpl implements NodesService {
         List<Map<String, Object>> result = new ArrayList<>();
 
 
+        /*
+            所有的 node，master 节点的包含标签 ，node-type.，值为 normal-node
+            所有的 edge 节点包含标签 withLabel("metadata.labels", "node-role.kubernetes.io/edge")
+         */
         // 获取当前 node 节点信息
-        List<Node> items = KubernetesUtils.client.nodes().list().getItems();
+        List<Node> items = KubernetesUtils.client.nodes().withLabel("node-type","normal-node").list().getItems();
 
         for (Node item : items) {
             // 获取最近一条数据

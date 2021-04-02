@@ -83,4 +83,9 @@ public class PersistentVolumeClaimsServiceImpl implements PersistentVolumeClaims
         }
         return pvc;
     }
+
+    @Override
+    public PersistentVolumeClaim getPVCByNameAndNamespace(String name, String namespace) {
+        return  KubernetesUtils.client.persistentVolumeClaims().inNamespace(namespace).withName(name).get();
+    }
 }

@@ -62,4 +62,12 @@ public interface PersistentVolumeClaimsService {
      * @throws FileNotFoundException
      */
     PersistentVolumeClaim createOrReplacePVC(String path) throws FileNotFoundException;;
+
+    /**
+     * 通过PersistentVolumeClaim name和namespace获取PersistentVolumeClaim的信息
+     * @param name PersistentVolumeClaim名称
+     * @param namespace PersistentVolumeClaim命名空间
+     * @return PersistentVolumeClaim信息
+     */
+    PersistentVolumeClaim getPVCByNameAndNamespace(String name, String namespace);
 }

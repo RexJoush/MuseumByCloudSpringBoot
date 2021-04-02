@@ -96,6 +96,11 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
         return configMap;
     }
 
+    @Override
+    public ConfigMap getConfigMapByNameAndNamespace(String name, String namespace) {
+        return KubernetesUtils.client.configMaps().inNamespace(namespace).withName(name).get();
+    }
+
     //@Override
 //    public ConfigMap updateConfigMap(String name, String namespace) {
 //
