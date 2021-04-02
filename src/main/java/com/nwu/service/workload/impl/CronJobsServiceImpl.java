@@ -87,4 +87,10 @@ public class CronJobsServiceImpl implements CronJobsService {
         }
         return cronJob;
     }
+
+    @Override
+    public CronJob getCronJobByNameAndNamespace(String name, String namespace) {
+        CronJob cronJob = KubernetesUtils.client.batch().cronjobs().inNamespace(namespace).withName(name).get();
+        return cronJob;
+    }
 }

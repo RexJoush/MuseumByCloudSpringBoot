@@ -32,6 +32,8 @@ public class DaemonSetsController {
 
     @RequestMapping("/getAllDaemonSets")
     public String findAllDaemonSets() throws ApiException {
+        System.out.println("DStest\n\n");
+
 
         List<DaemonSet> daemonSets = daemonSetsService.findAllDaemonSets();
 

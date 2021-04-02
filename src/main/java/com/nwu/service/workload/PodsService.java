@@ -1,6 +1,7 @@
 package com.nwu.service.workload;
 
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
@@ -30,6 +31,14 @@ public interface PodsService {
      * @return pod 列表
      */
     List<Map<String, Object>> findPodsByNamespace(String namespace);
+
+    /**
+     * 通过名字和命名空间查找 Pod
+     * @param name Pod名字
+     * @param namespace Pod命名空间
+     * @return 查找到的Pod
+     */
+    Pod getPodByNameAndNamespace(String name, String namespace);
 
     /**
      * 根据 node 获取当前节点下的 pod 列表

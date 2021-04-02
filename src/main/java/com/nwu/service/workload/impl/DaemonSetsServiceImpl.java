@@ -3,6 +3,7 @@ package com.nwu.service.workload.impl;
 import com.nwu.service.workload.DaemonSetsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -82,6 +83,12 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DaemonSetsServiceImpl类的createOrReplaceDaemonSet方法");
         }
         return daemonSet;
+    }
+
+    @Override
+    public DaemonSet getDaemonSetByNameAndNamespace(String name, String namespace){
+        DaemonSet items = KubernetesUtils.client.apps().daemonSets().inNamespace(namespace).withName(name).get();
+        return items;
     }
 
 }

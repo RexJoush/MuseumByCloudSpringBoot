@@ -2,6 +2,7 @@ package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.ReplicaSetsService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,12 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
 
         List<ReplicaSet> items = KubernetesUtils.client.apps().replicaSets().inNamespace(namespace).list().getItems();
 
+        return items;
+    }
+
+    @Override
+    public ReplicaSet getReplicaSetByNameAndNamespace(String name, String namespace){
+        ReplicaSet items = KubernetesUtils.client.apps().replicaSets().inNamespace(namespace).withName(name).get();
         return items;
     }
 

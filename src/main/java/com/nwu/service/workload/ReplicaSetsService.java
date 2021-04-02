@@ -5,8 +5,10 @@ package com.nwu.service.workload;
  * @time 2021.03.22
  */
 
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
@@ -69,4 +71,11 @@ public interface ReplicaSetsService {
      */
     void setReplicas(String name, String namespace, Integer replicas);
 
+    /**
+     * 通过名字和命名空间查找 ReplicaSet
+     * @param name ReplicaSet名字
+     * @param namespace ReplicaSet命名空间
+     * @return 查找到的ReplicaSet
+     */
+    ReplicaSet getReplicaSetByNameAndNamespace(String name, String namespace);
 }

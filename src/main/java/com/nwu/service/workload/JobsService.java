@@ -5,6 +5,7 @@ package com.nwu.service.workload;
  * @time 2021.03.22
  */
 
+import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
@@ -60,4 +61,12 @@ public interface JobsService {
      * @return 创建或更新的job
      */
     Job createOrReplaceJob(String path) throws FileNotFoundException;
+
+    /**
+     * 通过名字和命名空间查找 Job
+     * @param name Job名字
+     * @param namespace Job命名空间
+     * @return 查找到的Job
+     */
+    Job getJobByNameAndNamespace(String name, String namespace);
 }
