@@ -9,4 +9,5 @@ package com.nwu.service;
  * 边缘节点的 service 层接口
  */
 public interface EdgeService {
+
 }

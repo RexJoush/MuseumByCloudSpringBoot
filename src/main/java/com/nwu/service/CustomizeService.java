@@ -5,11 +5,14 @@ package com.nwu.service;
  * @time 2021.03.22
  */
 
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 
 import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -22,7 +25,7 @@ public interface CustomizeService {
 
      * @return CustomResourceDefinition列表
      */
-    CustomResourceDefinitionList getCustomResourceDefinition() ;
+    public List<CustomResourceDefinition> getCustomResourceDefinition() ;
 
     /**
      * 删除CustomResourceDefinition
@@ -44,4 +47,5 @@ public interface CustomizeService {
      * @return CustomResourceDefinition列表
      */
     CustomResourceDefinition createCustomResourceDefinition(String path)throws FileNotFoundException;
+    public Map<String,Object> geteCustomResourceDefinitionObject(String devicename);
 }

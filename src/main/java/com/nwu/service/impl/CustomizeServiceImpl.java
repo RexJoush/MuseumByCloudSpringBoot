@@ -3,12 +3,13 @@ package com.nwu.service.impl;
 import com.nwu.service.CustomizeService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
-import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
+import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
 
 import static com.nwu.util.GetYamlInputStream.byPath;
 
@@ -34,19 +35,47 @@ public class CustomizeServiceImpl implements CustomizeService {
     @Override
     public CustomResourceDefinition createCustomResourceDefinition(String path) throws FileNotFoundException {
 
+
         CustomResourceDefinition customResourceDefinition=KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().createOrReplace(loadCustomResourceDefinition(path));
+        System.out.println(customResourceDefinition);
+
         return customResourceDefinition;
     }
 
     @Override
-    public CustomResourceDefinitionList getCustomResourceDefinition() {
-        CustomResourceDefinitionList crdList= KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().list();
-        return crdList;
+    public List<CustomResourceDefinition> getCustomResourceDefinition() {
+        List<CustomResourceDefinition> items = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().list().getItems();
+
+        for (CustomResourceDefinition item : items) {
+            System.out.println(item);
+        }
+
+        return items;
     }
 
     @Override
     public boolean deleteCustomResourceDefinition(CustomResourceDefinition customResourceDefinition) {
         boolean deleted= KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().delete(customResourceDefinition);
+
         return deleted;
+    }
+    @Override
+    public Map<String,Object> geteCustomResourceDefinitionObject(String devicename) {
+        CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
+                .Builder()
+                .withGroup("devices.kubeedge.io")
+                .withKind("Device")
+                .withName("devices.devices.kubeedge.io")
+                .withPlural("devices")
+                .withScope("Namespaced")
+                .withVersion("v1alpha2")
+                .build();
+//        Map<String, Object> dummyObject = KubernetesUtils.client.customResource(context)
+//                .load(deleteCustomResourceDefinition().class.getResourceAsStream("/test-customresource.yaml"));
+        return  KubernetesUtils.client.customResource(context).get("default",devicename);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new CustomizeServiceImpl().geteCustomResourceDefinitionObject("counter"));
     }
 }
