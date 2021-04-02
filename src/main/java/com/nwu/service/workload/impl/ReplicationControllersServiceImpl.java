@@ -2,6 +2,7 @@ package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.ReplicationControllersService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,12 @@ public class ReplicationControllersServiceImpl implements ReplicationControllers
 
         List<ReplicationController> items = KubernetesUtils.client.replicationControllers().inNamespace(namespace).list().getItems();
 
+        return items;
+    }
+
+    @Override
+    public ReplicationController getReplicationControllerByNameAndNamespace(String name, String namespace){
+        ReplicationController items = KubernetesUtils.client.replicationControllers().inNamespace(namespace).withName(name).get();
         return items;
     }
 

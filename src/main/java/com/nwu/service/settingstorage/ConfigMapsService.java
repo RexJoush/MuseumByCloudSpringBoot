@@ -61,4 +61,12 @@ public interface ConfigMapsService {
      * @throws FileNotFoundException
      */
     ConfigMap createOrReplaceConfigMap(String path) throws FileNotFoundException;
+
+    /**
+     * 通过ConfigMap name和namespace获取ConfigMap的信息
+     * @param name ConfigMap名称
+     * @param namespace ConfigMap命名空间
+     * @return ConfigMap信息
+     */
+    ConfigMap getConfigMapByNameAndNamespace(String name, String namespace);
 }

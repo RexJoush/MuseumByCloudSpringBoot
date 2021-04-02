@@ -2,6 +2,7 @@ package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.StatefulSetsService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,12 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
 
         List<StatefulSet> items = KubernetesUtils.client.apps().statefulSets().inNamespace(namespace).list().getItems();
 
+        return items;
+    }
+
+    @Override
+    public StatefulSet getStatefulSetByNameAndNamespace(String name, String namespace){
+        StatefulSet items = KubernetesUtils.client.apps().statefulSets().inNamespace(namespace).withName(name).get();
         return items;
     }
 

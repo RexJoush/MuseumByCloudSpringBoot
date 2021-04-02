@@ -18,7 +18,8 @@ public class Test {
 
 
 
-        String path = com.nwu.service.explorebalancing.ServicesService.class.getClassLoader().getResource("service.yaml").getPath();
+//        String path = com.nwu.service.explorebalancing.ServicesService.class.getClassLoader().getResource("service.yaml").getPath();
+        String path = com.nwu.service.explorebalancing.IngressesService.class.getClassLoader().getResource("service.yaml").getPath();
 
 
         ServicesServiceImpl servicesServiceImpl = new ServicesServiceImpl();

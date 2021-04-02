@@ -67,4 +67,13 @@ public interface ServicesService {
      * @throws ApiException
      */
     Service createOrReplaceService(String path) throws FileNotFoundException;
+
+
+    /**
+     * 通过名字和命名空间获取service
+     * @param name 名字
+     * @param namespace 命名空间
+     * @return
+     */
+    Service getServiceByNameAndNamespace(String name, String namespace);
 }

@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: crontab-job
+  name: aWrongjob
   namespace: default
 spec:
   schedule: "1 5 * * *"
@@ -10,8 +10,8 @@ spec:
       template:
         spec:
           containers:
-            - name: crontab-job
-              image: 'your-domain.com/your-project-path:version'
+            - name: aWrongjob
+              image: "123edw"
               args:
                 - /usr/bin/php
                 - /www/demo.php

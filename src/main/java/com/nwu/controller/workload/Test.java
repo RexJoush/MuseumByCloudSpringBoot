@@ -3,36 +3,76 @@ package com.nwu.controller.workload;
 import com.nwu.controller.workload.PodsController;
 import com.nwu.service.cluster.impl.ClusterRolesServiceImpl;
 import com.nwu.service.workload.impl.*;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
+import io.fabric8.kubernetes.client.dsl.KubernetesListMixedOperation;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.logging.Log;
 
+import javax.imageio.IIOImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
+
+
+
 public class Test {
 
+
+
+
     public static void main(String[] args) throws ApiException, IOException {
+        //CronJob
+        CronJobsServiceImpl cronJobsService = new CronJobsServiceImpl();
+        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace("cronjob-demo", "default");
+        System.out.println(aCronJob);
 
-        Map<String, String> test = new HashMap<String, String>();
-        test.put("星期一", "Monday");
-        test.put("星期二", "Tuesday");
-        Set<String> set = test.keySet();
-        Iterator<String> iterator = set.iterator();
-        while(iterator.hasNext()){
-            String key = (String) iterator.next();
-            String value = test.get(key);
-            System.out.println(key + value);
-        }
-        ClusterRolesServiceImpl clusterRolesService = new ClusterRolesServiceImpl();
-        List<ClusterRole> allClusterRoles = clusterRolesService.getAllClusterRoles();
+        //DaemonSet
+//        DaemonSetsServiceImpl daemonSetsService = new DaemonSetsServiceImpl();
+//        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace("nginx-ingress-controller", "ingress-nginx");
+//        System.out.println(aDaemonSet);
 
-        System.out.println(allClusterRoles);
+        //Job
+//        JobsServiceImpl jobsService = new JobsServiceImpl();
+//        Job aJob = jobsService.getJobByNameAndNamespace("job-demo", "default");
+//        System.out.println(aJob);
+
+//        List arrayList = new ArrayList();
+//        arrayList.add("aaaa");
+//        arrayList.add(100);
+//
+//        for(int i = 0; i< arrayList.size();i++){
+//            String item = (String)arrayList.get(i);
+//            System.out.println("泛型测试"+"item = " + item);
+//        }
+
+//        try{
+//            System.out.println("开始创建对象");
+//            CronJobsServiceImpl cronJobsService = new CronJobsServiceImpl();
+//            String path = Test.class.getClassLoader().getResource("CronJob.yaml").getPath();
+//            System.out.println("传入路径");
+//            List<CronJob> allCronJobs = (List<CronJob>) cronJobsService.createCronJobByYaml(path);
+//            System.out.println("\n\n" + allCronJobs + "\n\n");
+//        }catch (Exception e){
+//            System.out.println("no");
+//        }
+
+//        ClusterRolesServiceImpl clusterRolesService = new ClusterRolesServiceImpl();
+//        List<ClusterRole> allClusterRoles = clusterRolesService.getAllClusterRoles();
+//        Iterator<ClusterRole> iterator = allClusterRoles.iterator();
+//        while(iterator.hasNext()){
+//            ClusterRole clusterRole = iterator.next();
+//
+//        }
+        //System.out.println(allClusterRoles);
 
 /*
         String path = Test.class.getClassLoader().getResource("RS.yaml").getPath();

@@ -112,4 +112,18 @@ public class PersistentVolumeClaimsController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/getPVCByNameAndNamespace")
+    public String getPVCByNameAndNamespace(String name, String namespace){
+
+        PersistentVolumeClaim persistentVolumeClaim = persistentVolumeClaimsService.getPVCByNameAndNamespace(name,namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过 name namespace 获取 persistentVolumeClaim 成功");
+        result.put("data", persistentVolumeClaim);
+
+        return JSON.toJSONString(result);
+    }
 }

@@ -114,4 +114,19 @@ public class ConfigMapsController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/getConfigMapByNameAndNamespace")
+    public String getConfigMapByNameAndNamespace(String name, String namespace){
+
+        ConfigMap configMap = configMapsService.getConfigMapByNameAndNamespace(name,namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过 name namespace 获取 ConfigMap 成功");
+        result.put("data", configMap);
+
+        return JSON.toJSONString(result);
+    }
+
 }

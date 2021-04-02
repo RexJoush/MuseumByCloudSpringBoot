@@ -6,6 +6,7 @@ import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -91,6 +92,12 @@ public class PodsServiceImpl implements PodsService {
         List<Pod> items = KubernetesUtils.client.pods().inAnyNamespace().withField("spec.nodeName", nodeName).list().getItems();
 
         return formatPodList(items);
+    }
+
+    @Override
+    public Pod getPodByNameAndNamespace(String name, String namespace){
+        Pod items = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();
+        return items;
     }
 
     /**
