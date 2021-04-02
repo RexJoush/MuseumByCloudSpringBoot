@@ -47,5 +47,6 @@ public interface CustomizeService {
      * @return CustomResourceDefinition列表
      */
     CustomResourceDefinition createCustomResourceDefinition(String path)throws FileNotFoundException;
-    Map<String,Object> getCustomResourceDefinitionObject(String deviceName);
+    Map<String,Object> getCustomResourceDefinitionObject(String nameSpace,String deviceName);
+    Map<String,Object> getCustomResourceDefinitionObjectList(String nameSpace);
 }
