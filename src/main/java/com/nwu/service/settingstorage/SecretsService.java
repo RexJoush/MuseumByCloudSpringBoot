@@ -62,4 +62,12 @@ public interface SecretsService {
      * @throws FileNotFoundException
      */
     Secret createOrReplaceSecret(String path) throws FileNotFoundException;
+
+    /**
+     * 通过Secret name和namespace获取Secret的信息
+     * @param name Secret名称
+     * @param namespace Secret命名空间
+     * @return Secret信息
+     */
+    Secret getSecretByNameAndNamespace(String name, String namespace);
 }

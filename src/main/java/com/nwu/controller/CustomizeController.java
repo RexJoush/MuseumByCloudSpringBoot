@@ -5,9 +5,22 @@ package com.nwu.controller;
  * @time 2021.03.22
  */
 
+import com.alibaba.fastjson.JSON;
+import com.nwu.service.CustomizeService;
+import com.nwu.service.workload.impl.JobsServiceImpl;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
+import io.fabric8.kubernetes.api.model.batch.Job;
+import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 自定义资源的 controller 层
@@ -16,31 +29,80 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/customize")
 public class CustomizeController {
 
-    @RequestMapping("/index")
-    public String index(){
-        System.out.println("index 111");
-        return "Hello Index";
-    }
+    @Resource
+    private CustomizeService customizeService;
 
-    @RequestMapping("/home")
-    public String home(){
-        System.out.println("home 111");
-        return "Hello Home";
-    }
+    @RequestMapping("/loadCustomResourceDefinition")
+    public String loadCustomResourceDefinition(String path) throws ApiException, FileNotFoundException {
 
-    @RequestMapping("/level1/{id}")
-    public String level1(@PathVariable("id") int id){
-        return "Hello level1 " + id;
-    }
 
-    @RequestMapping("/level2/{id}")
-    public String level2(@PathVariable("id") int id){
-        return "Hello level2 " + id;
-    }
+        CustomResourceDefinition customResourceDefinition = customizeService.loadCustomResourceDefinition(path);
 
-    @RequestMapping("/level3/{id}")
-    public String level3(@PathVariable("id") int id){
-        return "Hello level3 " + id;
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载 CRD 成功");
+        result.put("data", customResourceDefinition);
+
+        return JSON.toJSONString(result);
+
+    }
+    @RequestMapping("/createCustomResourceDefinition")
+    public String createCustomResourceDefinition(String path) throws ApiException, FileNotFoundException {
+
+
+        CustomResourceDefinition customResourceDefinition = customizeService.createCustomResourceDefinition(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载 CRD 成功");
+        result.put("data", customResourceDefinition);
+
+        return JSON.toJSONString(result);
+
+    }
+    @RequestMapping("/getCustomResourceDefinition")
+    public String getCustomResourceDefinition() throws ApiException, FileNotFoundException {
+
+
+        List<CustomResourceDefinition> customResourceDefinitionList = customizeService.getCustomResourceDefinition();
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载 CRD 成功");
+        result.put("data", customResourceDefinitionList);
+
+        return JSON.toJSONString(result);
+    }
+    @RequestMapping("/deleteCustomResourceDefinition")
+    public String deleteCustomResourceDefinition(CustomResourceDefinition customResourceDefinition) throws ApiException, FileNotFoundException {
+
+
+        boolean deleted= customizeService.deleteCustomResourceDefinition(customResourceDefinition);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载boolean成功");
+        result.put("data", deleted);
+
+        return JSON.toJSONString(result);
+    }
+    @RequestMapping("/getCustomResourceDefinitionObject")
+    public String getCustomResourceDefinitionObject(String deviceName) throws ApiException, FileNotFoundException {
+
+
+        Map<String,Object> deviceObject= customizeService.getCustomResourceDefinitionObject(deviceName);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载boolean成功");
+        result.put("data", deviceObject);
+
+        return JSON.toJSONString(result);
     }
 
 }

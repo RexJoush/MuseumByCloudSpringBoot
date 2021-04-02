@@ -32,18 +32,6 @@ public class PodsServiceImpl implements PodsService {
     @Resource
     private PodUsageDao podUsageDao;
 
-    public static void main(String[] args) {
-        List<PodMetrics> items = KubernetesUtils.client.top().pods().metrics().getItems();
-
-        for (PodMetrics item : items) {
-            System.out.println(item.getMetadata().getName());
-            System.out.println(item.getContainers().get(0).getUsage().get("cpu").getAmount());
-            System.out.println(item.getContainers().get(0).getUsage().get("memory").getAmount());
-            System.out.println("===========================");
-        }
-
-    }
-
     /**
      * 封装获取的 pod 列表，包含利用率信息和 pod 信息
      * @return 封装好的列表
@@ -58,10 +46,19 @@ public class PodsServiceImpl implements PodsService {
             // 获取最近一条数据
             PodUsage usage = podUsageDao.findLast(item.getMetadata().getName(), item.getMetadata().getNamespace());
             Map<String, Object> map = new HashMap<>();
-            // 放入节点信息
-            map.put("pod", item);
-            // 放入利用率信息
-            map.put("usage",usage);
+
+            // 当前 pod 有利用率信息
+            if (usage != null){
+                // 放入节点信息
+                map.put("pod", item);
+                // 放入利用率信息
+                map.put("usage",usage);
+            } else {
+                map.put("pod", item);
+                map.put("usage", null);
+            }
+
+
             // 添加进结果集合
             result.add(map);
         }

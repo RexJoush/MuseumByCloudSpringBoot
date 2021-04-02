@@ -93,5 +93,10 @@ public class SecretsServiceImpl implements SecretsService {
         return secret;
     }
 
+    @Override
+    public Secret getSecretByNameAndNamespace(String name, String namespace) {
+        return KubernetesUtils.client.secrets().inNamespace(namespace).withName(name).get();
+    }
+
 
 }
