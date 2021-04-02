@@ -97,4 +97,10 @@ public class ServicesServiceImpl implements ServicesService {
     }
 
 
+    @Override
+    public io.fabric8.kubernetes.api.model.Service getServiceByNameAndNamespace(String name, String namespace){
+
+        return KubernetesUtils.client.services().inNamespace(namespace).withName(name).get();
+    }
+
 }
