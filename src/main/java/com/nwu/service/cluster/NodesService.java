@@ -33,10 +33,22 @@ public interface NodesService {
     void saveNodeUsage() throws InterruptedException;
 
     /**
+     * 删除 node 节点两天前的资源利用率信息
+     */
+    void deleteNodeUsage();
+
+    /**
      * 获取当前节点的近 20 分钟的利用率数据
      * @param nodeName 节点名称
      * @return 利用率列表
      */
     List<NodeUsage> findRecentTwenty(String nodeName);
+
+    /**
+     * 获取当前节点的近一天的利用率数据
+     * @param nodeName 节点名称
+     * @return 利用率列表
+     */
+    List<NodeUsage> findRecentOneDay(String nodeName);
 
 }

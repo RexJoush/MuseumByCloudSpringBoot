@@ -6,7 +6,7 @@
         SELECT *
         FROM pod_usage
         WHERE pod_name = #{podName}
-        AND namespace = #{namespace}
+          AND namespace = #{namespace}
         ORDER BY time
     </select>
 
@@ -14,9 +14,9 @@
         SELECT *
         FROM pod_usage
         WHERE pod_name = #{podName}
-        AND namespace = #{namespace}
+          AND namespace = #{namespace}
         ORDER BY time DESC
-        LIMIT 1
+            LIMIT 1
     </select>
 
     <select id="findRecentTwenty" resultType="podUsage">
@@ -24,7 +24,8 @@
         FROM pod_usage
         WHERE pod_name = #{podName}
           AND namespace = #{namespace}
-        AND time > #{time}
+          AND time
+            > #{time}
         ORDER BY time DESC
     </select>
 
@@ -32,9 +33,14 @@
         SELECT *
         FROM pod_usage
         WHERE pod_name = #{podName}
-        AND namespace = #{namespace}
+          AND namespace = #{namespace}
         ORDER BY time DESC
     </select>
+
+    <delete id="delTwoDayAgo">
+        DELETE FROM pod_usage
+        WHERE time &lt;= #{time}
+    </delete>
 
     <insert id="addPodUsage">
         INSERT INTO pod_usage (pod_name, namespace, cpu, memory, time)

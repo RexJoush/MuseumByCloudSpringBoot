@@ -14,14 +14,15 @@
         FROM node_usage
         WHERE node_name = #{nodeName}
         ORDER BY time DESC
-        LIMIT 1
+            LIMIT 1
     </select>
 
     <select id="findRecentTwenty" resultType="nodeUsage">
         SELECT *
         FROM node_usage
         WHERE node_name = #{nodeName}
-        AND time > #{time}
+          AND time
+            > #{time}
         ORDER BY time DESC
     </select>
 
@@ -31,6 +32,12 @@
         WHERE node_name = #{nodeName}
         ORDER BY time DESC
     </select>
+
+    <delete id="delTwoDayAgo">
+        DELETE
+        FROM node_usage
+        WHERE time &lt;= #{time}
+    </delete>
 
     <insert id="addNodeUsage">
         INSERT INTO node_usage (node_name, cpu, memory, time)
