@@ -90,7 +90,12 @@ public class CustomizeServiceImpl implements CustomizeService {
         return  KubernetesUtils.client.customResource(context).list(nameSpace);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new CustomizeServiceImpl().getCustomResourceDefinitionObjectList("default"));
+    @Override
+    public CustomResourceDefinition getCustomResourceDefinitionByName(String name) throws FileNotFoundException {
+
+        CustomResourceDefinition customResourceDefinition=KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().withName(name).get();
+        return customResourceDefinition;
+
     }
+
 }
