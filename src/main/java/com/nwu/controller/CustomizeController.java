@@ -118,5 +118,19 @@ public class CustomizeController {
 
         return JSON.toJSONString(result);
     }
+    @RequestMapping("/getCustomResourceDefinitionByName")
+    public String getCustomResourceDefinitionByName(String name) throws ApiException, FileNotFoundException {
+
+
+        CustomResourceDefinition customResourceDefinition= customizeService.getCustomResourceDefinitionByName(name);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "加载boolean成功");
+        result.put("data", customResourceDefinition);
+
+        return JSON.toJSONString(result);
+    }
 
 }
