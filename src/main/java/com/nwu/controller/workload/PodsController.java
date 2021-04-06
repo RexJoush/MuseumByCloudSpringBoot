@@ -2,6 +2,7 @@ package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.PodDetails;
 import com.nwu.service.workload.PodsService;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -66,6 +67,21 @@ public class PodsController {
         result.put("code", 1200);
         result.put("message", "获取 Pod 列表成功");
         result.put("data", pods);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getPodByNameAndNamespace")
+    public String findPodByNameAndNamespace(String name, String namespace) {
+        System.out.println("name, " + name);
+        System.out.println("namespace, " + namespace);
+        PodDetails podByNameAndNamespace = podsService.findPodByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Pod 详情成功");
+        result.put("data", podByNameAndNamespace);
 
         return JSON.toJSONString(result);
     }

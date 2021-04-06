@@ -2,7 +2,9 @@ package com.nwu.service.workload.impl;
 
 import com.nwu.dao.workload.PodUsageDao;
 import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.PodDetails;
 import com.nwu.entity.workload.PodUsage;
+import com.nwu.entity.workload.Usage;
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
@@ -45,10 +47,22 @@ public class PodsServiceImpl implements PodsService {
         // 返回结果列表
         List<PodDefinition> result = new ArrayList<>();
 
+        List<PodMetrics> tops = KubernetesUtils.client.top().pods().metrics().getItems();
+
+        Map<String, Usage> usage = new HashMap<>();
+
+        for (PodMetrics top : tops){
+            if (top.getContainers().size() > 0) {
+                usage.put(top.getMetadata().getName() + top.getMetadata().getNamespace(),
+                        new Usage(top.getContainers().get(0).getUsage()
+                                .get("cpu").getAmount(), top.getContainers().get(0).getUsage()
+                                .get("memory").getAmount()));
+            }
+        }
+
         // 封装 pod 列表
         for (Pod item : items) {
-            // 获取最近一条数据
-            PodUsage usage = podUsageDao.findLast(item.getMetadata().getName(), item.getMetadata().getNamespace());
+
 
             PodDefinition pod = new PodDefinition();
 
@@ -67,12 +81,13 @@ public class PodsServiceImpl implements PodsService {
             }
 
             // 设置内存和 cpu 利用率
-            if (usage == null) {
+            String key = item.getMetadata().getName()+item.getMetadata().getNamespace();
+            if (usage.containsKey(key)) {
+                pod.setCpuUsage(usage.get(key).getCpu());
+                pod.setMemoryUsage(usage.get(key).getMemory());
+            } else {
                 pod.setCpuUsage("-1");
                 pod.setMemoryUsage("-1");
-            } else {
-                pod.setCpuUsage(usage.getCpu());
-                pod.setMemoryUsage(usage.getMemory());
             }
 
             // 设置主机名和 ip 信息
@@ -112,10 +127,17 @@ public class PodsServiceImpl implements PodsService {
         return formatPodList(items);
     }
 
+    public static void main(String[] args) {
+        new PodsServiceImpl().findPodByNameAndNamespace("kubernetes-dashboard-7b544877d5-9knhd","kubernetes-dashboard");
+    }
+
     @Override
-    public Pod getPodByNameAndNamespace(String name, String namespace) {
-        Pod items = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();
-        return items;
+    public PodDetails findPodByNameAndNamespace(String name, String namespace) {
+        Pod item = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();
+        System.out.println(item);
+        List<PodUsage> usages = podUsageDao.findRecentTwenty(name, namespace, TimeUtils.getTwentyMinuteAgo());
+        PodDetails podDetails = new PodDetails(item, usages);
+        return podDetails;
     }
 
     /**

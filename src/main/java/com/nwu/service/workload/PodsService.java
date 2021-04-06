@@ -1,6 +1,7 @@
 package com.nwu.service.workload;
 
 import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.PodDetails;
 import com.nwu.entity.workload.PodUsage;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
@@ -39,7 +40,7 @@ public interface PodsService {
      * @param namespace Pod命名空间
      * @return 查找到的Pod
      */
-    Pod getPodByNameAndNamespace(String name, String namespace);
+    PodDetails findPodByNameAndNamespace(String name, String namespace);
 
     /**
      * 根据 node 获取当前节点下的 pod 列表
