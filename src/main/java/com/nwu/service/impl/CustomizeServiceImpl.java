@@ -2,6 +2,7 @@ package com.nwu.service.impl;
 
 import com.nwu.service.CustomizeService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Sysctl;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,6 @@ public class CustomizeServiceImpl implements CustomizeService {
 
 
     public CustomResourceDefinition loadCustomResourceDefinition(String path) throws FileNotFoundException {
-
         InputStream yamlInputStream = byPath(path);
         CustomResourceDefinition customResourceDefinition=KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().load(yamlInputStream).get();
         return customResourceDefinition;
@@ -35,28 +35,19 @@ public class CustomizeServiceImpl implements CustomizeService {
     @Override
     public CustomResourceDefinition createCustomResourceDefinition(String path) throws FileNotFoundException {
 
-
         CustomResourceDefinition customResourceDefinition=KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().createOrReplace(loadCustomResourceDefinition(path));
-        System.out.println(customResourceDefinition);
-
         return customResourceDefinition;
     }
 
     @Override
     public List<CustomResourceDefinition> getCustomResourceDefinition() {
         List<CustomResourceDefinition> items = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().list().getItems();
-
-        for (CustomResourceDefinition item : items) {
-            System.out.println(item);
-        }
-
         return items;
     }
 
     @Override
     public boolean deleteCustomResourceDefinition(CustomResourceDefinition customResourceDefinition) {
         boolean deleted= KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().delete(customResourceDefinition);
-
         return deleted;
     }
     @Override
@@ -89,6 +80,22 @@ public class CustomizeServiceImpl implements CustomizeService {
 //                .load(deleteCustomResourceDefinition().class.getResourceAsStream("/test-customresource.yaml"));
         return  KubernetesUtils.client.customResource(context).list(nameSpace);
     }
+    @Override
+    public Map<String, Object> getCustomResourceDefinitionObjectListbyName(String crdName) throws FileNotFoundException {
+        CustomResourceDefinition customResourceDefinition=new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
+        CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
+                .Builder()
+                .withGroup(customResourceDefinition.getSpec().getGroup())
+                .withKind(customResourceDefinition.getSpec().getNames().getKind())
+                .withName(customResourceDefinition.getMetadata().getName())
+                .withPlural(customResourceDefinition.getSpec().getNames().getPlural())
+                .withScope(customResourceDefinition.getSpec().getScope())
+                .withVersion(customResourceDefinition.getSpec().getVersions().get(0).getName())
+                .build();
+//        Map<String, Object> dummyObject = KubernetesUtils.client.customResource(context)
+//                .load(deleteCustomResourceDefinition().class.getResourceAsStream("/test-customresource.yaml"));
+        return  KubernetesUtils.client.customResource(context).list();
+    }
 
     @Override
     public CustomResourceDefinition getCustomResourceDefinitionByName(String name) throws FileNotFoundException {
@@ -97,5 +104,6 @@ public class CustomizeServiceImpl implements CustomizeService {
         return customResourceDefinition;
 
     }
+
 
 }
