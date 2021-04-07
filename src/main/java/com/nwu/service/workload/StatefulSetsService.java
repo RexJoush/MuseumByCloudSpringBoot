@@ -5,6 +5,7 @@ package com.nwu.service.workload;
  * @time 2021.03.22
  */
 
+import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
@@ -59,4 +60,12 @@ public interface StatefulSetsService {
      * @return 创建或更新的StatefulSet
      */
     StatefulSet createOrReplaceStatefulSet(String path) throws FileNotFoundException;
+
+    /**
+     * 通过名字和命名空间查找 StatefulSet
+     * @param name StatefulSet名字
+     * @param namespace StatefulSet命名空间
+     * @return 查找到的StatefulSet
+     */
+    StatefulSet getStatefulSetByNameAndNamespace(String name, String namespace);
 }

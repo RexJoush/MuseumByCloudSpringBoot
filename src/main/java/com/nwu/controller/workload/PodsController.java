@@ -1,6 +1,8 @@
 package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.PodDetails;
 import com.nwu.service.workload.PodsService;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -37,7 +39,7 @@ public class PodsController {
     @RequestMapping("/getAllPods")
     public String findAllPods(String namespace) {
 
-        List<Map<String, Object>> pods;
+        List<PodDefinition> pods;
         if ("all".equals(namespace)){
             pods = podsService.findAllPods();
         } else {
@@ -58,7 +60,7 @@ public class PodsController {
     @RequestMapping("/getPodsByNode")
     public String findPodsByNode(String nodeName) {
 
-        List<Map<String, Object>> pods = podsService.findPodsByNode(nodeName);
+        List<PodDefinition> pods = podsService.findPodsByNode(nodeName);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -69,10 +71,25 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getPodByNameAndNamespace")
+    public String findPodByNameAndNamespace(String name, String namespace) {
+        System.out.println("name, " + name);
+        System.out.println("namespace, " + namespace);
+        PodDetails podByNameAndNamespace = podsService.findPodByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Pod 详情成功");
+        result.put("data", podByNameAndNamespace);
+
+        return JSON.toJSONString(result);
+    }
+
     @RequestMapping("/getPodsByNamespace")
     public String findPodsByNamespace(String namespace) throws ApiException {
 
-        List<Map<String, Object>> v1PodList = podsService.findPodsByNamespace(namespace);
+        List<PodDefinition> v1PodList = podsService.findPodsByNamespace(namespace);
 
         Map<String, Object> result = new HashMap<>();
 

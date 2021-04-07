@@ -59,4 +59,12 @@ public interface DaemonSetsService {
      * @return 创建或更新的DaemonSet
      */
     DaemonSet createOrReplaceDaemonSet(String path) throws FileNotFoundException;
+
+    /**
+     * 通过名字和命名空间查找DaemonSet
+     * @param name DaemonSet名字
+     * @param namespace DaemonSet命名空间
+     * @return 查找到的DaemonSet
+     */
+    DaemonSet getDaemonSetByNameAndNamespace(String name, String namespace);
 }

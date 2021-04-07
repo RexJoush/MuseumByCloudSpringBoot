@@ -61,7 +61,6 @@ public class NodesServiceImpl implements NodesService {
     @Override
     public void saveNodeUsage() throws InterruptedException {
 
-
         while (true) {
             List<NodeMetrics> items = KubernetesUtils.client.top().nodes().metrics().getItems();
 
@@ -87,6 +86,16 @@ public class NodesServiceImpl implements NodesService {
     }
 
     /**
+     * 删除某节点两天前的利用率数据
+     */
+    @Async
+    @Override
+    public void deleteNodeUsage() {
+        // 删除两天前的数据
+        nodeUsageDao.delTwoDayAgo(TimeUtils.getTwoDayAgo());
+    }
+
+    /**
      * 获取近 20 分钟的 node 利用率信息
      * @param nodeName 节点名称
      * @return
@@ -94,6 +103,16 @@ public class NodesServiceImpl implements NodesService {
     @Override
     public List<NodeUsage> findRecentTwenty(String nodeName) {
         return nodeUsageDao.findRecentTwenty(nodeName, TimeUtils.getTwentyMinuteAgo());
+    }
+
+    /**
+     * 获取近一天的 node 利用率信息
+     * @param nodeName 节点名称
+     * @return
+     */
+    @Override
+    public List<NodeUsage> findRecentOneDay(String nodeName) {
+        return nodeUsageDao.findRecentOneDay(nodeName, TimeUtils.getOneDayAgo());
     }
 
     public Node findNodeByName(String nodeName) {

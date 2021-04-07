@@ -39,6 +39,12 @@ public class JobsServiceImpl implements JobsService {
     }
 
     @Override
+    public Job getJobByNameAndNamespace(String name, String namespace){
+        Job items = KubernetesUtils.client.batch().jobs().inNamespace(namespace).withName(name).get();
+        return items;
+    }
+
+    @Override
     public Boolean deleteJobByNameAndNamespace(String name, String namespace){
 
         Boolean delete = KubernetesUtils.client.batch().jobs().inNamespace(namespace).withName(name).delete();

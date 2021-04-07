@@ -45,6 +45,13 @@ public interface NodeUsageDao {
     List<NodeUsage> findRecentOneDay(String nodeName, String time);
 
     /**
+     * 删除两天前的数据
+     * @param time 两天前的时间
+     * @return 删除的记录数
+     */
+    int delTwoDayAgo (String time);
+
+    /**
      * 添加一条利用率记录
      * @param nodeUsage 添加的记录
      * @return 添加记录数

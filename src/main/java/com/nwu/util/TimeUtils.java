@@ -26,5 +26,19 @@ public class TimeUtils {
         return sdf.format(new Date().getTime() - 1000 * 60 * 20);
     }
 
+    /**
+     * 获取一天前的时间值
+     * @return 格式为 2021.02.10 20:20:20
+     */
+    public static String getOneDayAgo(){
+        return sdf.format(new Date().getTime() - 1000 * 60 * 60 * 24);
+    }
+    /**
+     * 获取两天前的时间值
+     * @return 格式为 2021.02.10 20:20:20
+     */
+    public static String getTwoDayAgo(){
+        return sdf.format(new Date().getTime() - 1000 * 60 * 60 * 24 * 2);
+    }
 
 }

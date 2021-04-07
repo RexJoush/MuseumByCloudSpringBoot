@@ -60,7 +60,7 @@ public class CustomizeServiceImpl implements CustomizeService {
         return deleted;
     }
     @Override
-    public Map<String,Object> getCustomResourceDefinitionObject(String deviceName) {
+    public Map<String,Object> getCustomResourceDefinitionObject(String nameSpace,String deviceName) {
         CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
                 .Builder()
                 .withGroup("devices.kubeedge.io")
@@ -72,10 +72,30 @@ public class CustomizeServiceImpl implements CustomizeService {
                 .build();
 //        Map<String, Object> dummyObject = KubernetesUtils.client.customResource(context)
 //                .load(deleteCustomResourceDefinition().class.getResourceAsStream("/test-customresource.yaml"));
-        return  KubernetesUtils.client.customResource(context).get("default",deviceName);
+        return  KubernetesUtils.client.customResource(context).get(nameSpace,deviceName);
+    }
+    @Override
+    public Map<String, Object> getCustomResourceDefinitionObjectList(String nameSpace) {
+        CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
+                .Builder()
+                .withGroup("devices.kubeedge.io")
+                .withKind("Device")
+                .withName("devices.devices.kubeedge.io")
+                .withPlural("devices")
+                .withScope("Namespaced")
+                .withVersion("v1alpha2")
+                .build();
+//        Map<String, Object> dummyObject = KubernetesUtils.client.customResource(context)
+//                .load(deleteCustomResourceDefinition().class.getResourceAsStream("/test-customresource.yaml"));
+        return  KubernetesUtils.client.customResource(context).list(nameSpace);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new CustomizeServiceImpl().getCustomResourceDefinitionObject("counter"));
+    @Override
+    public CustomResourceDefinition getCustomResourceDefinitionByName(String name) throws FileNotFoundException {
+
+        CustomResourceDefinition customResourceDefinition=KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().withName(name).get();
+        return customResourceDefinition;
+
     }
+
 }

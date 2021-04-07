@@ -27,6 +27,7 @@ public interface CustomizeService {
      */
     List<CustomResourceDefinition> getCustomResourceDefinition() ;
 
+
     /**
      * 删除CustomResourceDefinition
      * @param customResourceDefinition 要删除的自定义资源
@@ -47,5 +48,7 @@ public interface CustomizeService {
      * @return CustomResourceDefinition列表
      */
     CustomResourceDefinition createCustomResourceDefinition(String path)throws FileNotFoundException;
-    Map<String,Object> getCustomResourceDefinitionObject(String deviceName);
+    Map<String,Object> getCustomResourceDefinitionObject(String nameSpace,String deviceName);
+    Map<String,Object> getCustomResourceDefinitionObjectList(String nameSpace);
+    CustomResourceDefinition getCustomResourceDefinitionByName(String name)throws FileNotFoundException;
 }

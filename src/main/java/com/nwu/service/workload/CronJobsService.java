@@ -60,4 +60,12 @@ public interface CronJobsService {
      * @return 创建或更新的Cronjob
      */
     CronJob createOrReplaceCronJob(String path) throws FileNotFoundException;
+
+    /**
+     * 通过名字和命名空间查找CronJob
+     * @param name CronJob名字
+     * @param namespace CronJob命名空间
+     * @return 查找到的CronJob
+     */
+    CronJob getCronJobByNameAndNamespace(String name, String namespace);
 }

@@ -1,5 +1,8 @@
 package com.nwu.service.workload;
 
+import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.PodDetails;
+import com.nwu.entity.workload.PodUsage;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
 
@@ -21,7 +24,7 @@ public interface PodsService {
      * 获取 Pod 列表
      * @return pod 列表
      */
-    List<Map<String, Object>> findAllPods() throws ApiException;
+    List<PodDefinition> findAllPods() throws ApiException;
 
 
     /**
@@ -29,19 +32,40 @@ public interface PodsService {
      * @param namespace namespace 名称
      * @return pod 列表
      */
-    List<Map<String, Object>> findPodsByNamespace(String namespace);
+    List<PodDefinition> findPodsByNamespace(String namespace);
+
+    /**
+     * 通过名字和命名空间查找 Pod
+     * @param name Pod名字
+     * @param namespace Pod命名空间
+     * @return 查找到的Pod
+     */
+    PodDetails findPodByNameAndNamespace(String name, String namespace);
 
     /**
      * 根据 node 获取当前节点下的 pod 列表
      * @param nodeName 当前节点名称
      * @return pod 列表
      */
-    List<Map<String, Object>> findPodsByNode(String nodeName);
+    List<PodDefinition> findPodsByNode(String nodeName);
 
     /**
      * 保存 pod 节点的资源利用率信息
      */
     void savePodUsage() throws InterruptedException;
+
+    /**
+     * 删除 pod 节点两天前的资源利用率信息
+     */
+    void deletePodUsage() throws InterruptedException;
+
+    /**
+     * 获取当前 pod 的近 20 分钟的利用率数据
+     * @param podName pod 名称
+     * @param podNamespace pod 命名空间
+     * @return 利用率列表
+     */
+    List<PodUsage> findRecentTwenty(String podName, String podNamespace);
 
     /**
      * 通过名称删除Pod

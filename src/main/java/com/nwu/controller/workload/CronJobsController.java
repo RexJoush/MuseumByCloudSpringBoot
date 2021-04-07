@@ -114,4 +114,17 @@ public class CronJobsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getCronJobByNameAndNamespace")
+    public String getCronJobByNameAndNamespace(String name, String namespace){
+        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过名称和命名空间查找 CronJob 成功");
+        result.put("data", aCronJob);
+
+        return JSON.toJSONString(result);
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.nwu.dao.workload;
 
-import com.nwu.entity.cluster.NodeUsage;
 import com.nwu.entity.workload.PodUsage;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -48,6 +47,13 @@ public interface PodUsageDao {
      * @return 利用率列表
      */
     List<PodUsage> findRecentOneDay(String podName, String namespace, String time);
+
+    /**
+     * 删除某个 pod 两天前的数据
+     * @param time 两天前的日期
+     * @return 利用率列表
+     */
+    int delTwoDayAgo( String time);
 
     /**
      * 添加一条利用率记录

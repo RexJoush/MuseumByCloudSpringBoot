@@ -6,6 +6,7 @@ package com.nwu.service.workload;
  */
 
 import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
@@ -67,4 +68,12 @@ public interface ReplicationControllersService {
      * @param replicas Pod副本数量
      */
     void setReplicas(String name, String namespace, Integer replicas);
+
+    /**
+     * 通过名字和命名空间查找 ReplicationController
+     * @param name ReplicationController名字
+     * @param namespace ReplicationController命名空间
+     * @return 查找到的ReplicationController
+     */
+    ReplicationController getReplicationControllerByNameAndNamespace(String name, String namespace);
 }
