@@ -17,12 +17,14 @@ public interface EdgeService {
 
     /**
      * 获取所有 node 集合
+     *
      * @return node 集合
      */
     List<Node> findAllEdgeNodes();
 
     /**
      * 通过 node 节点名称获取信息
+     *
      * @param nodeName node 节点名
      * @return 当前节点信息
      */

@@ -77,6 +77,7 @@ public class CustomizeServiceImpl implements CustomizeService {
                 .build();
         return KubernetesUtils.client.customResource(context).list(nameSpace);
     }
+
     @Override
     public Map<String, Object> getCustomResourceDefinitionObjectListbyName(String crdName) throws FileNotFoundException {
         CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
@@ -94,7 +95,7 @@ public class CustomizeServiceImpl implements CustomizeService {
     }
 
     @Override
-    public Map<String, Object> getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName,String nameSpace) throws FileNotFoundException {
+    public Map<String, Object> getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException {
         CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
         CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
                 .Builder()
@@ -106,7 +107,7 @@ public class CustomizeServiceImpl implements CustomizeService {
                 .withVersion(customResourceDefinition.getSpec().getVersions().get(0).getName())
                 .build();
 
-        return KubernetesUtils.client.customResource(context).get(nameSpace,objName);
+        return KubernetesUtils.client.customResource(context).get(nameSpace, objName);
     }
 
 
