@@ -7,6 +7,7 @@ package com.nwu.controller.explorebalancing;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
+import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.kubernetes.client.openapi.ApiException;
@@ -61,14 +62,14 @@ public class ServicesController {
 
 
     @RequestMapping("/getServiceByNameAndNamespace")
-    public String getDeploymentByNameAndNamespace(String name, String namespace){
+    public String getServiceByNameAndNamespace(String name, String namespace){
 
         Service service = serviceService.getServiceByNameAndNamespace(name,namespace);
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "通过 name namespace 获取 Deployment 成功");
+        result.put("message", "通过 name namespace 获取 Service 成功");
         result.put("data", service);
 
         return JSON.toJSONString(result);
@@ -134,6 +135,20 @@ public class ServicesController {
         result.put("code", 1200);
         result.put("message", "创建或更新 Service 成功");
         result.put("data", service);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getEndpointBySvcNameAndNamespace")
+    public String getEndpointBySvcNameAndNamespace(String name, String namespace){
+
+        Endpoints endpoint = serviceService.getEndpointBySvcNameAndNamespace(name,namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过 name namespace 获取 Endpoint 成功");
+        result.put("data", endpoint);
 
         return JSON.toJSONString(result);
     }

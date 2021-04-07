@@ -7,6 +7,7 @@ package com.nwu.controller.explorebalancing;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.service.explorebalancing.impl.IngressesServiceImpl;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,8 +45,24 @@ public class IngressesController {
 
     }
 
-    @RequestMapping("/getServiceByNamespace")
-    public String findServiceByNamespace(String namespace){
+
+    @RequestMapping("/getIngressByNameAndNamespace")
+    public String getIngressByNameAndNamespace(String name, String namespace){
+
+        Ingress ingress = ingressesService.getIngressByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过 name namespace 获取 Ingress 成功");
+        result.put("data", ingress);
+
+        return JSON.toJSONString(result);
+    }
+
+
+    @RequestMapping("/getIngressByNamespace")
+    public String findIngressByNamespace(String namespace){
 
         List<Ingress> v1IngressesList = ingressesService.findIngressesByNamespace(namespace);
 
@@ -58,15 +75,15 @@ public class IngressesController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/loadServiceFromYaml")
-    public String loadServiceFromYaml(String path) throws FileNotFoundException {
+    @RequestMapping("/loadIngressFromYaml")
+    public String loadIngressFromYaml(String path) throws FileNotFoundException {
 
         Ingress ingress = ingressesService.loadServiceFromYaml(path);
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "加载 ingress 成功");
+        result.put("message", "加载 Ingress 成功");
         result.put("data", ingress);
 
         return JSON.toJSONString(result);
@@ -95,7 +112,7 @@ public class IngressesController {
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "删除 Service 成功");
+        result.put("message", "删除 Ingress 成功");
         result.put("data", deleteIngress);
 
         return JSON.toJSONString(result);
@@ -110,7 +127,7 @@ public class IngressesController {
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "创建或更新 Service 成功");
+        result.put("message", "创建或更新 Ingress 成功");
         result.put("data", ingress);
 
         return JSON.toJSONString(result);
