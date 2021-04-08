@@ -4,6 +4,7 @@ import com.nwu.entity.workload.PodDefinition;
 import com.nwu.entity.workload.PodDetails;
 import com.nwu.entity.workload.PodUsage;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
@@ -56,6 +57,14 @@ public interface PodsService {
      * @return pod 列表
      */
     List<PodDefinition> findPodsByNode(String nodeName);
+
+    /**
+     * 通过Service中的label来获取相关联的pod
+     * @param labelKey 标签名
+     * @param labelValue 标签值
+     * @return
+     */
+    List<PodDefinition> findPodBySvcLabel(String labelKey, String labelValue);
 
     /**
      * 保存 pod 节点的资源利用率信息

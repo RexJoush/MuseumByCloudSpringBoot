@@ -9,7 +9,6 @@ import com.alibaba.fastjson.JSON;
 import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -152,6 +151,7 @@ public class ServicesController {
 
         return JSON.toJSONString(result);
     }
+
 }
 
 

@@ -114,6 +114,20 @@ public class PodsController {
 
     }
 
+
+    @RequestMapping("/getPodBySvcLabel")
+    public String findPodBySvcLabel(String labelKey, String labelValue) {
+        List<PodDefinition> pods = podsService.findPodBySvcLabel(labelKey, labelValue);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过标签获取 Pod  成功");
+        result.put("data", pods);
+
+        return JSON.toJSONString(result);
+    }
+
     @RequestMapping("/deletePodByNameAndNamespace")
     public String deletePodByNameAndNamespace(String name, String namespace){
         Boolean delete = podsService.deletePodByNameAndNamespace(name, namespace);
