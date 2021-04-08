@@ -100,4 +100,9 @@ public class IngressesServiceImpl implements IngressesService {
 
     }
 
+    @Override
+    public Ingress getIngressByNameAndNamespace(String name, String namespace){
+        return KubernetesUtils.client.extensions().ingresses().inNamespace(namespace).withName(name).get();
+    }
+
 }

@@ -2,6 +2,7 @@ package com.nwu.service.explorebalancing.impl;
 
 import com.nwu.service.explorebalancing.ServicesService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Endpoints;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -20,6 +21,13 @@ import static com.nwu.util.GetYamlInputStream.byPath;
  */
 @Service
 public class ServicesServiceImpl implements ServicesService {
+
+//    public static void main(String[] args) {
+//        String name = "kubernetes";
+//        String namespace = "default";
+//        Endpoints endpoints = KubernetesUtils.client.endpoints().inNamespace(namespace).withName(name).get();
+//        System.out.println(endpoints);
+//    }
 
 
     @Override
@@ -100,7 +108,14 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public io.fabric8.kubernetes.api.model.Service getServiceByNameAndNamespace(String name, String namespace){
 
+
         return KubernetesUtils.client.services().inNamespace(namespace).withName(name).get();
     }
 
+
+    public Endpoints getEndpointBySvcNameAndNamespace(String name, String namespace){
+
+
+        return KubernetesUtils.client.endpoints().inNamespace(namespace).withName(name).get();
+    }
 }

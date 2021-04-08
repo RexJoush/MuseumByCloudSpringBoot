@@ -65,4 +65,11 @@ public interface IngressesService {
      */
     Ingress createOrReplaceIngress(String path) throws FileNotFoundException;
 
+    /**
+     * 通过名字和命名空间获取ingress
+     * @param name 名字
+     * @param namespace 命名空间
+     * @return
+     */
+    Ingress getIngressByNameAndNamespace(String name, String namespace);
 }
