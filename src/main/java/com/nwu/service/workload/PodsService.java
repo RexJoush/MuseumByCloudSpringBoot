@@ -43,6 +43,14 @@ public interface PodsService {
     PodDetails findPodByNameAndNamespace(String name, String namespace);
 
     /**
+     * 通过名字和命名空间查找 Pod 的 yaml 文件
+     * @param name Pod名字
+     * @param namespace Pod命名空间
+     * @return 查找到的 Pod 的 yaml 格式文件
+     */
+    String findPodYamlByNameAndNamespace(String name, String namespace);
+
+    /**
      * 根据 node 获取当前节点下的 pod 列表
      * @param nodeName 当前节点名称
      * @return pod 列表

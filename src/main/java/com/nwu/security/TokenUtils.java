@@ -1,10 +1,10 @@
 package com.nwu.security;
 
-import com.nwu.util.impl.UserDetailsImpl;
+//import com.nwu.util.impl.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -123,12 +123,12 @@ public class TokenUtils {
      * @param userDetails
      * @return
      */
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        UserDetailsImpl user = (UserDetailsImpl) userDetails;
-        final String username = this.getUsernameFromToken(token);
-        final Date created = this.getCreatedDateFromToken(token);
-        return (username.equals(user.getUsername()) && !(this.isTokenExpired(token)));
-    }
+//    public Boolean validateToken(String token, UserDetails userDetails) {
+//        UserDetailsImpl user = (UserDetailsImpl) userDetails;
+//        final String username = this.getUsernameFromToken(token);
+//        final Date created = this.getCreatedDateFromToken(token);
+//        return (username.equals(user.getUsername()) && !(this.isTokenExpired(token)));
+//    }
 
     /**
      * 获得我们封装在 token 中的 token 创建时间

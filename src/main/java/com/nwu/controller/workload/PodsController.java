@@ -3,19 +3,13 @@ package com.nwu.controller.workload;
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.PodDefinition;
 import com.nwu.entity.workload.PodDetails;
-import com.nwu.service.workload.PodsService;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.models.V1PodList;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +25,17 @@ import java.util.Map;
 
 @RequestMapping("/pods")
 @RestController
+@CrossOrigin
 public class PodsController {
 
     @Resource
     private PodsServiceImpl podsService;
+
+    @RequestMapping("/changeResourceByYaml")
+    public String changeResourceByYaml(@RequestBody String yaml){
+        System.out.println(yaml);
+        return "success";
+    }
 
     @RequestMapping("/getAllPods")
     public String findAllPods(String namespace) {
@@ -73,8 +74,7 @@ public class PodsController {
 
     @RequestMapping("/getPodByNameAndNamespace")
     public String findPodByNameAndNamespace(String name, String namespace) {
-        System.out.println("name, " + name);
-        System.out.println("namespace, " + namespace);
+
         PodDetails podByNameAndNamespace = podsService.findPodByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
@@ -82,6 +82,19 @@ public class PodsController {
         result.put("code", 1200);
         result.put("message", "获取 Pod 详情成功");
         result.put("data", podByNameAndNamespace);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getPodYamlByNameAndNamespace")
+    public String getPodYamlByNameAndNamespace(String name, String namespace) {
+        String podYaml = podsService.findPodYamlByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Pod Yaml 成功");
+        result.put("data", podYaml);
 
         return JSON.toJSONString(result);
     }

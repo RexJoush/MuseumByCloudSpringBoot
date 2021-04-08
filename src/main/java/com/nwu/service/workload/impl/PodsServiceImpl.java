@@ -10,6 +10,7 @@ import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -134,10 +135,15 @@ public class PodsServiceImpl implements PodsService {
     @Override
     public PodDetails findPodByNameAndNamespace(String name, String namespace) {
         Pod item = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();
-        System.out.println(item);
         List<PodUsage> usages = podUsageDao.findRecentTwenty(name, namespace, TimeUtils.getTwentyMinuteAgo());
         PodDetails podDetails = new PodDetails(item, usages);
         return podDetails;
+    }
+
+    @Override
+    public String findPodYamlByNameAndNamespace(String name, String namespace) {
+        Pod pod = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(pod);
     }
 
     /**
