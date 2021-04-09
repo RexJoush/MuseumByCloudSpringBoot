@@ -6,6 +6,7 @@ package com.nwu.controller.explorebalancing;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.settingstorage.ServiceDefinition;
 import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Service;
@@ -63,7 +64,7 @@ public class ServicesController {
     @RequestMapping("/getServiceByNameAndNamespace")
     public String getServiceByNameAndNamespace(String name, String namespace){
 
-        Service service = serviceService.getServiceByNameAndNamespace(name,namespace);
+        ServiceDefinition service = serviceService.getServiceByNameAndNamespace(name,namespace);
 
         Map<String, Object> result = new HashMap<>();
 

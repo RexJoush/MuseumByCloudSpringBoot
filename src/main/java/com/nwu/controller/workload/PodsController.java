@@ -117,13 +117,14 @@ public class PodsController {
 
     @RequestMapping("/getPodBySvcLabel")
     public String findPodBySvcLabel(String labelKey, String labelValue) {
-        List<PodDefinition> pods = podsService.findPodBySvcLabel(labelKey, labelValue);
+
+        List<PodDefinition> podLabel = podsService.findPodBySvcLabel(labelKey, labelValue);
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "通过标签获取 Pod  成功");
-        result.put("data", pods);
+        result.put("message", "通过 labels 获取  Pod  成功");
+        result.put("data", podLabel);
 
         return JSON.toJSONString(result);
     }

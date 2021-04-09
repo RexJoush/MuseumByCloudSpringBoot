@@ -8,6 +8,7 @@ import com.nwu.entity.workload.Usage;
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
+import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics;
 import io.kubernetes.client.util.Yaml;
@@ -36,70 +37,7 @@ public class PodsServiceImpl implements PodsService {
     @Resource
     private PodUsageDao podUsageDao;
 
-    DecimalFormat df = new DecimalFormat("#.##");
 
-    /**
-     * 封装获取的 pod 列表，包含利用率信息和 pod 信息
-     *
-     * @return 封装好的列表
-     */
-    public List<PodDefinition> formatPodList(List<Pod> items) {
-
-        // 返回结果列表
-        List<PodDefinition> result = new ArrayList<>();
-
-        List<PodMetrics> tops = KubernetesUtils.client.top().pods().metrics().getItems();
-
-        Map<String, Usage> usage = new HashMap<>();
-
-        for (PodMetrics top : tops){
-            if (top.getContainers().size() > 0) {
-                usage.put(top.getMetadata().getName() + top.getMetadata().getNamespace(),
-                        new Usage(top.getContainers().get(0).getUsage()
-                                .get("cpu").getAmount(), top.getContainers().get(0).getUsage()
-                                .get("memory").getAmount()));
-            }
-        }
-
-        // 封装 pod 列表
-        for (Pod item : items) {
-
-
-            PodDefinition pod = new PodDefinition();
-
-            // 设置名称和命名空间
-            pod.setName(item.getMetadata().getName());
-            pod.setNamespace(item.getMetadata().getNamespace());
-
-            // 设置状态
-            pod.setPhase(item.getStatus().getPhase());
-
-            // 设置重启次数
-            if (item.getStatus().getContainerStatuses().size() > 0) {
-                pod.setRestartCount(item.getStatus().getContainerStatuses().get(0).getRestartCount());
-            } else {
-                pod.setRestartCount(0);
-            }
-
-            // 设置内存和 cpu 利用率
-            String key = item.getMetadata().getName()+item.getMetadata().getNamespace();
-            if (usage.containsKey(key)) {
-                pod.setCpuUsage(usage.get(key).getCpu());
-                pod.setMemoryUsage(usage.get(key).getMemory());
-            } else {
-                pod.setCpuUsage("-1");
-                pod.setMemoryUsage("-1");
-            }
-
-            // 设置主机名和 ip 信息
-            pod.setNodeName(item.getSpec().getNodeName());
-            pod.setPodIP(item.getStatus().getPodIP());
-
-            result.add(pod);
-        }
-
-        return result;
-    }
 
     @Override
     public List<PodDefinition> findAllPods() {
@@ -107,7 +45,7 @@ public class PodsServiceImpl implements PodsService {
         // 获取当前 pod 节点信息
         List<Pod> items = KubernetesUtils.client.pods().inAnyNamespace().list().getItems();
         // 封装返回结果
-        return formatPodList(items);
+        return PodFormat.formatPodList(items);
 
     }
 
@@ -117,7 +55,7 @@ public class PodsServiceImpl implements PodsService {
         // 获取当前 pod 节点信息
         List<Pod> items = KubernetesUtils.client.pods().inNamespace(namespace).list().getItems();
 
-        return formatPodList(items);
+        return PodFormat.formatPodList(items);
     }
 
     @Override
@@ -125,14 +63,14 @@ public class PodsServiceImpl implements PodsService {
 
         // 获取当前 pod 节点信息
         List<Pod> items = KubernetesUtils.client.pods().inAnyNamespace().withField("spec.nodeName", nodeName).list().getItems();
-        return formatPodList(items);
+        return PodFormat.formatPodList(items);
     }
 
     @Override
     public List<PodDefinition> findPodBySvcLabel(String labelKey, String labelValue) {
         // 获取当前 pod 节点信息
         List<Pod> items = KubernetesUtils.client.pods().withLabel(labelKey, labelValue).list().getItems();
-        return formatPodList(items);
+        return PodFormat.formatPodList(items);
     }
 
     public static void main(String[] args) {
