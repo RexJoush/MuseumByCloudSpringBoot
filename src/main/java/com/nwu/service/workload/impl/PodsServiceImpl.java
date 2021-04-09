@@ -128,6 +128,13 @@ public class PodsServiceImpl implements PodsService {
         return formatPodList(items);
     }
 
+    @Override
+    public List<PodDefinition> findPodBySvcLabel(String labelKey, String labelValue) {
+        // 获取当前 pod 节点信息
+        List<Pod> items = KubernetesUtils.client.pods().withLabel(labelKey, labelValue).list().getItems();
+        return formatPodList(items);
+    }
+
     public static void main(String[] args) {
         new PodsServiceImpl().findPodByNameAndNamespace("kubernetes-dashboard-7b544877d5-9knhd","kubernetes-dashboard");
     }
