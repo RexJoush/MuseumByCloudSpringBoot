@@ -73,10 +73,6 @@ public class PodsServiceImpl implements PodsService {
         return PodFormat.formatPodList(items);
     }
 
-    public static void main(String[] args) {
-        new PodsServiceImpl().findPodByNameAndNamespace("kubernetes-dashboard-7b544877d5-9knhd","kubernetes-dashboard");
-    }
-
     @Override
     public PodDetails findPodByNameAndNamespace(String name, String namespace) {
         Pod item = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();

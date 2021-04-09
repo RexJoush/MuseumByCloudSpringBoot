@@ -8,7 +8,6 @@ package com.nwu.controller;
 import com.alibaba.fastjson.JSON;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.util.KubernetesUtils;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
