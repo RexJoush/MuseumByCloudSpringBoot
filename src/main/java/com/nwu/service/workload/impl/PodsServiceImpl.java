@@ -10,6 +10,7 @@ import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -127,6 +128,13 @@ public class PodsServiceImpl implements PodsService {
         return formatPodList(items);
     }
 
+    @Override
+    public List<PodDefinition> findPodBySvcLabel(String labelKey, String labelValue) {
+        // 获取当前 pod 节点信息
+        List<Pod> items = KubernetesUtils.client.pods().withLabel(labelKey, labelValue).list().getItems();
+        return formatPodList(items);
+    }
+
     public static void main(String[] args) {
         new PodsServiceImpl().findPodByNameAndNamespace("kubernetes-dashboard-7b544877d5-9knhd","kubernetes-dashboard");
     }
@@ -134,10 +142,15 @@ public class PodsServiceImpl implements PodsService {
     @Override
     public PodDetails findPodByNameAndNamespace(String name, String namespace) {
         Pod item = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();
-        System.out.println(item);
         List<PodUsage> usages = podUsageDao.findRecentTwenty(name, namespace, TimeUtils.getTwentyMinuteAgo());
         PodDetails podDetails = new PodDetails(item, usages);
         return podDetails;
+    }
+
+    @Override
+    public String findPodYamlByNameAndNamespace(String name, String namespace) {
+        Pod pod = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(pod);
     }
 
     /**
