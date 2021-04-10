@@ -41,12 +41,12 @@ public class PodsController {
     public String findAllPods(String namespace) {
 
         List<PodDefinition> pods;
+
         if ("all".equals(namespace)){
             pods = podsService.findAllPods();
         } else {
             pods = podsService.findPodsByNamespace(namespace);
         }
-
 
         Map<String, Object> result = new HashMap<>();
 
