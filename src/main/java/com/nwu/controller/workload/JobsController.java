@@ -62,6 +62,20 @@ public class JobsController {
 
     }
 
+    @RequestMapping("/getJobByNameAndNamespace")
+    public String getJobByNameAndNamespace(String name, String namespace){
+
+        Job aJob = jobsService.getJobByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过name和namespace获取 Job 成功");
+        result.put("data", aJob);
+
+        return JSON.toJSONString(result);
+    }
+
     @RequestMapping("/deleteJobByNameAndNamespace")
     public String deleteJobByNameAndNamespace(String name, String namespace){
         Boolean delete = jobsService.deleteJobByNameAndNamespace(name, namespace);
