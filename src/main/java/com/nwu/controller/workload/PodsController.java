@@ -129,7 +129,7 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/deletePodByNameAndNamespace")
+    @RequestMapping("/delPodByNameAndNamespace")
     public String deletePodByNameAndNamespace(String name, String namespace){
         Boolean delete = podsService.deletePodByNameAndNamespace(name, namespace);
 
