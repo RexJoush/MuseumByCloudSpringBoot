@@ -5,6 +5,7 @@ package com.nwu.service.explorebalancing;
  * @time 2021.03.22
  */
 
+import com.nwu.entity.settingstorage.ServiceDefinition;
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
@@ -71,12 +72,12 @@ public interface ServicesService {
 
 
     /**
-     * 通过名字和命名空间获取service
+     * 通过名字和命名空间获取 service 详情，包括 service 基本数据，pod 列表，endpoint 列表，event 列表
      * @param name 名字
      * @param namespace 命名空间
      * @return
      */
-    Service getServiceByNameAndNamespace(String name, String namespace);
+    ServiceDefinition getServiceByNameAndNamespace(String name, String namespace);
 
 
     /**

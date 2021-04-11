@@ -1,13 +1,20 @@
 package com.nwu.service.explorebalancing.impl;
 
+import com.nwu.entity.settingstorage.ServiceDefinition;
+import com.nwu.entity.workload.PodDefinition;
 import com.nwu.service.explorebalancing.ServicesService;
 import com.nwu.util.KubernetesUtils;
+import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.Endpoints;
+import io.fabric8.kubernetes.api.model.Event;
+import io.fabric8.kubernetes.api.model.Pod;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.nwu.util.GetYamlInputStream.byPath;
 
@@ -106,10 +113,30 @@ public class ServicesServiceImpl implements ServicesService {
 
 
     @Override
-    public io.fabric8.kubernetes.api.model.Service getServiceByNameAndNamespace(String name, String namespace){
+    public ServiceDefinition getServiceByNameAndNamespace(String name, String namespace){
 
+        // 获取 service
+        io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().inNamespace(namespace).withName(name).get();
+        // 根据 service 的 selector 获取 pod
+        Map<String, String> selector = service.getSpec().getSelector();
+        // 格式化 pod 列表
+        List<PodDefinition> podDefinitions = PodFormat.formatPodList(KubernetesUtils.client.pods().withLabels(selector).list().getItems());
 
-        return KubernetesUtils.client.services().inNamespace(namespace).withName(name).get();
+        // 获取 endpoint
+        Endpoints endpoints = KubernetesUtils.client.endpoints().inNamespace(namespace).withName(name).get();
+
+        // 获取 event
+        Event event = KubernetesUtils.client.v1().events().inNamespace(namespace).withName(name).get();
+
+        // 封装对象
+        ServiceDefinition serviceDefinition = new ServiceDefinition();
+
+        serviceDefinition.setService(service);
+        serviceDefinition.setPods(podDefinitions);
+        serviceDefinition.setEndpoints(endpoints);
+        serviceDefinition.setEvent(event);
+
+        return serviceDefinition;
     }
 
 

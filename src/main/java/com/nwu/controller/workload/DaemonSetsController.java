@@ -62,6 +62,21 @@ public class DaemonSetsController {
 
     }
 
+    @RequestMapping("/getDaemonSetByNameAndNamespace")
+    public String getDaemonSetByNameAndNamespace(String name, String namespace) throws ApiException {
+
+        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 DaemonSet 列表成功");
+        result.put("data", aDaemonSet);
+
+        return JSON.toJSONString(result);
+
+    }
+
     @RequestMapping("/deleteDaemonSetByNameAndNamespace")
     public String deleteDaemonSetByNameAndNamespace(String name, String namespace) throws ApiException {
 
