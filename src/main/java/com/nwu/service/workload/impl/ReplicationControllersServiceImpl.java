@@ -4,6 +4,8 @@ import com.nwu.service.workload.ReplicationControllersService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -42,8 +44,8 @@ public class ReplicationControllersServiceImpl implements ReplicationControllers
 
     @Override
     public ReplicationController getReplicationControllerByNameAndNamespace(String name, String namespace){
-        ReplicationController items = KubernetesUtils.client.replicationControllers().inNamespace(namespace).withName(name).get();
-        return items;
+        ReplicationController item = KubernetesUtils.client.replicationControllers().inNamespace(namespace).withName(name).get();
+        return item;
     }
 
     @Override
@@ -103,5 +105,11 @@ public class ReplicationControllersServiceImpl implements ReplicationControllers
         }catch (Exception e){
             System.out.println("设置ReplicationController的replicas失败");
         }
+    }
+
+    @Override
+    public String getReplicationControllerYamlByNameAndNamespace(String name ,String namespace){
+        ReplicationController item = KubernetesUtils.client.replicationControllers().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(item);
     }
 }

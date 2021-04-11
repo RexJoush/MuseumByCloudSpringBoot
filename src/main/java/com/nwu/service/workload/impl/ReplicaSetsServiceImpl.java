@@ -4,6 +4,8 @@ import com.nwu.service.workload.ReplicaSetsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -106,5 +108,9 @@ public class ReplicaSetsServiceImpl implements ReplicaSetsService {
         }
     }
 
-
+    @Override
+    public String getReplicaSetYamlByNameAndNamespace(String name ,String namespace){
+        ReplicaSet item = KubernetesUtils.client.apps().replicaSets().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(item);
+    }
 }

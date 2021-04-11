@@ -6,7 +6,6 @@ spring:
     username: root
     password: liyihang123
 
-
 # mybatis 信息
 mybatis:
   # 加载 Mybatis 映射文件

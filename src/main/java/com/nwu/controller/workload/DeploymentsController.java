@@ -32,9 +32,15 @@ public class DeploymentsController {
     private DeploymentsServiceImpl deploymentsService;
 
     @RequestMapping("/getAllDeployments")
-    public String findAllDeployments() throws ApiException {
+    public String findAllDeployments(String namespace) throws ApiException {
 
-        List<Deployment> deployments = deploymentsService.findAllDeployments();
+        List<Deployment> deployments;
+
+        if("".equals(namespace)){
+            deployments = deploymentsService.findAllDeployments();
+        }else{
+            deployments = deploymentsService.findDeploymentsByNamespace(namespace);
+        }
 
         Map<String, Object> result = new HashMap<>();
 
@@ -155,4 +161,16 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getDeploymentYamlByNameAndNamespace")
+    public String getDeploymentYamlByNameAndNamespace(String name, String namespace){
+
+        String deploymentYaml = deploymentsService.getDeploymentYamlByNameAndNamespace(name, namespace);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Deployment Yaml 成功");
+        result.put("data", deploymentYaml);
+
+        return JSON.toJSONString(result);
+    }
 }

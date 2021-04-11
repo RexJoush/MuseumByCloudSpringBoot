@@ -85,4 +85,11 @@ public interface DeploymentsService {
      */
     void setReplicas(String name, String namespace, Integer replicas);
 
+    /**
+     * 通过名字和命名空间获取 Yaml 格式的 Deployment
+     * @param name Deployment 的名字
+     * @param namespace Deployment 的命名空间
+     * @return Yaml 格式的 Deployment
+     */
+    String getDeploymentYamlByNameAndNamespace(String name, String namespace);
 }

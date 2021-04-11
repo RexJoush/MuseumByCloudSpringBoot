@@ -68,4 +68,12 @@ public interface CronJobsService {
      * @return 查找到的CronJob
      */
     CronJob getCronJobByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间获取 Yaml 格式的 CronJob
+     * @param name CronJob 的名字
+     * @param namespace CronJob 的命名空间
+     * @return Yaml 格式的 CronJob
+     */
+    String getCronJobYamlByNameAndNamespace(String name, String namespace);
 }

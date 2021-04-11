@@ -31,11 +31,15 @@ public class DaemonSetsController {
     private DaemonSetsServiceImpl daemonSetsService;
 
     @RequestMapping("/getAllDaemonSets")
-    public String findAllDaemonSets() throws ApiException {
-        System.out.println("DStest\n\n");
+    public String findAllDaemonSets(String namespace) throws ApiException {
 
+        List<DaemonSet> daemonSets;
 
-        List<DaemonSet> daemonSets = daemonSetsService.findAllDaemonSets();
+        if("".equals(namespace)){
+            daemonSets = daemonSetsService.findAllDaemonSets();
+        }else{
+            daemonSets = daemonSetsService.findDaemonSetsByNamespace(namespace);
+        }
 
         Map<String, Object> result = new HashMap<>();
 
@@ -134,4 +138,16 @@ public class DaemonSetsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getDaemonSetYamlByNameAndNamespace")
+    public String getDaemonSetYamlByNameAndNamespace(String name, String namespace){
+
+        String daemonSetYaml = daemonSetsService.getDaemonSetYamlByNameAndNamespace(name, namespace);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 DaemonSet Yaml 成功");
+        result.put("data", daemonSetYaml);
+
+        return JSON.toJSONString(result);
+    }
 }

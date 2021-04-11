@@ -30,9 +30,13 @@ public class CommonController {
 
         Map<String, Object> result = new HashMap<>();
         int code = 0;
-
-        String s = yaml.substring(8, yaml.length() - 2).replaceAll("\\\\n","%");
+        // 将 \" 转换为 " 将 \\ 转换为 \
+        // 即，去掉前后端传值时自动添加的转义字符
+        String s = yaml.substring(8, yaml.length() - 2).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
         File file = new File(KubernetesUtils.path);
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdir();
+        }
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(file);
@@ -49,6 +53,7 @@ public class CommonController {
             code = commonService.changeResourceByYaml(file);
 
         } catch (IOException e) {
+            e.printStackTrace();
             code = 1203;
         }
 

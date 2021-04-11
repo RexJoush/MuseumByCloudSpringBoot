@@ -4,6 +4,8 @@ import com.nwu.service.workload.StatefulSetsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -41,8 +43,8 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
 
     @Override
     public StatefulSet getStatefulSetByNameAndNamespace(String name, String namespace){
-        StatefulSet items = KubernetesUtils.client.apps().statefulSets().inNamespace(namespace).withName(name).get();
-        return items;
+        StatefulSet item = KubernetesUtils.client.apps().statefulSets().inNamespace(namespace).withName(name).get();
+        return item;
     }
 
     @Override
@@ -94,4 +96,9 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
         return statefulSet;
     }
 
+    @Override
+    public String getStatefulSetYamlByNameAndNamespace(String name ,String namespace){
+        StatefulSet item = KubernetesUtils.client.apps().statefulSets().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(item);
+    }
 }

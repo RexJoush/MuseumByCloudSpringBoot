@@ -69,4 +69,12 @@ public interface JobsService {
      * @return 查找到的Job
      */
     Job getJobByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间获取 Yaml 格式的 Job
+     * @param name Job 的名字
+     * @param namespace Job 的命名空间
+     * @return Yaml 格式的 Job
+     */
+    String getJobYamlByNameAndNamespace(String name, String namespace);
 }

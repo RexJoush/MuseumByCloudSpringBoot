@@ -3,6 +3,7 @@ package com.nwu.service.workload.impl;
 import com.nwu.service.workload.CronJobsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -92,5 +93,11 @@ public class CronJobsServiceImpl implements CronJobsService {
     public CronJob getCronJobByNameAndNamespace(String name, String namespace) {
         CronJob cronJob = KubernetesUtils.client.batch().cronjobs().inNamespace(namespace).withName(name).get();
         return cronJob;
+    }
+
+    @Override
+    public String getCronJobYamlByNameAndNamespace(String name ,String namespace){
+        CronJob cronJob = KubernetesUtils.client.batch().cronjobs().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(cronJob);
     }
 }

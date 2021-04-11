@@ -28,6 +28,7 @@ public class CommonServiceImpl implements CommonService {
         try {
             InputStream inputStream = new FileInputStream(yaml);
             List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream).createOrReplace();
+            inputStream.close();
             yaml.delete();
             if (orReplace != null) {
                 return 1200;
