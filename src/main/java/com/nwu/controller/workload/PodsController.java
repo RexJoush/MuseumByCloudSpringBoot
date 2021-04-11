@@ -42,7 +42,7 @@ public class PodsController {
 
         List<PodDefinition> pods;
 
-        if ("all".equals(namespace)){
+        if ("".equals(namespace)){
             pods = podsService.findAllPods();
         } else {
             pods = podsService.findPodsByNamespace(namespace);
