@@ -9,6 +9,7 @@ import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import org.springframework.stereotype.Service;
+import io.kubernetes.client.util.Yaml;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -30,12 +31,20 @@ import static com.nwu.util.GetYamlInputStream.byPath;
 public class ServicesServiceImpl implements ServicesService {
 
 //    public static void main(String[] args) {
-//        String name = "kubernetes";
+//        String name = "hello-1618034820-kw9vn";
 //        String namespace = "default";
-//        Endpoints endpoints = KubernetesUtils.client.endpoints().inNamespace(namespace).withName(name).get();
-//        System.out.println(endpoints);
+//        Event event = KubernetesUtils.client.v1().events().inNamespace(namespace).withName(name).get();
+//        System.out.println(event);
+//
 //    }
 
+    @Override
+    public String findServiceYamlByNameAndNamespace(String name, String namespace) {
+
+        io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().inNamespace(namespace).withName(name).get();
+
+        return Yaml.dump(service);
+    }
 
     @Override
     public List<io.fabric8.kubernetes.api.model.Service> findAllServices(){
@@ -104,9 +113,9 @@ public class ServicesServiceImpl implements ServicesService {
     }
 
     @Override
-    public Boolean deleteServicesByNameAndNamespace(String serviceName,String namespace){
+    public Boolean deleteServiceByNameAndNamespace(String name,String namespace){
 
-        Boolean deleteSvc = KubernetesUtils.client.services().inNamespace(namespace).withName(serviceName).delete();
+        Boolean deleteSvc = KubernetesUtils.client.services().inNamespace(namespace).withName(name).delete();
 
         return deleteSvc;
     }

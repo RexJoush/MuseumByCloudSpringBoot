@@ -19,6 +19,14 @@ import java.util.List;
  */
 public interface ServicesService {
 
+    /**
+     * 通过名字和命名空间查找 service 对应的yaml文件
+     * @param name 名字
+     * @param namespace 命名空间
+     * @return
+     */
+    String findServiceYamlByNameAndNamespace(String name, String namespace);
+
 
     /**
      * 获取Service 列表
@@ -54,12 +62,12 @@ public interface ServicesService {
 
     /**
      * 删除一个 Service
-     * @param serviceName
+     * @param name
      * @param namespace
      * @return
      * @throws ApiException
      */
-    Boolean deleteServicesByNameAndNamespace(String serviceName,String namespace);
+    Boolean deleteServiceByNameAndNamespace(String name,String namespace);
 
 
     /**
