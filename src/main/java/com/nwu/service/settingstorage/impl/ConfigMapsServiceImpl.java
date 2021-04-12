@@ -4,6 +4,7 @@ import com.nwu.service.settingstorage.ConfigMapsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -30,7 +31,7 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
 
 
     @Override
-    public List<ConfigMap> findAllConfigMaps() throws ApiException {
+    public List<ConfigMap> findAllConfigMaps() {
 
         List<ConfigMap> items = KubernetesUtils.client.configMaps().inAnyNamespace().list().getItems();
 
@@ -49,7 +50,7 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     @Override
     public Boolean deleteConfigMapByNameAndNamespace(String name, String namespace) {
 
-        Boolean delete = KubernetesUtils.client.secrets().inNamespace(namespace).withName(name).delete();
+        Boolean delete = KubernetesUtils.client.configMaps().inNamespace(namespace).withName(name).delete();
 
         return delete;
     }
@@ -101,11 +102,10 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
         return KubernetesUtils.client.configMaps().inNamespace(namespace).withName(name).get();
     }
 
-    //@Override
-//    public ConfigMap updateConfigMap(String name, String namespace) {
-//
-//        ConfigMap configMap = KubernetesUtils.client.configMaps().inNamespace(namespace).withName(name).edit()
-//        //ConfigMap configMap1 = client.configMaps().inNamespace(currentNamespace).withName("configmap1").edit()
-//          //      .addToData("4", "four").done();
-//    }
+    @Override
+    public String getConfigMapYamlByNameAndNamespace(String name, String namespace) {
+        ConfigMap configMap = KubernetesUtils.client.configMaps().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(configMap);
+    }
+
 }
