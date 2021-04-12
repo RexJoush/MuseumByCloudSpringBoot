@@ -67,4 +67,12 @@ public interface DaemonSetsService {
      * @return 查找到的DaemonSet
      */
     DaemonSet getDaemonSetByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间获取 Yaml 格式的 DaemonSet
+     * @param name DaemonSet 的名字
+     * @param namespace DaemonSet 的命名空间
+     * @return Yaml 格式的 DaemonSet
+     */
+    String getDaemonSetYamlByNameAndNamespace(String name, String namespace);
 }

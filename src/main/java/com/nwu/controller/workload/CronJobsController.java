@@ -31,15 +31,21 @@ public class CronJobsController {
     private CronJobsServiceImpl cronJobsService;
 
     @RequestMapping("/getAllCronJobs")
-    public String findAllCronJobs() throws ApiException {
+    public String findAllCronJobs(String namespace) throws ApiException {
 
-        List<CronJob> v1CronJobList = cronJobsService.findAllCronJobs();
+        List<CronJob> cronJobList;
+
+        if("".equals(namespace)){
+            cronJobList = cronJobsService.findAllCronJobs();
+        }else{
+            cronJobList = cronJobsService.findCronJobsByNamespace(namespace);
+        }
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
         result.put("message", "获取 CronJob 列表成功");
-        result.put("data", v1CronJobList);
+        result.put("data", cronJobList);
 
         return JSON.toJSONString(result);
 
@@ -123,6 +129,19 @@ public class CronJobsController {
         result.put("code", 1200);
         result.put("message", "通过名称和命名空间查找 CronJob 成功");
         result.put("data", aCronJob);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getCronJobYamlByNameAndNamespace")
+    public String getCronJobYamlByNameAndNamespace(String name, String namespace){
+
+        String cronJobYaml = cronJobsService.getCronJobYamlByNameAndNamespace(name, namespace);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 CronJob Yaml 成功");
+        result.put("data", cronJobYaml);
 
         return JSON.toJSONString(result);
     }

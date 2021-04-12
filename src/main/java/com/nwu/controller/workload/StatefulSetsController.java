@@ -33,9 +33,15 @@ public class StatefulSetsController {
     private StatefulSetsServiceImpl statefulSetsService;
 
     @RequestMapping("/getAllStatefulSets")
-    public String findAllStatefulSets() throws ApiException {
+    public String findAllStatefulSets(String namespace) throws ApiException {
 
-        List<StatefulSet> statefulSetList = statefulSetsService.findAllStatefulSets();
+        List<StatefulSet> statefulSetList;
+
+        if("".equals(namespace)){
+            statefulSetList = statefulSetsService.findAllStatefulSets();
+        }else {
+            statefulSetList = statefulSetsService.findStatefulSetsByNamespace(namespace);
+        }
 
         Map<String, Object> result = new HashMap<>();
 
@@ -116,4 +122,16 @@ public class StatefulSetsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getStatefulSetYamlByNameAndNamespace")
+    public String getStatefulSetYamlByNameAndNamespace(String name, String namespace){
+
+        String statefulSetYaml = statefulSetsService.getStatefulSetYamlByNameAndNamespace(name, namespace);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 StatefulSet Yaml 成功");
+        result.put("data", statefulSetYaml);
+
+        return JSON.toJSONString(result);
+    }
 }

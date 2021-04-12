@@ -30,7 +30,7 @@ public class NamespacesServiceImpl implements NamespacesService {
     public List<NamespaceName> getAllNamespaceName() {
         List<Namespace> items = KubernetesUtils.client.namespaces().list().getItems();
         List<NamespaceName> namespaceNameList = new ArrayList<>();
-        namespaceNameList.add(new NamespaceName("所有命名空间", "all"));
+        namespaceNameList.add(new NamespaceName("所有命名空间", ""));
         for (Namespace item : items) {
             namespaceNameList.add(new NamespaceName(item.getMetadata().getName(), item.getMetadata().getName()));
         }

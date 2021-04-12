@@ -33,9 +33,15 @@ public class JobsController {
     private JobsServiceImpl jobsService;
 
     @RequestMapping("/getAllJobs")
-    public String findAllJobs() throws ApiException {
+    public String findAllJobs(String namespace) throws ApiException {
 
-        List<Job> jobs = jobsService.findAllJobs();
+        List<Job> jobs;
+
+        if("".equals(namespace)){
+            jobs = jobsService.findAllJobs();
+        }else{
+            jobs = jobsService.findJobsByNamespace(namespace);
+        }
 
         Map<String, Object> result = new HashMap<>();
 
@@ -130,4 +136,16 @@ public class JobsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getJobYamlByNameAndNamespace")
+    public String getJobYamlByNameAndNamespace(String name, String namespace){
+
+        String jobYaml = jobsService.getJobYamlByNameAndNamespace(name, namespace);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Job Yaml 成功");
+        result.put("data", jobYaml);
+
+        return JSON.toJSONString(result);
+    }
 }

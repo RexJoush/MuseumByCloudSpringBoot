@@ -78,4 +78,12 @@ public interface ReplicaSetsService {
      * @return 查找到的ReplicaSet
      */
     ReplicaSet getReplicaSetByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间获取 Yaml 格式的 ReplicaSet
+     * @param name ReplicaSet 的名字
+     * @param namespace ReplicaSet 的命名空间
+     * @return Yaml 格式的 ReplicaSet
+     */
+    String getReplicaSetYamlByNameAndNamespace(String name, String namespace);
 }

@@ -76,4 +76,12 @@ public interface ReplicationControllersService {
      * @return 查找到的ReplicationController
      */
     ReplicationController getReplicationControllerByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间获取 Yaml 格式的 ReplicationController
+     * @param name ReplicationController 的名字
+     * @param namespace ReplicationController 的命名空间
+     * @return Yaml 格式的 ReplicationController
+     */
+    String getReplicationControllerYamlByNameAndNamespace(String name, String namespace);
 }

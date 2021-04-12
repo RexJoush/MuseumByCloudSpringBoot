@@ -2,7 +2,9 @@ package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.JobsService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -40,8 +42,8 @@ public class JobsServiceImpl implements JobsService {
 
     @Override
     public Job getJobByNameAndNamespace(String name, String namespace){
-        Job items = KubernetesUtils.client.batch().jobs().inNamespace(namespace).withName(name).get();
-        return items;
+        Job item = KubernetesUtils.client.batch().jobs().inNamespace(namespace).withName(name).get();
+        return item;
     }
 
     @Override
@@ -91,5 +93,11 @@ public class JobsServiceImpl implements JobsService {
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在JobsServiceImpl类的createOrReplaceJob方法");
         }
         return job;
+    }
+
+    @Override
+    public String getJobYamlByNameAndNamespace(String name ,String namespace){
+        Job item = KubernetesUtils.client.batch().jobs().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(item);
     }
 }

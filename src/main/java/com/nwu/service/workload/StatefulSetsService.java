@@ -68,4 +68,12 @@ public interface StatefulSetsService {
      * @return 查找到的StatefulSet
      */
     StatefulSet getStatefulSetByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间获取 Yaml 格式的 StatefulSet
+     * @param name StatefulSet 的名字
+     * @param namespace StatefulSet 的命名空间
+     * @return Yaml 格式的 StatefulSet
+     */
+    String getStatefulSetYamlByNameAndNamespace(String name, String namespace);
 }

@@ -32,9 +32,15 @@ public class ReplicationControllersController {
     private ReplicationControllersServiceImpl replicationControllersService;
 
     @RequestMapping("/getAllReplicationControllers")
-    public String findAllReplicationControllers() throws ApiException {
+    public String findAllReplicationControllers(String namespace) throws ApiException {
 
-        List<ReplicationController> replicationControllerList = replicationControllersService.findAllReplicationControllers();
+        List<ReplicationController> replicationControllerList;
+
+        if("".equals(namespace)){
+            replicationControllerList = replicationControllersService.findAllReplicationControllers();
+        }else {
+            replicationControllerList = replicationControllersService.findReplicationControllersByNamespace(namespace);
+        }
 
         Map<String, Object> result = new HashMap<>();
 
@@ -129,4 +135,16 @@ public class ReplicationControllersController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getReplicationControllerYamlByNameAndNamespace")
+    public String getReplicationControllerYamlByNameAndNamespace(String name, String namespace){
+
+        String replicationControllerYaml = replicationControllersService.getReplicationControllerYamlByNameAndNamespace(name, namespace);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 ReplicationController Yaml 成功");
+        result.put("data", replicationControllerYaml);
+
+        return JSON.toJSONString(result);
+    }
 }

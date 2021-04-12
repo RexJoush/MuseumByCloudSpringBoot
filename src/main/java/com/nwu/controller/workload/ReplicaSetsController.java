@@ -31,9 +31,15 @@ public class ReplicaSetsController {
     private ReplicaSetsServiceImpl replicaSetsService;
 
     @RequestMapping("/getAllReplicaSets")
-    public String findAllReplicaSets() throws ApiException {
+    public String findAllReplicaSets(String namespace) throws ApiException {
 
-        List<ReplicaSet> replicaSetList = replicaSetsService.findAllReplicaSets();
+        List<ReplicaSet> replicaSetList;
+
+        if("".equals(namespace)){
+            replicaSetList = replicaSetsService.findAllReplicaSets();
+        }else {
+            replicaSetList = replicaSetsService.findReplicaSetsByNamespace(namespace);
+        }
 
         Map<String, Object> result = new HashMap<>();
 
@@ -128,4 +134,16 @@ public class ReplicaSetsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getReplicaSetYamlByNameAndNamespace")
+    public String getReplicaSetYamlByNameAndNamespace(String name, String namespace){
+
+        String replicaSetYaml = replicaSetsService.getReplicaSetYamlByNameAndNamespace(name, namespace);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 ReplicaSet Yaml 成功");
+        result.put("data", replicaSetYaml);
+
+        return JSON.toJSONString(result);
+    }
 }
