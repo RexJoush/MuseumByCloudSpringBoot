@@ -19,9 +19,6 @@ import java.util.List;
 @Service
 public class EdgeServiceImpl implements EdgeService {
 
-    public static void main(String[] args) {
-        new EdgeServiceImpl().findAllEdgeNodes();
-    }
 
     /*
         所有的 node，master 节点的包含标签 ，node-type.，值为 normal-node

@@ -8,13 +8,9 @@ package com.nwu.service.impl;
 import com.nwu.service.CommonService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -36,7 +32,9 @@ public class CommonServiceImpl implements CommonService {
                 return 1201;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return 1202;
         }
     }
+
 }
