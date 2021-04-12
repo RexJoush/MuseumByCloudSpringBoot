@@ -32,10 +32,15 @@ public class ServicesController {
 
 
     @RequestMapping("/getAllServices")
-    public String findAllServices() throws ApiException {
+    public String findAllServices(String namespace) throws ApiException {
 
         List<Service> services = serviceService.findAllServices();
-
+        // 区分查询的命名空间
+        if ("".equals(namespace)){
+            services = serviceService.findAllServices();
+        } else {
+            services = serviceService.findServicesByNamespace(namespace);
+        }
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
@@ -56,6 +61,21 @@ public class ServicesController {
         result.put("code", 1200);
         result.put("message", "获取 Service 列表成功");
         result.put("data", v1ServiceList);
+
+        return JSON.toJSONString(result);
+    }
+
+
+    @RequestMapping("/getServiceYamlByNameAndNamespace")
+    public String getServiceYamlByNameAndNamespace(String name, String namespace) {
+
+        String serviceYaml = serviceService.findServiceYamlByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Pod Yaml 成功");
+        result.put("data", serviceYaml);
 
         return JSON.toJSONString(result);
     }
@@ -108,10 +128,10 @@ public class ServicesController {
 
 
 
-    @RequestMapping("/deleteServiceByNameAndNamespace")
+    @RequestMapping("/delServiceByNameAndNamespace")
     public String deleteServiceByNameAndNamespace(String name, String namespace){
 
-        Boolean deleteSvc = serviceService.deleteServicesByNameAndNamespace(name,namespace);
+        Boolean deleteSvc = serviceService.deleteServiceByNameAndNamespace(name,namespace);
 
         Map<String, Object> result = new HashMap<>();
 
