@@ -21,6 +21,7 @@ public class PodFormat {
 
     /**
      * 封装获取的 pod 列表，包含利用率信息和 pod 信息
+     *
      * @return 封装好的列表
      */
     public static List<PodDefinition> formatPodList(List<Pod> items) {
@@ -32,7 +33,7 @@ public class PodFormat {
 
         Map<String, Usage> usage = new HashMap<>();
 
-        for (PodMetrics top : tops){
+        for (PodMetrics top : tops) {
             if (top.getContainers().size() > 0) {
                 usage.put(top.getMetadata().getName() + top.getMetadata().getNamespace(),
                         new Usage(top.getContainers().get(0).getUsage()
@@ -61,7 +62,7 @@ public class PodFormat {
             }
 
             // 设置内存和 cpu 利用率
-            String key = item.getMetadata().getName()+item.getMetadata().getNamespace();
+            String key = item.getMetadata().getName() + item.getMetadata().getNamespace();
             if (usage.containsKey(key)) {
                 pod.setCpuUsage(usage.get(key).getCpu());
                 pod.setMemoryUsage(usage.get(key).getMemory());

@@ -1,5 +1,6 @@
 package com.nwu.service.cluster;
 
+import com.nwu.entity.cluster.NodeDefinition;
 import com.nwu.entity.cluster.NodeUsage;
 import io.fabric8.kubernetes.api.model.Node;
 
@@ -17,7 +18,7 @@ public interface NodesService {
      * 获取所有 node 集合
      * @return node 集合
      */
-    List<Map<String, Object>> findAllNodes();
+    List<NodeDefinition> findAllNodes();
 
     /**
      * 通过 node 节点名称获取信息

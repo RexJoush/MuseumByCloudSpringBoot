@@ -22,4 +22,11 @@ public class ClusterRolesServiceImpl implements ClusterRolesService {
 
         return items;
     }
+
+    @Override
+    public ClusterRole getClusterRoleDetails(String clusterRoleName) {
+        return KubernetesUtils.client.rbac().clusterRoles().withName(clusterRoleName).get();
+    }
+
+
 }

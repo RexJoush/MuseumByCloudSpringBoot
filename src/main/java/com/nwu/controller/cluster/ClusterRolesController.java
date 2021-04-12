@@ -37,4 +37,18 @@ public class ClusterRolesController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/getClusterRoleDetails")
+    public String getClusterRoleDetails(String clusterRole){
+
+        ClusterRole clusterRoleDetails = clusterRolesService.getClusterRoleDetails(clusterRole);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Cluster Role 详情成功");
+        result.put("data", clusterRoleDetails);
+
+        return JSON.toJSONString(result);
+    }
 }

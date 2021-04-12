@@ -1,6 +1,7 @@
 package com.nwu.controller.cluster;
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.cluster.NodeDefinition;
 import com.nwu.entity.cluster.NodeUsage;
 import com.nwu.service.cluster.impl.NodesServiceImpl;
 import io.fabric8.kubernetes.api.model.Node;
@@ -29,7 +30,7 @@ public class NodesController {
     @RequestMapping("/getAllNodes")
     public String getAllNodes() throws ApiException {
 
-        List<Map<String, Object>> nodeList = nodesService.findAllNodes();
+        List<NodeDefinition> nodeList = nodesService.findAllNodes();
 
         Map<String, Object> result = new HashMap<>();
 

@@ -2,6 +2,7 @@ package com.nwu.controller.cluster;
 
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.cluster.NamespaceDetails;
 import com.nwu.entity.cluster.NamespaceName;
 import com.nwu.service.cluster.impl.NamespacesServiceImpl;
 import io.fabric8.kubernetes.api.model.Namespace;
@@ -49,6 +50,20 @@ public class NamespacesController {
         result.put("code", 1200);
         result.put("message", "获取 Namespace Name 列表成功");
         result.put("data", namespacesNameList);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getNamespaceDetails")
+    public String getNamespaceDetails(String namespace){
+
+        NamespaceDetails namespaceDetails = namespacesService.getNamespaceDetails(namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Namespace 详情成功");
+        result.put("data", namespaceDetails);
 
         return JSON.toJSONString(result);
     }
