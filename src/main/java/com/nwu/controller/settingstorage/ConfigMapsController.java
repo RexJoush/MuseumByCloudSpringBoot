@@ -32,9 +32,15 @@ public class ConfigMapsController {
     private ConfigMapsServiceImpl configMapsService;
 
     @RequestMapping("/getAllConfigMaps")
-    public String findAllConfigMaps() throws ApiException{
+    public String findAllConfigMaps(String namespace) {
 
-        List<ConfigMap> configMaps = configMapsService.findAllConfigMaps();
+        List<ConfigMap> configMaps;
+
+        if ("".equals(namespace)){
+            configMaps = configMapsService.findAllConfigMaps();
+        }else {
+            configMaps = configMapsService.findConfigMapsByNamespace(namespace);
+        }
 
         Map<String,Object> result = new HashMap<>();
 
@@ -59,7 +65,7 @@ public class ConfigMapsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/deleteConfigMap")
+    @RequestMapping("/delConfigMapByNameAndNamespace")
     public String deleteConfigMapByNameAndNamespace(String name, String namespace) throws ApiException{
 
         Boolean isDeleteConfigMap = configMapsService.deleteConfigMapByNameAndNamespace(name, namespace);
@@ -125,6 +131,20 @@ public class ConfigMapsController {
         result.put("code", 1200);
         result.put("message", "通过 name namespace 获取 ConfigMap 成功");
         result.put("data", configMap);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getConfigMapYamlByNameAndNamespace")
+    public String getConfigMapYamlByNameAndNamespace(String name, String namespace) {
+
+        String configMapYaml = configMapsService.getConfigMapYamlByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 configMap Yaml 成功");
+        result.put("data", configMapYaml);
 
         return JSON.toJSONString(result);
     }
