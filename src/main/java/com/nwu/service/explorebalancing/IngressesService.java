@@ -17,6 +17,8 @@ import java.util.List;
  */
 public interface IngressesService {
 
+
+
     /**
      * 获取 Ingresses 列表
      * @return Ingresses 列表
