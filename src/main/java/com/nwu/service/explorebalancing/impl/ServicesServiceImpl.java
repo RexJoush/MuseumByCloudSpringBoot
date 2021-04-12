@@ -5,12 +5,12 @@ import com.nwu.entity.workload.PodDefinition;
 import com.nwu.service.explorebalancing.ServicesService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.PodFormat;
-import io.fabric8.kubernetes.api.model.Endpoints;
-import io.fabric8.kubernetes.api.model.Event;
-import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.*;
 import org.springframework.stereotype.Service;
 import io.kubernetes.client.util.Yaml;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -31,10 +31,27 @@ import static com.nwu.util.GetYamlInputStream.byPath;
 public class ServicesServiceImpl implements ServicesService {
 
 //    public static void main(String[] args) {
-//        String name = "hello-1618034820-kw9vn";
-//        String namespace = "default";
-//        Event event = KubernetesUtils.client.v1().events().inNamespace(namespace).withName(name).get();
-//        System.out.println(event);
+//
+//        File yaml = new File("D:\\Files\\a.yaml");
+//
+//        try {
+//            InputStream inputStream = new FileInputStream(yaml);
+//            io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().load(yaml).get();
+//
+//            String namespace = service.getMetadata().getNamespace();
+//            String name = service.getMetadata().getName();
+//
+//            Boolean delete = KubernetesUtils.client.services().inNamespace(namespace).withName(name).delete();
+//            System.out.println(delete);
+//
+//
+//            List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream).createOrReplace();
+//            inputStream.close();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
 //
 //    }
 
