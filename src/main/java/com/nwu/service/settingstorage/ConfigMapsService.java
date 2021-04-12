@@ -69,4 +69,12 @@ public interface ConfigMapsService {
      * @return ConfigMap信息
      */
     ConfigMap getConfigMapByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间查找 ConfigMap 的 yaml 文件
+     * @param name ConfigMap 名字
+     * @param namespace ConfigMap 命名空间
+     * @return 查找到的 ConfigMap 的 yaml 格式文件
+     */
+    String getConfigMapYamlByNameAndNamespace(String name, String namespace);
 }
