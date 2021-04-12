@@ -2,11 +2,14 @@ package com.nwu.service.impl;
 
 import com.nwu.service.CustomizeService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Sysctl;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -45,7 +48,9 @@ public class CustomizeServiceImpl implements CustomizeService {
     }
 
     @Override
-    public boolean deleteCustomResourceDefinition(CustomResourceDefinition customResourceDefinition) {
+    public boolean deleteCustomResourceDefinition(String crdName) throws FileNotFoundException {
+
+        CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
         boolean deleted = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().delete(customResourceDefinition);
         return deleted;
     }
@@ -95,6 +100,12 @@ public class CustomizeServiceImpl implements CustomizeService {
     }
 
     @Override
+    public String getCrdYamlByName(String crdName) {
+        CustomResourceDefinition customResourceDefinition = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().withName(crdName).get();
+        return Yaml.dump(customResourceDefinition);
+    }
+
+    @Override
     public Map<String, Object> getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException {
         CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
         CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
@@ -117,6 +128,4 @@ public class CustomizeServiceImpl implements CustomizeService {
         CustomResourceDefinition customResourceDefinition = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().withName(name).get();
         return customResourceDefinition;
     }
-
-
 }

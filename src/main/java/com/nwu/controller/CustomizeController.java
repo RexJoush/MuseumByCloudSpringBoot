@@ -80,10 +80,10 @@ public class CustomizeController {
     }
 
     @RequestMapping("/deleteCustomResourceDefinition")
-    public String deleteCustomResourceDefinition(CustomResourceDefinition customResourceDefinition) throws ApiException, FileNotFoundException {
+    public String deleteCustomResourceDefinition(String crdName) throws ApiException, FileNotFoundException {
 
 
-        boolean deleted = customizeService.deleteCustomResourceDefinition(customResourceDefinition);
+        boolean deleted = customizeService.deleteCustomResourceDefinition(crdName);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -163,5 +163,16 @@ public class CustomizeController {
 
         return JSON.toJSONString(result);
     }
+    @RequestMapping("/getCrdYamlByName")
+    public String getCrdYamlByName(String crdName){
+        String crdYaml = customizeService.getCrdYamlByName(crdName);
 
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 CRD Yaml 成功");
+        result.put("data", crdYaml);
+
+        return JSON.toJSONString(result);
+    }
 }

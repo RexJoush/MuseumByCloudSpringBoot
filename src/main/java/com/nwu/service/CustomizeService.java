@@ -5,10 +5,7 @@ package com.nwu.service;
  * @time 2021.03.22
  */
 
-import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
-import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -39,10 +36,10 @@ public interface CustomizeService {
     /**
      * 删除CustomResourceDefinition
      *
-     * @param customResourceDefinition 要删除的自定义资源
+     * @param crdName 要删除的自定义资源名称
      * @return CustomResourceDefinition列表
      */
-    boolean deleteCustomResourceDefinition(CustomResourceDefinition customResourceDefinition);
+    boolean deleteCustomResourceDefinition(String crdName) throws FileNotFoundException;
 
     /**
      * 加载以一个CustomResourceDefinition
@@ -96,5 +93,13 @@ public interface CustomizeService {
      * @throws FileNotFoundException
      */
     public Map<String, Object> getCustomResourceDefinitionObjectListbyName(String crdName) throws FileNotFoundException;
+
+    /**
+     * 通过crdname获取crdYaml
+     *
+     * @param crdName
+     * @return crdYaml
+     */
+    String getCrdYamlByName(String crdName);
 
 }
