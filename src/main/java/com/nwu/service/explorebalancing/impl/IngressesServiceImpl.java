@@ -2,11 +2,14 @@ package com.nwu.service.explorebalancing.impl;
 
 import com.nwu.service.explorebalancing.IngressesService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.kubernetes.client.util.Yaml;
 import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -24,9 +27,35 @@ import static com.nwu.util.GetYamlInputStream.byPath;
 @Service
 public class IngressesServiceImpl implements IngressesService {
 
-//    public static void main(String[] args) {
-//        System.out.println(new IngressesServiceImpl().findAllIngresses());
-//    }
+    public static void main(String[] args) {
+
+        File yaml = new File("D:\\Files\\a.yaml");
+
+        try {
+            InputStream inputStream = new FileInputStream(yaml);
+//            io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().load(yaml).get();
+//            String namespace = service.getMetadata().getNamespace();
+//            String name = service.getMetadata().getName();
+//            Boolean delete = KubernetesUtils.client.services().inNamespace(namespace).withName(name).delete();
+//            System.out.println(delete);
+//            List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream).createOrReplace();
+//            inputStream.close();
+
+            Ingress ingress = KubernetesUtils.client.extensions().ingresses().load(yaml).get();
+            String namespace1 = ingress.getMetadata().getNamespace();
+            String name1 = ingress.getMetadata().getName();
+            Boolean delete1 = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace1).withName(name1).delete();
+            System.out.println(delete1);
+            InputStream inputStream2 = new FileInputStream(yaml);
+//            List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream2).createOrReplace();
+            Ingress orReplace1 = KubernetesUtils.client.extensions().ingresses().load(inputStream2).createOrReplace();
+            inputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
     @Override
     public List<Ingress> findAllIngresses(){
 
