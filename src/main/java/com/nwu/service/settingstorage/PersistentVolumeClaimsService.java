@@ -70,4 +70,12 @@ public interface PersistentVolumeClaimsService {
      * @return PersistentVolumeClaim信息
      */
     PersistentVolumeClaim getPVCByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间查找 PersistentVolumeClaim 的 yaml 文件
+     * @param name PersistentVolumeClaim 名字
+     * @param namespace PersistentVolumeClaim 命名空间
+     * @return 查找到的 PersistentVolumeClaim 的 yaml 格式文件
+     */
+    String getPVCYamlByNameAndNamespace(String name, String namespace);
 }

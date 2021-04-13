@@ -30,9 +30,15 @@ public class SecretsController {
     private SecretsServiceImpl secretsService;
 
     @RequestMapping("/getAllSecrets")
-    public String findAllSecrets() throws ApiException{
+    public String findAllSecrets(String namespace) throws ApiException{
 
-        List<Secret> secrets = secretsService.findAllSecrets();
+        List<Secret> secrets;
+
+        if ("".equals(namespace)){
+            secrets = secretsService.findAllSecrets();
+        }else {
+            secrets = secretsService.findSecretsByNamespace(namespace);
+        }
 
         Map<String,Object> result = new HashMap<>();
 
@@ -59,7 +65,7 @@ public class SecretsController {
 
     }
 
-    @RequestMapping("/deleteSecret")
+    @RequestMapping("/delSecretByNameAndNamespace")
     public String deleteSecretByNameAndNamespace(String name, String namespace) throws ApiException{
 
         Boolean isDeleteSecrets = secretsService.deleteSecretByNameAndNamespace(name,namespace);
@@ -125,6 +131,20 @@ public class SecretsController {
         result.put("code", 1200);
         result.put("message", "通过 name namespace 获取 Secret 成功");
         result.put("data", secret);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getSecretYamlByNameAndNamespace")
+    public String getSecretYamlByNameAndNamespace(String name, String namespace) {
+
+        String secretYaml = secretsService.getSecretYamlByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 secret Yaml 成功");
+        result.put("data", secretYaml);
 
         return JSON.toJSONString(result);
     }

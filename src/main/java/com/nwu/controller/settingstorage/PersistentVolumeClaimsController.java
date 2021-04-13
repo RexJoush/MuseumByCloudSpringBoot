@@ -31,9 +31,15 @@ public class PersistentVolumeClaimsController {
     private PersistentVolumeClaimsServiceImpl persistentVolumeClaimsService;
 
     @RequestMapping("/getAllPVC")
-    public String findAllPVC() throws ApiException{
+    public String findAllPVC(String namespace) throws ApiException{
 
-        List<PersistentVolumeClaim> persistentVolumeClaims = persistentVolumeClaimsService.findAllPVC();
+        List<PersistentVolumeClaim> persistentVolumeClaims;
+
+        if ("".equals(namespace)){
+            persistentVolumeClaims = persistentVolumeClaimsService.findAllPVC();
+        }else {
+            persistentVolumeClaims = persistentVolumeClaimsService.findPVCByNamespace(namespace);
+        }
 
         Map<String,Object> result = new HashMap<>();
 
@@ -59,7 +65,7 @@ public class PersistentVolumeClaimsController {
 
     }
 
-    @RequestMapping("/deletePVC")
+    @RequestMapping("/delPVCByNameAndNamespace")
     public String deletePVCByNameAndNamespace(String name, String namespace){
         Boolean aBoolean = persistentVolumeClaimsService.deletePVCByNameAndNamespace(name, namespace);
 
@@ -126,4 +132,19 @@ public class PersistentVolumeClaimsController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/getPVCYamlByNameAndNamespace")
+    public String getPVCYamlByNameAndNamespace(String name, String namespace) {
+
+        String pvcYaml = persistentVolumeClaimsService.getPVCYamlByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 persistentVolumeClaim Yaml 成功");
+        result.put("data", pvcYaml);
+
+        return JSON.toJSONString(result);
+    }
+
 }

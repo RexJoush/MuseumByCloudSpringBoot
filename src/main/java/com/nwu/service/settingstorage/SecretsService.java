@@ -70,4 +70,12 @@ public interface SecretsService {
      * @return Secret信息
      */
     Secret getSecretByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 通过名字和命名空间查找 Secret 的 yaml 文件
+     * @param name Secret 名字
+     * @param namespace Secret 命名空间
+     * @return 查找到的 Secret 的 yaml 格式文件
+     */
+    String getSecretYamlByNameAndNamespace(String name, String namespace);
 }

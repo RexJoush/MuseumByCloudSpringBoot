@@ -4,6 +4,7 @@ import com.nwu.service.settingstorage.SecretsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -96,6 +97,12 @@ public class SecretsServiceImpl implements SecretsService {
     @Override
     public Secret getSecretByNameAndNamespace(String name, String namespace) {
         return KubernetesUtils.client.secrets().inNamespace(namespace).withName(name).get();
+    }
+
+    @Override
+    public String getSecretYamlByNameAndNamespace(String name, String namespace) {
+        Secret secretYaml = KubernetesUtils.client.secrets().inNamespace(namespace).withName(name).get();
+        return Yaml.dump(secretYaml);
     }
 
 
