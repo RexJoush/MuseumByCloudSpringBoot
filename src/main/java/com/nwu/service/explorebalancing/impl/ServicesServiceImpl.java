@@ -41,6 +41,7 @@ public class ServicesServiceImpl implements ServicesService {
 //            String namespace = service.getMetadata().getNamespace();
 //            String name = service.getMetadata().getName();
 //
+//
 //            Boolean delete = KubernetesUtils.client.services().inNamespace(namespace).withName(name).delete();
 //            System.out.println(delete);
 //

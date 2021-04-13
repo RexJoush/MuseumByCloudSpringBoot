@@ -56,16 +56,14 @@ public class CommonServiceImpl implements CommonService {
 
             yaml.delete();
 
-            if (delete) {
+            if (orReplace != null) {
                 return 1200;
-            }else {
+            } else {
                 return 1201;
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
-            return 1020;
+            return 1202;
         }
     }
 
@@ -87,16 +85,14 @@ public class CommonServiceImpl implements CommonService {
 
             yaml.delete();
 
-            if (delete) {
+            if (orReplace != null) {
                 return 1200;
-            }else {
+            } else {
                 return 1201;
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
-            return 1020;
+            return 1202;
         }
     }
 
