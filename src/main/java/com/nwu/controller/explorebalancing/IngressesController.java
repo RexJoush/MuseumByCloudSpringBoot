@@ -6,6 +6,7 @@ package com.nwu.controller.explorebalancing;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.settingstorage.IngressDefinition;
 import com.nwu.service.explorebalancing.impl.IngressesServiceImpl;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
@@ -103,8 +104,22 @@ public class IngressesController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getIngressYamlByNameAndNamespace")
+    public String getIngressYamlByNameAndNamespace(String name, String namespace) {
 
-    @RequestMapping("/deleteIngressByNameAndNamespace")
+        String ingressYaml = ingressesService.findIngressYamlByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Ingress Yaml 成功");
+        result.put("data", ingressYaml);
+
+        return JSON.toJSONString(result);
+    }
+
+
+    @RequestMapping("/delIngressByNameAndNamespace")
     public String deleteIngressByNameAndNamespace(String name, String namespace){
 
         Boolean deleteIngress = ingressesService.deleteIngressesByNameAndNamespace(name,namespace);

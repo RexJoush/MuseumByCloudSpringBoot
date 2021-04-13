@@ -34,4 +34,14 @@ public interface CommonService {
      */
     int changeServicesByYaml(File yaml);
 
+    /**
+     * 根据传入的 yaml 文件进行资源的修改
+     * @param yaml yaml 文件字符串
+     * @return 创建结果信息
+     *          1200 表示成功
+     *          1201 表示失败
+     *          1202 表示文件有问题
+     */
+    int changeIngressesByYaml(File yaml);
+
 }

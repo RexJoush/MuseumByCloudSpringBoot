@@ -3,6 +3,8 @@ package com.nwu.service.explorebalancing.impl;
 import com.nwu.service.explorebalancing.IngressesService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
+import io.kubernetes.client.util.Yaml;
+import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -81,7 +83,7 @@ public class IngressesServiceImpl implements IngressesService {
         return deleteIngress;
     }
 
-
+    @Override
     public Ingress createOrReplaceIngress(String path) throws FileNotFoundException {
 
         InputStream yamlInputStream = byPath(path);
@@ -102,7 +104,19 @@ public class IngressesServiceImpl implements IngressesService {
 
     @Override
     public Ingress getIngressByNameAndNamespace(String name, String namespace){
-        return KubernetesUtils.client.extensions().ingresses().inNamespace(namespace).withName(name).get();
+
+        Ingress ingress = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace).withName(name).get();
+
+        return ingress;
+    }
+
+    @Override
+    public String findIngressYamlByNameAndNamespace(String name, String namespace){
+
+        Ingress ingress = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace).withName(name).get();
+
+        return Yaml.dump(ingress);
+
     }
 
 }

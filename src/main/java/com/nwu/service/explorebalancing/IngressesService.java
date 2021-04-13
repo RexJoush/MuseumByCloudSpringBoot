@@ -50,6 +50,14 @@ public interface IngressesService {
      */
     Ingress createIngressByYaml(String path) throws FileNotFoundException;
 
+    /**
+     * 通过名字和命名空间查找 ingress 对应的yaml文件
+     * @param name 名字
+     * @param namespace 命名空间
+     * @return
+     */
+    String findIngressYamlByNameAndNamespace(String name, String namespace);
+
 
     /**
      * 删除一个Ingress

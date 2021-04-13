@@ -8,6 +8,7 @@ package com.nwu.service.impl;
 import com.nwu.service.CommonService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -46,6 +47,37 @@ public class CommonServiceImpl implements CommonService {
             io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().load(inputStream).get();
 
             Boolean delete = KubernetesUtils.client.services().inNamespace(service.getMetadata().getNamespace()).withName(service.getMetadata().getName()).delete();
+
+            InputStream inputStream2 = new FileInputStream(yaml);
+
+            List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream2).createOrReplace();
+
+            inputStream.close();
+
+            yaml.delete();
+
+            if (delete) {
+                return 1200;
+            }else {
+                return 1201;
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1020;
+        }
+    }
+
+    @Override
+    public int changeIngressesByYaml(File yaml) {
+
+        try {
+            InputStream inputStream = new FileInputStream(yaml);
+
+            Ingress ingress = KubernetesUtils.client.extensions().ingresses().load(inputStream).get();
+
+            Boolean delete = KubernetesUtils.client.extensions().ingresses().inNamespace(ingress.getMetadata().getNamespace()).withName(ingress.getMetadata().getName()).delete();
 
             InputStream inputStream2 = new FileInputStream(yaml);
 

@@ -74,7 +74,7 @@ public class ServicesController {
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "获取 Pod Yaml 成功");
+        result.put("message", "获取 Service Yaml 成功");
         result.put("data", serviceYaml);
 
         return JSON.toJSONString(result);
