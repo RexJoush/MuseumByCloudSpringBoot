@@ -9,6 +9,7 @@ import com.nwu.util.TimeUtils;
 import io.fabric8.kubernetes.api.model.Node;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.metrics.v1beta1.NodeMetrics;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -129,9 +130,8 @@ public class NodesServiceImpl implements NodesService {
 
     /**
      * 获取近 20 分钟的 node 利用率信息
-     *
      * @param nodeName 节点名称
-     * @return
+     * @return 利用率列表
      */
     @Override
     public List<NodeUsage> findRecentTwenty(String nodeName) {
@@ -140,9 +140,8 @@ public class NodesServiceImpl implements NodesService {
 
     /**
      * 获取近一天的 node 利用率信息
-     *
      * @param nodeName 节点名称
-     * @return
+     * @return 利用率列表
      */
     @Override
     public List<NodeUsage> findRecentOneDay(String nodeName) {
@@ -150,7 +149,11 @@ public class NodesServiceImpl implements NodesService {
     }
 
     public Node findNodeByName(String nodeName) {
+        return KubernetesUtils.client.nodes().withName(nodeName).get();
+    }
+
+    public String findPodYamlByNameAndNamespace(String nodeName) {
         Node node = KubernetesUtils.client.nodes().withName(nodeName).get();
-        return node;
+        return Yaml.dump(node);
     }
 }

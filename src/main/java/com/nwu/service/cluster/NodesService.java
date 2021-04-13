@@ -28,6 +28,13 @@ public interface NodesService {
     Node findNodeByName(String nodeName);
 
     /**
+     * 获取 node 的 yaml 文件
+     * @param nodeName node 名称
+     * @return yaml 文件
+     */
+    String findPodYamlByNameAndNamespace(String nodeName);
+
+    /**
      * 保存 node 节点的资源利用率信息
      * @throws InterruptedException
      */

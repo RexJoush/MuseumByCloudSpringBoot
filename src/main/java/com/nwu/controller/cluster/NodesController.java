@@ -65,4 +65,18 @@ public class NodesController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getNodeYamlByName")
+    public String getPodYamlByNameAndNamespace(String nodeName){
+        String nodeYaml = nodesService.findPodYamlByNameAndNamespace(nodeName);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Node Yaml 成功");
+        result.put("data", nodeYaml);
+
+        return JSON.toJSONString(result);
+    }
+
+
 }
