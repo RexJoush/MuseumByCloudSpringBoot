@@ -4,6 +4,13 @@ import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
+import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.Configuration;
+import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.apis.ExtensionsV1beta1Api;
+import io.kubernetes.client.openapi.models.ExtensionsV1beta1Ingress;
+import io.kubernetes.client.util.Yaml;
 
 /**
  * @author Rex Joush
@@ -25,12 +32,21 @@ public class KubernetesUtils {
 
         config = new ConfigBuilder().withMasterUrl(kubernetesUrl).withTrustCerts(true).withOauthToken(token).build();
 
+        ApiClient apiClient = io.kubernetes.client.util.Config.fromToken(kubernetesUrl, token, false);
+        Configuration.setDefaultApiClient(apiClient);
     }
 
-    // 创建 Kubernetes 客户端
+    // 创建 Kubernetes Official CoreV1Api 客户端
+    public static CoreV1Api coreV1Api = new CoreV1Api();
+
+    // 创建 Kubernetes Official ExtensionsV1Beta1Api 客户端
+    public static ExtensionsV1beta1Api extensionsV1beta1Api = new ExtensionsV1beta1Api();
+
+    // 创建 Fabric8 Kubernetes客户端
     public static KubernetesClient client = new DefaultKubernetesClient(config);
 
     // 增删资源的 yaml 文件临时路径
     public static String path = "D:\\Files\\a.yaml";
+
 
 }
