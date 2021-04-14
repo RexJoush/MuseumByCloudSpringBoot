@@ -27,6 +27,11 @@ public interface PodsService {
      */
     List<PodDefinition> findAllPods() throws ApiException;
 
+    /**
+     * 获取完整形式的 Pod 列表
+     * @return Pod 列表
+     */
+    List<Pod> findCompletePodsList();
 
     /**
      * 通过 namespace 获取 pod 列表
@@ -65,6 +70,14 @@ public interface PodsService {
      * @return
      */
     List<PodDefinition> findPodBySvcLabel(String labelKey, String labelValue);
+
+    /**
+     * 查找被匹配的 Pods
+     * @param labelsKey 标签键
+     * @param labelsValue 标签值
+     * @return 返回被匹配的 Pods
+     */
+    List<Pod> findPodsByLabels(Map<String, String> labels);
 
     /**
      * 保存 pod 节点的资源利用率信息

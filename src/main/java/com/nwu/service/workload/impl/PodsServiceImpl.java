@@ -46,6 +46,12 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
+    public List<Pod> findCompletePodsList() {
+        List<Pod> items = KubernetesUtils.client.pods().inAnyNamespace().list().getItems();
+        return  items;
+    }
+
+    @Override
     public List<PodDefinition> findPodsByNamespace(String namespace) {
 
         // 获取当前 pod 节点信息
@@ -64,9 +70,17 @@ public class PodsServiceImpl implements PodsService {
 
     @Override
     public List<PodDefinition> findPodBySvcLabel(String labelKey, String labelValue) {
+
         // 获取当前 pod 节点信息
         List<Pod> items = KubernetesUtils.client.pods().withLabel(labelKey, labelValue).list().getItems();
         return PodFormat.formatPodList(items);
+    }
+
+    @Override
+    public List<Pod> findPodsByLabels(Map<String, String> labels) {
+
+        List<Pod> items = KubernetesUtils.client.pods().withLabels(labels).list().getItems();
+        return items;
     }
 
     @Override

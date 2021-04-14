@@ -9,6 +9,9 @@ import com.alibaba.fastjson.JSON;
 import com.nwu.service.workload.JobsService;
 import com.nwu.service.workload.impl.DeploymentsServiceImpl;
 import com.nwu.service.workload.impl.JobsServiceImpl;
+import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.format.PodFormat;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
@@ -78,6 +81,24 @@ public class JobsController {
         result.put("code", 1200);
         result.put("message", "通过name和namespace获取 Job 成功");
         result.put("data", aJob);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getJobPodsByNameAndNamespace")
+    public String getJobPodsByNameAndNamespace(String name, String namespace){
+
+        Job aJob = jobsService.getJobByNameAndNamespace(name, namespace);
+        PodsServiceImpl podsService = new PodsServiceImpl();
+        Map<String, String> matchLabels = aJob.getSpec().getSelector().getMatchLabels();
+        List<Pod> pods = podsService.findPodsByLabels(matchLabels);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过name和namespace获取 Job 和 Pods 成功");
+        result.put("dataJob", aJob);
+        result.put("dataPods", PodFormat.formatPodList(pods));
 
         return JSON.toJSONString(result);
     }

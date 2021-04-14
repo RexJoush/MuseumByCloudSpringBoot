@@ -74,7 +74,7 @@ public class DaemonSetsController {
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "获取 DaemonSet 列表成功");
+        result.put("message", "获取 DaemonSet 成功");
         result.put("data", aDaemonSet);
 
         return JSON.toJSONString(result);
