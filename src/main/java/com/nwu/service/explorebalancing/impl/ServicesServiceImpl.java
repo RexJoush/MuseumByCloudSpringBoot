@@ -6,6 +6,8 @@ import com.nwu.service.explorebalancing.ServicesService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.*;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1Service;
 import org.springframework.stereotype.Service;
 import io.kubernetes.client.util.Yaml;
 
@@ -59,9 +61,16 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public String findServiceYamlByNameAndNamespace(String name, String namespace) {
 
-        io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().inNamespace(namespace).withName(name).get();
+        V1Service v1Service = null;
+        try {
+            v1Service = KubernetesUtils.coreV1Api.readNamespacedService(name, namespace, null, null, null);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
 
-        return Yaml.dump(service);
+//        io.fabric8.kubernetes.api.model.Service service = KubernetesUtils.client.services().inNamespace(namespace).withName(name).get();
+
+        return Yaml.dump(v1Service);
     }
 
     @Override

@@ -23,7 +23,7 @@
         WHERE node_name = #{nodeName}
           AND time
             > #{time}
-        ORDER BY time DESC
+        ORDER BY time ASC
     </select>
 
     <select id="findRecentOneDay" resultType="nodeUsage">

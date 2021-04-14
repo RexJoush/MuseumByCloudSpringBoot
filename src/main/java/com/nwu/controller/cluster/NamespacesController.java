@@ -83,4 +83,18 @@ public class NamespacesController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getNamespaceYamlByName")
+    public String findNamespaceYamlByName(String name){
+
+        String namespaceYamlByName = namespacesService.findNamespaceYamlByName(name);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过 name 获取 Namespace 的 yaml 文件成功");
+        result.put("data", namespaceYamlByName);
+
+        return JSON.toJSONString(result);
+    }
+
 }

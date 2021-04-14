@@ -136,7 +136,7 @@ public class ConfigMapsController {
     }
 
     @RequestMapping("/getConfigMapYamlByNameAndNamespace")
-    public String getConfigMapYamlByNameAndNamespace(String name, String namespace) {
+    public String getConfigMapYamlByNameAndNamespace(String name, String namespace) throws ApiException {
 
         String configMapYaml = configMapsService.getConfigMapYamlByNameAndNamespace(name, namespace);
 

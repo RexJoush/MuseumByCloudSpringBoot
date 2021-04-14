@@ -4,6 +4,7 @@ import com.nwu.service.settingstorage.PersistentVolumeClaimsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1PersistentVolumeClaim;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
@@ -91,8 +92,10 @@ public class PersistentVolumeClaimsServiceImpl implements PersistentVolumeClaims
     }
 
     @Override
-    public String getPVCYamlByNameAndNamespace(String name, String namespace) {
-        PersistentVolumeClaim pvc = KubernetesUtils.client.persistentVolumeClaims().inNamespace(namespace).withName(name).get();
-        return Yaml.dump(pvc);
+    public String getPVCYamlByNameAndNamespace(String name, String namespace) throws ApiException {
+
+        V1PersistentVolumeClaim v1PersistentVolumeClaim = KubernetesUtils.coreV1Api.readNamespacedPersistentVolumeClaim(name, namespace, null, null, null);
+        
+        return Yaml.dump(v1PersistentVolumeClaim);
     }
 }

@@ -77,5 +77,5 @@ public interface PersistentVolumeClaimsService {
      * @param namespace PersistentVolumeClaim 命名空间
      * @return 查找到的 PersistentVolumeClaim 的 yaml 格式文件
      */
-    String getPVCYamlByNameAndNamespace(String name, String namespace);
+    String getPVCYamlByNameAndNamespace(String name, String namespace) throws ApiException;
 }

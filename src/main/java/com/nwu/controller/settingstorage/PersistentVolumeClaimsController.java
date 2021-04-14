@@ -134,7 +134,7 @@ public class PersistentVolumeClaimsController {
     }
 
     @RequestMapping("/getPVCYamlByNameAndNamespace")
-    public String getPVCYamlByNameAndNamespace(String name, String namespace) {
+    public String getPVCYamlByNameAndNamespace(String name, String namespace) throws ApiException {
 
         String pvcYaml = persistentVolumeClaimsService.getPVCYamlByNameAndNamespace(name, namespace);
 
