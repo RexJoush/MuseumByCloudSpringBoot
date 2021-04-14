@@ -4,6 +4,7 @@ import com.nwu.service.settingstorage.SecretsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1Secret;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
@@ -100,9 +101,11 @@ public class SecretsServiceImpl implements SecretsService {
     }
 
     @Override
-    public String getSecretYamlByNameAndNamespace(String name, String namespace) {
-        Secret secretYaml = KubernetesUtils.client.secrets().inNamespace(namespace).withName(name).get();
-        return Yaml.dump(secretYaml);
+    public String getSecretYamlByNameAndNamespace(String name, String namespace) throws ApiException {
+
+        V1Secret v1Secret = KubernetesUtils.coreV1Api.readNamespacedSecret(name, namespace, null, null, null);
+
+        return Yaml.dump(v1Secret);
     }
 
 

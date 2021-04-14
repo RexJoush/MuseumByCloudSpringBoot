@@ -77,5 +77,5 @@ public interface SecretsService {
      * @param namespace Secret 命名空间
      * @return 查找到的 Secret 的 yaml 格式文件
      */
-    String getSecretYamlByNameAndNamespace(String name, String namespace);
+    String getSecretYamlByNameAndNamespace(String name, String namespace) throws ApiException;;
 }
