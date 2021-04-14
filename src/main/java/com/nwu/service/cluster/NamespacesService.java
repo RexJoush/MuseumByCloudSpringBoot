@@ -39,4 +39,12 @@ public interface NamespacesService {
      */
     Boolean deleteNamespaceByName(String namespace);
 
+
+    /**
+     * 按名称查找命名空间
+     * @param name 名称
+     * @return 详情
+     */
+    String findNamespaceYamlByName(String name);
+
 }

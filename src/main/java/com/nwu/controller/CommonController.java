@@ -78,7 +78,7 @@ public class CommonController {
         int code = 0;
         // 将 \" 转换为 " 将 \\ 转换为 \
         // 即，去掉前后端传值时自动添加的转义字符
-        String s = yaml.substring(8, yaml.length() - 2).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
+        String s = yaml.substring(12, yaml.length() - 2).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
         File file = new File(KubernetesUtils.path);
         if (!file.getParentFile().exists()){
             file.getParentFile().mkdir();

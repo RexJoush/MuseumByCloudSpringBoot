@@ -7,6 +7,9 @@ import com.nwu.service.cluster.NamespacesService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Namespace;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1Namespace;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.List;
 
 @Service
 public class NamespacesServiceImpl implements NamespacesService {
+
 
     @Override
     public List<Namespace> getAllNamespaces(){
@@ -98,6 +102,19 @@ public class NamespacesServiceImpl implements NamespacesService {
         Boolean delete = KubernetesUtils.client.namespaces().withName(namespace).delete();
 
         return delete;
+    }
+
+    @Override
+    public String findNamespaceYamlByName(String name) {
+
+        V1Namespace v1Namespace = null;
+
+        try {
+            v1Namespace = KubernetesUtils.coreV1Api.readNamespace(name,null,null,null);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        return Yaml.dump(v1Namespace);
     }
 
 }

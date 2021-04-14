@@ -5,6 +5,8 @@ import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.extensions.*;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.ExtensionsV1beta1Ingress;
 import io.kubernetes.client.util.Yaml;
 import org.checkerframework.checker.units.qual.K;
 import org.springframework.stereotype.Service;
@@ -28,28 +30,28 @@ import static com.nwu.util.GetYamlInputStream.byPath;
 @Service
 public class IngressesServiceImpl implements IngressesService {
 
-    public static void main(String[] args) {
-
-        File yaml = new File("D:\\Files\\a.yaml");
-
-        try {
-            InputStream inputStream = new FileInputStream(yaml);
-
-            Ingress ingress = KubernetesUtils.client.extensions().ingresses().load(yaml).get();
-            String namespace1 = ingress.getMetadata().getNamespace();
-            String name1 = ingress.getMetadata().getName();
-            Boolean delete1 = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace1).withName(name1).delete();
-            System.out.println(delete1);
-            InputStream inputStream2 = new FileInputStream(yaml);
-//            List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream2).createOrReplace();
-            inputStream.close();
-            yaml.delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-    }
+//    public static void main(String[] args) {
+//
+//        File yaml = new File("D:\\Files\\a.yaml");
+//
+//        try {
+//            InputStream inputStream = new FileInputStream(yaml);
+//
+//            Ingress ingress = KubernetesUtils.client.extensions().ingresses().load(yaml).get();
+//            String namespace1 = ingress.getMetadata().getNamespace();
+//            String name1 = ingress.getMetadata().getName();
+//            Boolean delete1 = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace1).withName(name1).delete();
+//            System.out.println(delete1);
+//            InputStream inputStream2 = new FileInputStream(yaml);
+////            List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream2).createOrReplace();
+//            inputStream.close();
+//            yaml.delete();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//    }
     @Override
     public List<Ingress> findAllIngresses(){
 
@@ -126,18 +128,25 @@ public class IngressesServiceImpl implements IngressesService {
     @Override
     public String findIngressYamlByNameAndNamespace(String name, String namespace){
 
-        Ingress ingress = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace).withName(name).get();
-        IngressSpec spec = ingress.getSpec();
-        List<IngressRule> rules = spec.getRules();
-        IngressRule ingressRule = rules.get(0);
-        HTTPIngressRuleValue http = ingressRule.getHttp();
-        List<HTTPIngressPath> paths = http.getPaths();
-        for (HTTPIngressPath path : paths) {
-            IntOrString servicePort = path.getBackend().getServicePort();
+//        Ingress ingress = KubernetesUtils.client.extensions().ingresses().inNamespace(namespace).withName(name).get();
+//        IngressSpec spec = ingress.getSpec();
+//        List<IngressRule> rules = spec.getRules();
+//        IngressRule ingressRule = rules.get(0);
+//        HTTPIngressRuleValue http = ingressRule.getHttp();
+//        List<HTTPIngressPath> paths = http.getPaths();
+//        for (HTTPIngressPath path : paths) {
+//            IntOrString servicePort = path.getBackend().getServicePort();
+//
+//        }
 
+        ExtensionsV1beta1Ingress extensionsV1beta1Ingress = null;
+        try {
+            extensionsV1beta1Ingress = KubernetesUtils.extensionsV1beta1Api.readNamespacedIngress(name, namespace, null, null, null);
+        } catch (ApiException e) {
+            e.printStackTrace();
         }
 
-        return Yaml.dump(ingress).replaceAll("servicePort:\n[ ]*kind: [0-9]*\n[ ]*intVal: ([0-9]*)", "servicePort: $1");
+        return Yaml.dump(extensionsV1beta1Ingress);
 
     }
 
