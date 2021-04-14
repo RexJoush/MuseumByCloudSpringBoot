@@ -4,6 +4,7 @@ import com.nwu.service.settingstorage.ConfigMapsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1ConfigMap;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
@@ -103,9 +104,11 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     }
 
     @Override
-    public String getConfigMapYamlByNameAndNamespace(String name, String namespace) {
-        ConfigMap configMap = KubernetesUtils.client.configMaps().inNamespace(namespace).withName(name).get();
-        return Yaml.dump(configMap);
+    public String getConfigMapYamlByNameAndNamespace(String name, String namespace) throws ApiException {
+
+        V1ConfigMap v1ConfigMap = KubernetesUtils.coreV1Api.readNamespacedConfigMap(name, namespace, null, null, null);
+
+        return Yaml.dump(v1ConfigMap);
     }
 
 }

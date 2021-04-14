@@ -136,7 +136,7 @@ public class SecretsController {
     }
 
     @RequestMapping("/getSecretYamlByNameAndNamespace")
-    public String getSecretYamlByNameAndNamespace(String name, String namespace) {
+    public String getSecretYamlByNameAndNamespace(String name, String namespace) throws ApiException {
 
         String secretYaml = secretsService.getSecretYamlByNameAndNamespace(name, namespace);
 
