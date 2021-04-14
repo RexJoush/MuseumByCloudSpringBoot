@@ -7,6 +7,8 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
+import io.kubernetes.client.openapi.apis.BatchApi;
+import io.kubernetes.client.openapi.apis.BatchV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.ExtensionsV1beta1Api;
 import io.kubernetes.client.openapi.models.ExtensionsV1beta1Ingress;
@@ -41,6 +43,9 @@ public class KubernetesUtils {
 
     // 创建 Kubernetes Official ExtensionsV1Beta1Api 客户端
     public static ExtensionsV1beta1Api extensionsV1beta1Api = new ExtensionsV1beta1Api();
+
+    // 创建 Kubernetes Official BatchApi 客户端
+    public static BatchV1Api batchV1Api = new BatchV1Api();
 
     // 创建 Fabric8 Kubernetes客户端
     public static KubernetesClient client = new DefaultKubernetesClient(config);

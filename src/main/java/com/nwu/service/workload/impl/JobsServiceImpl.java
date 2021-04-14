@@ -4,6 +4,8 @@ import com.nwu.service.workload.JobsService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1Job;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
@@ -97,7 +99,13 @@ public class JobsServiceImpl implements JobsService {
 
     @Override
     public String getJobYamlByNameAndNamespace(String name ,String namespace){
-        Job item = KubernetesUtils.client.batch().jobs().inNamespace(namespace).withName(name).get();
-        return Yaml.dump(item);
+        // Job item = KubernetesUtils.client.batch().jobs().inNamespace(namespace).withName(name).get();
+        V1Job v1Job = null;
+        try {
+            v1Job = KubernetesUtils.batchV1Api.readNamespacedJob(name, namespace, null, null, null);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        return Yaml.dump(v1Job);
     }
 }
