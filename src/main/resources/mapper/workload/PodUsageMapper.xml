@@ -26,7 +26,7 @@
           AND namespace = #{namespace}
           AND time
             > #{time}
-        ORDER BY time DESC
+        ORDER BY time ASC
     </select>
 
     <select id="findRecentOneDay" resultType="podUsage">

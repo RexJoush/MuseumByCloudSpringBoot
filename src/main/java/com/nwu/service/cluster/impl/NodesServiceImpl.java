@@ -72,10 +72,10 @@ public class NodesServiceImpl implements NodesService {
             int cpuAllocatable = Integer.parseInt(item.getStatus().getAllocatable().get("cpu").getAmount());
             int memoryAllocatable = Integer.parseInt(item.getStatus().getAllocatable().get("memory").getAmount());
             double cpu = 0.0, memory = 0.0;
-            if (usage.get(item.getMetadata().getName()).getCpu() != null){
+            if (usage.get(item.getMetadata().getName()) != null){
                 cpu = Double.parseDouble(usage.get(item.getMetadata().getName()).getCpu());
             }
-            if (usage.get(item.getMetadata().getName()).getMemory() != null) {
+            if (usage.get(item.getMetadata().getName()) != null) {
                 memory = Double.parseDouble(usage.get(item.getMetadata().getName()).getMemory());
             }
             definition.setCpuUsage(cpu / 1000 / 1000 / cpuAllocatable / 10);
