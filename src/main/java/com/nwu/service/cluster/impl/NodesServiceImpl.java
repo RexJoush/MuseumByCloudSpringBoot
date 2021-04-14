@@ -9,6 +9,8 @@ import com.nwu.util.TimeUtils;
 import io.fabric8.kubernetes.api.model.Node;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.metrics.v1beta1.NodeMetrics;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -69,8 +71,13 @@ public class NodesServiceImpl implements NodesService {
             // 设置 cpu 和内存利用率
             int cpuAllocatable = Integer.parseInt(item.getStatus().getAllocatable().get("cpu").getAmount());
             int memoryAllocatable = Integer.parseInt(item.getStatus().getAllocatable().get("memory").getAmount());
-            double cpu = Double.parseDouble(usage.get(item.getMetadata().getName()).getCpu());
-            double memory = Double.parseDouble(usage.get(item.getMetadata().getName()).getMemory());
+            double cpu = 0.0, memory = 0.0;
+            if (usage.get(item.getMetadata().getName()).getCpu() != null){
+                cpu = Double.parseDouble(usage.get(item.getMetadata().getName()).getCpu());
+            }
+            if (usage.get(item.getMetadata().getName()).getMemory() != null) {
+                memory = Double.parseDouble(usage.get(item.getMetadata().getName()).getMemory());
+            }
             definition.setCpuUsage(cpu / 1000 / 1000 / cpuAllocatable / 10);
             definition.setMemoryUsage(memory / memoryAllocatable * 100);
 
@@ -152,8 +159,20 @@ public class NodesServiceImpl implements NodesService {
         return KubernetesUtils.client.nodes().withName(nodeName).get();
     }
 
-    public String findPodYamlByNameAndNamespace(String nodeName) {
-        Node node = KubernetesUtils.client.nodes().withName(nodeName).get();
-        return Yaml.dump(node);
+    public String findPodYamlByName(String nodeName) {
+
+        try {
+            V1Node v1Node = KubernetesUtils.coreV1Api.readNode(nodeName, null, null, null);
+            return Yaml.dump(v1Node);
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+
+        return "null";
+
+    }
+
+    public static void main(String[] args) {
+        new NodesServiceImpl().findPodYamlByName("master-1");
     }
 }

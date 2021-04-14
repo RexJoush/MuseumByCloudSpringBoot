@@ -67,7 +67,7 @@ public class NodesController {
 
     @RequestMapping("/getNodeYamlByName")
     public String getPodYamlByNameAndNamespace(String nodeName){
-        String nodeYaml = nodesService.findPodYamlByNameAndNamespace(nodeName);
+        String nodeYaml = nodesService.findPodYamlByName(nodeName);
 
         Map<String, Object> result = new HashMap<>();
 

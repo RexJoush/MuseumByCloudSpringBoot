@@ -32,7 +32,7 @@ public interface NodesService {
      * @param nodeName node 名称
      * @return yaml 文件
      */
-    String findPodYamlByNameAndNamespace(String nodeName);
+    String findPodYamlByName(String nodeName);
 
     /**
      * 保存 node 节点的资源利用率信息
