@@ -11,13 +11,10 @@ import io.kubernetes.client.openapi.models.V1Service;
 import org.springframework.stereotype.Service;
 import io.kubernetes.client.util.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.nwu.util.GetYamlInputStream.byPath;
 
@@ -184,7 +181,7 @@ public class ServicesServiceImpl implements ServicesService {
 
     @Override
     public List<io.fabric8.kubernetes.api.model.Service> getServicesByLabels(Map<String, String> labels){
-        return (List<io.fabric8.kubernetes.api.model.Service>) KubernetesUtils.client.services().withLabels(labels);
+        return  KubernetesUtils.client.services().withLabels(labels).list().getItems();
     }
 
 }

@@ -11,10 +11,13 @@ import com.nwu.service.workload.impl.CronJobsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.ReplicaSetsServiceImpl;
 import com.nwu.util.FilterPodsByControllerUid;
+import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.ServiceList;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.client.dsl.FilterWatchListDeletable;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -168,20 +171,23 @@ public class ReplicaSetsController {
 
     @RequestMapping("/getReplicaSetResources")
     public String getReplicaSetResources(String name,String namespace){
+        System.out.println(name + namespace);
 
         PodsServiceImpl podsService = new PodsServiceImpl();
         ServicesServiceImpl servicesService = new ServicesServiceImpl();
         ReplicaSet replicaSet = replicaSetsService.getReplicaSetByNameAndNamespace(name, namespace);
         String uid = replicaSet.getMetadata().getUid();
         Map<String, String> matchLabels = replicaSet.getSpec().getSelector().getMatchLabels();
+//        System.out.println(matchLabels);
+
         List<Service> services = servicesService.getServicesByLabels(matchLabels);
         List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "获取 ReplicaSet Yaml 成功");
+        result.put("message", "获取 ReplicaSet Resources 成功");
         result.put("dataReplicaSet", replicaSet);
-        result.put("dataPods", pods);
+        result.put("dataPods", PodFormat.formatPodList(pods));
         result.put("dataServices", services);
 
         return JSON.toJSONString(result);
