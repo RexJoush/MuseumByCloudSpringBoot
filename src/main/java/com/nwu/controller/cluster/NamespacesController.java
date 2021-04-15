@@ -5,8 +5,12 @@ import com.alibaba.fastjson.JSON;
 import com.nwu.entity.cluster.NamespaceDetails;
 import com.nwu.entity.cluster.NamespaceName;
 import com.nwu.service.cluster.impl.NamespacesServiceImpl;
+import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1Namespace;
+import io.kubernetes.client.openapi.models.V1Service;
+import io.kubernetes.client.util.Yaml;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,6 +27,16 @@ import java.util.Map;
 @RestController
 @RequestMapping("/namespaces")
 public class NamespacesController {
+
+//    public static void main(String[] args) {
+//        V1Namespace namespace = null;
+//        try {
+//            namespace = KubernetesUtils.coreV1Api.readNamespace("default", null, null, null);
+//        } catch (ApiException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(Yaml.dump(namespace));
+//    }
 
     @Resource
     private NamespacesServiceImpl namespacesService;
@@ -84,9 +98,9 @@ public class NamespacesController {
     }
 
     @RequestMapping("/getNamespaceYamlByName")
-    public String findNamespaceYamlByName(String name){
+    public String findNamespaceYamlByName(String namespace){
 
-        String namespaceYamlByName = namespacesService.findNamespaceYamlByName(name);
+        String namespaceYamlByName = namespacesService.findNamespaceYamlByName(namespace);
 
         Map<String, Object> result = new HashMap<>();
 
