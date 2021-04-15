@@ -6,8 +6,13 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
+import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.ReplicaSetsServiceImpl;
+import com.nwu.util.FilterPodsByControllerUid;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
@@ -64,6 +69,20 @@ public class ReplicaSetsController {
 
         return JSON.toJSONString(result);
 
+    }
+
+    @RequestMapping("/getReplicaSetByNameAndNamespace")
+    public String getReplicaSetByNameAndNamespace(String name, String namespace){
+
+        ReplicaSet replicaSet = replicaSetsService.getReplicaSetByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "根据名称和命名空间获取 ReplicaSet 成功");
+        result.put("data", replicaSet);
+
+        return JSON.toJSONString(result);
     }
 
     @RequestMapping("/deleteReplicaSetByNameAndNamespace")
@@ -143,6 +162,27 @@ public class ReplicaSetsController {
         result.put("code", 1200);
         result.put("message", "获取 ReplicaSet Yaml 成功");
         result.put("data", replicaSetYaml);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getReplicaSetResources")
+    public String getReplicaSetResources(String name,String namespace){
+
+        PodsServiceImpl podsService = new PodsServiceImpl();
+        ServicesServiceImpl servicesService = new ServicesServiceImpl();
+        ReplicaSet replicaSet = replicaSetsService.getReplicaSetByNameAndNamespace(name, namespace);
+        String uid = replicaSet.getMetadata().getUid();
+        Map<String, String> matchLabels = replicaSet.getSpec().getSelector().getMatchLabels();
+        List<Service> services = servicesService.getServicesByLabels(matchLabels);
+        List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 ReplicaSet Yaml 成功");
+        result.put("dataReplicaSet", replicaSet);
+        result.put("dataPods", pods);
+        result.put("dataServices", services);
 
         return JSON.toJSONString(result);
     }

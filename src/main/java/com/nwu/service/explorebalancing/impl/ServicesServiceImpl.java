@@ -182,4 +182,9 @@ public class ServicesServiceImpl implements ServicesService {
         return KubernetesUtils.client.endpoints().inNamespace(namespace).withName(name).get();
     }
 
+    @Override
+    public List<io.fabric8.kubernetes.api.model.Service> getServicesByLabels(Map<String, String> labels){
+        return (List<io.fabric8.kubernetes.api.model.Service>) KubernetesUtils.client.services().withLabels(labels);
+    }
+
 }
