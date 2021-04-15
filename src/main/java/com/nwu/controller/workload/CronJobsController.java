@@ -150,21 +150,21 @@ public class CronJobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/getCronJobPodsByNameAndNamespace")
-    public String getCronJobPodsByNameAndNamespace(String name, String namespace){
-
-        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        Map<String, String> matchLabels = aCronJob.getSpec().getSelector().getMatchLabels();
-        List<Pod> pods = podsService.findPodsByLabels(matchLabels);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "通过name和namespace获取 Job 和 Pods 成功");
-        result.put("dataJob", aJob);
-        result.put("dataPods", PodFormat.formatPodList(pods));
-
-        return JSON.toJSONString(result);
-    }
+//    @RequestMapping("/getCronJobPodsByNameAndNamespace")
+//    public String getCronJobPodsByNameAndNamespace(String name, String namespace){
+//
+//        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
+//        PodsServiceImpl podsService = new PodsServiceImpl();
+//        Map<String, String> matchLabels = aCronJob.getSpec().getSelector().getMatchLabels();
+//        List<Pod> pods = podsService.findPodsByLabels(matchLabels);
+//
+//        Map<String, Object> result = new HashMap<>();
+//
+//        result.put("code", 1200);
+//        result.put("message", "通过name和namespace获取 Job 和 Pods 成功");
+//        result.put("dataJob", aJob);
+//        result.put("dataPods", PodFormat.formatPodList(pods));
+//
+//        return JSON.toJSONString(result);
+//    }
 }
