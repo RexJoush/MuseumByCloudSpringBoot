@@ -51,4 +51,32 @@ public class ClusterRolesController {
 
         return JSON.toJSONString(result);
     }
+
+    @RequestMapping("/getClusterRoleYamlByName")
+    public String findClusterRoleYamlByName(String clusterRole){
+
+        String clusterRoleYaml = clusterRolesService.findClusterRoleYamlByName(clusterRole);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Cluster Role 详情成功");
+        result.put("data", clusterRoleYaml);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/delClusterRoleByName")
+    public String delClusterRoleByName(String clusterRole){
+
+        Boolean aBoolean = clusterRolesService.delClusterRoleByName(clusterRole);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Cluster Role 详情成功");
+        result.put("data", aBoolean);
+
+        return JSON.toJSONString(result);
+    }
 }

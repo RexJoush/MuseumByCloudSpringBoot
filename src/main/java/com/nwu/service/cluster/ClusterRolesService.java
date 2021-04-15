@@ -24,6 +24,19 @@ public interface ClusterRolesService {
      */
     ClusterRole getClusterRoleDetails(String clusterRoleName);
 
-//    String getClusterRole
+
+    /**
+     * 根据名称获取集群角色的 yaml 文件
+     * @param clusterRoleName 集群角色名
+     * @return 详情
+     */
+    String findClusterRoleYamlByName(String clusterRoleName);
+
+    /**
+     * 根据名称删除集群角色
+     * @param clusterRoleName 集群角色名
+     * @return 详情
+     */
+    Boolean delClusterRoleByName(String clusterRoleName);
 
 }

@@ -7,11 +7,10 @@ import io.fabric8.kubernetes.client.KubernetesClient;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
-import io.kubernetes.client.openapi.apis.BatchApi;
-import io.kubernetes.client.openapi.apis.BatchV1Api;
-import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.apis.ExtensionsV1beta1Api;
+import io.kubernetes.client.openapi.apis.*;
 import io.kubernetes.client.openapi.models.ExtensionsV1beta1Ingress;
+import io.kubernetes.client.openapi.models.V1ClusterRole;
+import io.kubernetes.client.proto.V1Rbac;
 import io.kubernetes.client.util.Yaml;
 
 /**
@@ -37,6 +36,10 @@ public class KubernetesUtils {
         ApiClient apiClient = io.kubernetes.client.util.Config.fromToken(kubernetesUrl, token, false);
         Configuration.setDefaultApiClient(apiClient);
     }
+
+    // 创建 Kubernetes Official RbacAuthorizationV1Api 客户端
+    public static RbacAuthorizationV1Api rbacAuthorizationV1Api = new RbacAuthorizationV1Api();
+
 
     // 创建 Kubernetes Official CoreV1Api 客户端
     public static CoreV1Api coreV1Api = new CoreV1Api();
