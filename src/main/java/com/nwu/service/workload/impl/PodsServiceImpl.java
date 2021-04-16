@@ -79,16 +79,14 @@ public class PodsServiceImpl implements PodsService {
     @Override
     public List<Pod> findPodsByLabels(Map<String, String> labels) {
 
-        List<Pod> items = KubernetesUtils.client.pods().withLabels(labels).list().getItems();
-        return items;
+        return KubernetesUtils.client.pods().withLabels(labels).list().getItems();
     }
 
     @Override
     public PodDetails findPodByNameAndNamespace(String name, String namespace) {
         Pod item = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get();
         List<PodUsage> usages = podUsageDao.findRecentTwenty(name, namespace, TimeUtils.getTwentyMinuteAgo());
-        PodDetails podDetails = new PodDetails(item, usages);
-        return podDetails;
+        return new PodDetails(item, usages);
     }
 
     @Override

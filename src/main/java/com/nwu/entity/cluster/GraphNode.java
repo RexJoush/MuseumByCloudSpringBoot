@@ -9,8 +9,8 @@ public class GraphNode {
     private int id;
     private String name;
     private String symbolSize;
-//    private double x;
-//    private double y;
+    private double x;
+    private double y;
     private String value;
     private int category;
 
@@ -38,21 +38,21 @@ public class GraphNode {
         this.symbolSize = symbolSize;
     }
 
-//    public double getX() {
-//        return x;
-//    }
-//
-//    public void setX(double x) {
-//        this.x = x;
-//    }
-//
-//    public double getY() {
-//        return y;
-//    }
-//
-//    public void setY(double y) {
-//        this.y = y;
-//    }
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
 
     public String getValue() {
         return value;
@@ -70,23 +70,23 @@ public class GraphNode {
         this.category = category;
     }
 
-    public GraphNode(int id, String name, String symbolSize, String value, int category) {
-        this.id = id;
-        this.name = name;
-        this.symbolSize = symbolSize;
-        this.value = value;
-        this.category = category;
-    }
-
-    //    public GraphNode(int id, String name, String symbolSize, double x, double y, String value, int category) {
+//    public GraphNode(int id, String name, String symbolSize, String value, int category) {
 //        this.id = id;
 //        this.name = name;
 //        this.symbolSize = symbolSize;
-//        this.x = x;
-//        this.y = y;
 //        this.value = value;
 //        this.category = category;
 //    }
+
+        public GraphNode(int id, String name, String symbolSize, double x, double y, String value, int category) {
+        this.id = id;
+        this.name = name;
+        this.symbolSize = symbolSize;
+        this.x = x;
+        this.y = y;
+        this.value = value;
+        this.category = category;
+    }
 
     public GraphNode() {
     }
