@@ -11,8 +11,8 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Services 的 service 层接口
@@ -96,5 +96,10 @@ public interface ServicesService {
      */
     Endpoints getEndpointBySvcNameAndNamespace(String name, String namespace);
 
-
+    /**
+     * 通过标签查找 Services
+     * @param labels 标签
+     * @return 找到的 Service 列表
+     */
+    List<Service> getServicesByLabels(Map<String, String> labels);
 }

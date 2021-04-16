@@ -8,8 +8,13 @@ package com.nwu.controller.workload;
 import com.alibaba.fastjson.JSON;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
 import com.nwu.service.workload.impl.DaemonSetsServiceImpl;
+import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.FilterPodsByControllerUid;
+import com.nwu.util.format.PodFormat;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,6 +84,26 @@ public class DaemonSetsController {
 
         return JSON.toJSONString(result);
 
+    }
+
+    @RequestMapping("/getDaemonSetPodsByNameAndNamespace")
+    public String getDaemonSetPodsByNameAndNamespace(String name, String namespace){
+
+        System.out.println(name + namespace);
+        PodsServiceImpl podsService = new PodsServiceImpl();
+        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace(name, namespace);
+        Map<String, String> matchLabels = aDaemonSet.getSpec().getSelector().getMatchLabels();
+        String uid = aDaemonSet.getMetadata().getUid();
+        List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过name和namespace获取 DaemonSet 和 Pods 成功");
+        result.put("dataDaemonSet", aDaemonSet);
+        result.put("dataPods", PodFormat.formatPodList(pods));
+
+        return JSON.toJSONString(result);
     }
 
     @RequestMapping("/deleteDaemonSetByNameAndNamespace")

@@ -6,9 +6,16 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
+import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.ReplicationControllersServiceImpl;
+import com.nwu.util.FilterPodsByControllerUid;
+import com.nwu.util.format.PodFormat;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -144,6 +151,28 @@ public class ReplicationControllersController {
         result.put("code", 1200);
         result.put("message", "获取 ReplicationController Yaml 成功");
         result.put("data", replicationControllerYaml);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getReplicationControllerResources")
+    public String getReplicationControllerResources(String name, String namespace){
+
+        PodsServiceImpl podsService = new PodsServiceImpl();
+        ServicesServiceImpl servicesService = new ServicesServiceImpl();
+        ReplicationController replicationController = replicationControllersService.getReplicationControllerByNameAndNamespace(name, namespace);
+        String uid = replicationController.getMetadata().getUid();
+        Map<String, String> matchLabel = replicationController.getSpec().getSelector();
+//        System.out.println(matchLabels);
+        List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabel));
+        Map<String, Object> result = new HashMap<>();
+        List<Service> services = servicesService.getServicesByLabels(matchLabel);
+
+        result.put("code", 1200);
+        result.put("message", "获取 ReplicaSet Resources 成功");
+        result.put("dataReplicationController", replicationController);
+        result.put("dataPods", PodFormat.formatPodList(pods));
+        result.put("dataServices", services);
 
         return JSON.toJSONString(result);
     }

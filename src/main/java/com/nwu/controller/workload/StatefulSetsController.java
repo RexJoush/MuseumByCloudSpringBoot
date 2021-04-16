@@ -6,9 +6,16 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
+import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.StatefulSetsServiceImpl;
+import com.nwu.util.FilterPodsByControllerUid;
+import com.nwu.util.format.PodFormat;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
@@ -131,6 +138,27 @@ public class StatefulSetsController {
         result.put("code", 1200);
         result.put("message", "获取 StatefulSet Yaml 成功");
         result.put("data", statefulSetYaml);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getStatefulSetResources")
+    public String getStatefulSetResources(String name,String namespace){
+        System.out.println(name + namespace);
+
+        PodsServiceImpl podsService = new PodsServiceImpl();
+        StatefulSet statefulSet = statefulSetsService.getStatefulSetByNameAndNamespace(name, namespace);
+        String uid = statefulSet.getMetadata().getUid();
+        Map<String, String> matchLabels = statefulSet.getSpec().getSelector().getMatchLabels();
+//        System.out.println(matchLabels);
+        Map<String, Object> result = new HashMap<>();
+        List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
+
+
+        result.put("code", 1200);
+        result.put("message", "获取 StatefulSet Resources 成功");
+        result.put("dataStatefulSet", statefulSet);
+        result.put("dataPods", PodFormat.formatPodList(pods));
 
         return JSON.toJSONString(result);
     }
