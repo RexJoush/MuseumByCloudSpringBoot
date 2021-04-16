@@ -70,15 +70,7 @@ public class GraphNode {
         this.category = category;
     }
 
-//    public GraphNode(int id, String name, String symbolSize, String value, int category) {
-//        this.id = id;
-//        this.name = name;
-//        this.symbolSize = symbolSize;
-//        this.value = value;
-//        this.category = category;
-//    }
-
-        public GraphNode(int id, String name, String symbolSize, double x, double y, String value, int category) {
+    public GraphNode(int id, String name, String symbolSize, double x, double y, String value, int category) {
         this.id = id;
         this.name = name;
         this.symbolSize = symbolSize;
@@ -89,5 +81,18 @@ public class GraphNode {
     }
 
     public GraphNode() {
+    }
+
+    @Override
+    public String toString() {
+        return "GraphNode{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", symbolSize='" + symbolSize + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                ", value='" + value + '\'' +
+                ", category=" + category +
+                '}';
     }
 }

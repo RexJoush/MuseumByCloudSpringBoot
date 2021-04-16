@@ -22,4 +22,11 @@ public class GraphCategory {
 
     public GraphCategory() {
     }
+
+    @Override
+    public String toString() {
+        return "GraphCategory{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

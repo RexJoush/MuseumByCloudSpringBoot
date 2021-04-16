@@ -48,6 +48,15 @@ public class ClusterGraph {
     public void setCategories(List<GraphCategory> categories) {
         this.categories = categories;
     }
+
+    @Override
+    public String toString() {
+        return "ClusterGraph{" +
+                "nodes=" + nodes +
+                ", links=" + links +
+                ", categories=" + categories +
+                '}';
+    }
 }
 
 

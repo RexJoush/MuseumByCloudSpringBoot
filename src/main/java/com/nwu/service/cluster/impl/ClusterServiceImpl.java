@@ -5,14 +5,12 @@ package com.nwu.service.cluster.impl;
  * @time 2021.04.13
  */
 
-import com.nwu.entity.cluster.ClusterGraph;
-import com.nwu.entity.cluster.GraphCategory;
-import com.nwu.entity.cluster.GraphLink;
-import com.nwu.entity.cluster.GraphNode;
+import com.nwu.entity.cluster.*;
 import com.nwu.service.cluster.ClusterService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.Pod;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -22,6 +20,7 @@ import java.util.List;
 /**
  * Cluster Service 实现类
  */
+@Service
 public class ClusterServiceImpl implements ClusterService {
 
     /**
@@ -43,74 +42,48 @@ public class ClusterServiceImpl implements ClusterService {
         // 类别列表
         List<GraphCategory> categories = new ArrayList<>();
 
+        categories.add(new GraphCategory("主节点"));
+        categories.add(new GraphCategory("节点"));
+
         int index = 0; // 所有图节点的 id 序列
 
         // 获取所有节点
-        List<Node> items = KubernetesUtils.client.nodes().list().getItems();
+         List<Node> items = KubernetesUtils.client.nodes().list().getItems();
+//        List<Node> items = KubernetesUtils.client.nodes().withLabelIn("node-type", "normal-node", "master-node").list().getItems();
+
 
         // 获取主节点坐标
         List<Coordinate> coordinates = getNodeCoordinate(items.size());
 
-
-        // 遍历 node，添加 node 的图节点
-        for (Node item : items) {
-            // 新建一个 图节点，node 节点
+        for (int i = 0; i < items.size(); i++) {
             GraphNode node = new GraphNode();
-            String name = item.getMetadata().getName();
+            String name = items.get(i).getMetadata().getName();
+            GraphCategory category = new GraphCategory("容器"+(i+1));
+            categories.add(category);
             node.setId(index);
-            node.setName(name);
-            if (name.contains("master")){
-                node.setSymbolSize("66");
-                node.setValue("Master Node");
-            } else if (name.contains("edge")){
-                node.setSymbolSize("50");
-                node.setValue("Node");
-            } else {
-                node.setSymbolSize("50");
-                node.setValue("Edge Node");
-            }
-            // 判断节点该往那个方向发展
-            switch (index % 4){
-                // 第一象限，右下角
-                case 0:
-                    node.setX(index);
-                    node.setY(index);
-                    break;
-                // 第二象限，左下角
-                case 1:
-                    node.setX(index * 10);
-                    node.setY(index * -10);
-                    break;
-                // 第三象限，左上角
-                case 2:
-                    node.setX(index * -10);
-                    node.setY(index * -10);
-                    break;
-                // 第四象限，右上角
-                case 3:
-                    node.setX(index * -10);
-                    node.setY(index * 10);
-                    break;
-                default:
-                    node.setX(index * 20);
-                    node.setY(index * 20);
-                    break;
-            }
-            // 添加节点进入图节点中
-            nodes.add(node);
+            node.setValue(name);
 
-            // 记录 pod 节点的坐标值
-            int subIndex = 0;
+            if ("master-node".equals(items.get(i).getMetadata().getLabels().get("node-type"))) {
+                node.setSymbolSize("40");
+                node.setCategory(0);
+            } else {
+                node.setSymbolSize("30");
+                node.setName("Node");
+                node.setCategory(1);
+            }
+
+            node.setX(coordinates.get(i).getX());
+            node.setY(coordinates.get(i).getY());
+
+            // 添加主节点
+            nodes.add(node);
+            // 记录当前 node 的 id 值
+            int anchorPoint = index;
+            index++;
+
             // 获取当前节点的 pod 列表
             List<Pod> pods = KubernetesUtils.client.pods().inAnyNamespace().withField("spec.nodeName", name).list().getItems();
 
-            // 记录当前节点的基点
-            int anchorPoint = index;
-
-            // id 值自增
-            index++;
-
-            // 遍历 pod 列表
             for (Pod pod : pods) {
                 // 新建图节点
                 GraphNode subNode = new GraphNode();
@@ -122,40 +95,57 @@ public class ClusterServiceImpl implements ClusterService {
                 // 设置图 pod 节点 id
                 subNode.setId(index);
                 // 设置图 pod 节点名称
-                subNode.setName(podName + "," + podNamespace);
+                subNode.setName("Pod");
 
-                // 判断节点该往那个方向发展
-                switch (anchorPoint % 4){
-                    // 第一象限，右下角
-                    case 0:
-                        node.setX(anchorPoint);
-                        break;
-                    // 第二象限，左下角
-                    case 1:
-                        node.setX(index + 1);
-                        node.setY(index - 1);
-                        break;
-                    // 第三象限，左上角
-                    case 2:
-                        node.setX(index - 1);
-                        node.setY(index - 1);
-                        break;
-                    // 第四象限，右上角
-                    case 3:
-                        node.setX(index - 1);
-                        node.setY(index + 1);
-                        break;
-                    default:
-                        node.setX(index + 2);
-                        node.setY(index + 2);
-                        break;
-                }
+                // 设置 值
+                subNode.setValue(podName + "," + podNamespace);
 
+                // 设置样式
+                subNode.setSymbolSize("15");
+                // 设置坐标
+                Coordinate subNodeCoordinate = getSubNodeCoordinate(coordinates.get(i));
+                subNode.setX(subNodeCoordinate.getX());
+                subNode.setY(subNodeCoordinate.getY());
+                subNode.setCategory(i + 2);
+
+                // 新建连接线
+                GraphLink link = new GraphLink();
+                link.setSource(index);
+                link.setTarget(anchorPoint);
+
+                // 加入连接线集合
+                links.add(link);
+                // 加入节点集合
+                nodes.add(subNode);
+                index++;
             }
+
         }
+
+        graph.setNodes(nodes);
+        graph.setLinks(links);
+        graph.setCategories(categories);
 
         return graph;
     }
+
+    /**
+     * 根据父节点的极坐标角度范围获取子节点的直角坐标值
+     * @param coordinate 父节点
+     * @return 子节点直角坐标
+     */
+    private Coordinate getSubNodeCoordinate(Coordinate coordinate) {
+
+        // 获取子节点的坐标范围上下限
+        double low = coordinate.getSpanLow();
+        double high = coordinate.getSpanHigh();
+
+        double rho = Math.round(Math.random() * 100 + 50);
+        double theta = Math.random() * (high - low) + low;
+
+        return new Coordinate(rho * Math.cos(theta), rho * Math.sin(theta), 0.0, 0.0);
+    }
+
 
     /**
      * 获取主节点的坐标
@@ -181,44 +171,14 @@ public class ClusterServiceImpl implements ClusterService {
             // 极直转换
             coordinate.setX(rho * Math.cos(theta));
             coordinate.setY(rho * Math.sin(theta));
+
+            // 设置子节点的随机范围
+            coordinate.setSpanLow(theta - span / 2);
+            coordinate.setSpanHigh(theta + span / 2);
+
             coordinates.add(coordinate);
         }
         return coordinates;
     }
 
-
-
-
-    public int getRandom(){
-        return (int) Math.round(Math.random() * 100);
-    }
-}
-
-class Coordinate {
-    double x;
-    double y;
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public Coordinate() {
-    }
-
-    public Coordinate(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
 }

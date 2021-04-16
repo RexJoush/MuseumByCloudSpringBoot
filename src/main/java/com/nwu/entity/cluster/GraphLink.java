@@ -33,4 +33,12 @@ public class GraphLink  {
 
     public GraphLink() {
     }
+
+    @Override
+    public String toString() {
+        return "GraphLink{" +
+                "source=" + source +
+                ", target=" + target +
+                '}';
+    }
 }
