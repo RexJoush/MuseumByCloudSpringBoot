@@ -9,7 +9,7 @@ package com.nwu.entity.workload;
  * Job 类
  * 保存前端需要信息
  */
-public class zqyJob {
+public class JobInformation {
     private String status;
     private String name;
     private String namespace;
