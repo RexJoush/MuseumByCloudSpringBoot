@@ -6,11 +6,15 @@ import com.nwu.service.EdgeService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.VolumeDevice;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rex Joush
@@ -23,9 +27,12 @@ import java.util.List;
 @Service
 public class EdgeServiceImpl implements EdgeService {
 
+    @Resource
+    private CustomizeServiceImpl customizeService;
 
     /*
-        所有的 node，master 节点的包含标签 ，node-type.，值为 normal-node
+        所有的 master 节点的包含标签 ，node-type，值为 master-node
+        所有的 node 节点的包含标签 ，node-type，值为 normal-node
         所有的 edge 节点包含标签 withLabel("metadata.labels", "node-role.kubernetes.io/edge")
      */
     @Override
@@ -39,7 +46,7 @@ public class EdgeServiceImpl implements EdgeService {
     }
 
 
-    public ClusterGraph initEdgeGraph(){
+    public ClusterGraph initEdgeGraph() throws FileNotFoundException {
         // 初始化
         ClusterGraph graph = new ClusterGraph();
         // 图节点列表
@@ -69,14 +76,10 @@ public class EdgeServiceImpl implements EdgeService {
             node.setId(index);
             node.setValue(name);
 
-            if ("master-node".equals(items.get(i).getMetadata().getLabels().get("node-type"))) {
-                node.setSymbolSize("40");
-                node.setCategory(0);
-            } else {
-                node.setSymbolSize("30");
-                node.setName("Node");
-                node.setCategory(1);
-            }
+            // 设置大小
+            node.setSymbolSize("30");
+            node.setName("Edge Node");
+            node.setCategory(0);
 
             node.setX(coordinates.get(i).getX());
             node.setY(coordinates.get(i).getY());
@@ -104,7 +107,8 @@ public class EdgeServiceImpl implements EdgeService {
                 subNode.setName("Pod");
 
                 // 设置 值
-                subNode.setValue(podName + "," + podNamespace);
+                subNode.setValue(podName);
+                subNode.setNamespace(podNamespace);
 
                 // 设置样式
                 subNode.setSymbolSize("15");
@@ -112,7 +116,7 @@ public class EdgeServiceImpl implements EdgeService {
                 Coordinate subNodeCoordinate = getSubNodeCoordinate(coordinates.get(i));
                 subNode.setX(subNodeCoordinate.getX());
                 subNode.setY(subNodeCoordinate.getY());
-                subNode.setCategory(i + 2);
+                subNode.setCategory(i + 1);
 
                 // 新建连接线
                 GraphLink link = new GraphLink();
@@ -126,7 +130,48 @@ public class EdgeServiceImpl implements EdgeService {
                 index++;
             }
 
+            // 获取设备列表
+            List<Map<Object, Object>> devices = (List<Map<Object, Object>>) customizeService.getCustomResourceDefinitionObjectListByName("devices.devices.kubeedge.io").get("items");
+
+            // 遍历设备列表
+            for (Map<Object, Object> device : devices) {
+                // 新建图节点
+                GraphNode deviceNode = new GraphNode();
+                Map<Object, Object> metadata = (Map<Object, Object>) device.get("metadata");
+                String deviceName = (String) metadata.get("name");
+                String deviceNamespace = (String) metadata.get("namespace");
+
+                // 设置图 pod 节点 id
+                deviceNode.setId(index);
+                // 设置图 pod 节点名称
+                deviceNode.setName("Device");
+
+                // 设置 值
+                deviceNode.setValue(deviceName);
+                deviceNode.setNamespace(deviceNamespace);
+
+                // 设置样式
+                deviceNode.setSymbolSize("15");
+                // 设置坐标
+                Coordinate subNodeCoordinate = getSubNodeCoordinate(coordinates.get(i));
+                deviceNode.setX(subNodeCoordinate.getX());
+                deviceNode.setY(subNodeCoordinate.getY());
+                deviceNode.setCategory(i + 2);
+
+                // 新建连接线
+                GraphLink link = new GraphLink();
+                link.setSource(index);
+                link.setTarget(anchorPoint);
+
+                // 加入连接线集合
+                links.add(link);
+                // 加入节点集合
+                nodes.add(deviceNode);
+                index++;
+            }
         }
+
+        categories.add(new GraphCategory("设备"));
 
         graph.setNodes(nodes);
         graph.setLinks(links);

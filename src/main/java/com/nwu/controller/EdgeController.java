@@ -6,6 +6,7 @@ package com.nwu.controller;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.cluster.ClusterGraph;
 import com.nwu.service.impl.EdgeServiceImpl;
 import io.fabric8.kubernetes.api.model.Node;
 import io.kubernetes.client.openapi.ApiException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +53,19 @@ public class EdgeController {
         result.put("code", 1200);
         result.put("message", "获取 Edge Node 列表成功");
         result.put("data", node);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/initEdgeGraph")
+    public String initEdgeGraph() throws FileNotFoundException {
+        Map<String, Object> result = new HashMap<>();
+
+        ClusterGraph graph = nodesService.initEdgeGraph();
+
+        result.put("code", 1200);
+        result.put("message", "获取边缘图表成功");
+        result.put("data", graph);
 
         return JSON.toJSONString(result);
     }

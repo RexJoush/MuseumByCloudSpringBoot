@@ -12,6 +12,7 @@ public class GraphNode {
     private double x;
     private double y;
     private String value;
+    private String namespace;
     private int category;
 
     public int getId() {
@@ -62,6 +63,14 @@ public class GraphNode {
         this.value = value;
     }
 
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
     public int getCategory() {
         return category;
     }
@@ -70,13 +79,14 @@ public class GraphNode {
         this.category = category;
     }
 
-    public GraphNode(int id, String name, String symbolSize, double x, double y, String value, int category) {
+    public GraphNode(int id, String name, String symbolSize, double x, double y, String value, String namespace, int category) {
         this.id = id;
         this.name = name;
         this.symbolSize = symbolSize;
         this.x = x;
         this.y = y;
         this.value = value;
+        this.namespace = namespace;
         this.category = category;
     }
 

@@ -48,8 +48,8 @@ public class ClusterServiceImpl implements ClusterService {
         int index = 0; // 所有图节点的 id 序列
 
         // 获取所有节点
-         List<Node> items = KubernetesUtils.client.nodes().list().getItems();
-//        List<Node> items = KubernetesUtils.client.nodes().withLabelIn("node-type", "normal-node", "master-node").list().getItems();
+        // List<Node> items = KubernetesUtils.client.nodes().list().getItems();
+        List<Node> items = KubernetesUtils.client.nodes().withLabelIn("node-type", "normal-node", "master-node").list().getItems();
 
 
         // 获取主节点坐标
@@ -65,6 +65,7 @@ public class ClusterServiceImpl implements ClusterService {
 
             if ("master-node".equals(items.get(i).getMetadata().getLabels().get("node-type"))) {
                 node.setSymbolSize("40");
+                node.setName("Master Node");
                 node.setCategory(0);
             } else {
                 node.setSymbolSize("30");
@@ -98,7 +99,8 @@ public class ClusterServiceImpl implements ClusterService {
                 subNode.setName("Pod");
 
                 // 设置 值
-                subNode.setValue(podName + "," + podNamespace);
+                subNode.setValue(podName);
+                subNode.setNamespace(podNamespace);
 
                 // 设置样式
                 subNode.setSymbolSize("15");
