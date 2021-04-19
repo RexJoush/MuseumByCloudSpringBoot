@@ -1,7 +1,7 @@
 package com.nwu.service.cluster.impl;
 
 import com.nwu.dao.cluster.NodeUsageDao;
-import com.nwu.entity.cluster.NodeDefinition;
+import com.nwu.entity.cluster.Definition.NodeDefinition;
 import com.nwu.entity.cluster.NodeUsage;
 import com.nwu.entity.workload.Usage;
 import com.nwu.service.cluster.NodesService;

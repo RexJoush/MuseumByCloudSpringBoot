@@ -1,4 +1,4 @@
-package com.nwu.entity.cluster;
+package com.nwu.entity.cluster.graph;
 
 /**
  * @author Rex Joush

@@ -1,5 +1,6 @@
 package com.nwu.service.cluster.impl;
 
+import com.nwu.entity.cluster.Definition.NamespaceDefinition;
 import com.nwu.entity.cluster.NamespaceDetails;
 import com.nwu.entity.cluster.NamespaceName;
 import com.nwu.entity.common.EventDefinition;
@@ -26,11 +27,25 @@ public class NamespacesServiceImpl implements NamespacesService {
 
 
     @Override
-    public List<Namespace> getAllNamespaces(){
+    public List<NamespaceDefinition> getAllNamespaces(){
 
+        // 自定义结果集
+        List<NamespaceDefinition> result = new ArrayList<>();
+
+        // 获取命名空间
         List<Namespace> items = KubernetesUtils.client.namespaces().list().getItems();
 
-        return items;
+        // 封装结果
+        for (Namespace item : items) {
+            NamespaceDefinition definition = new NamespaceDefinition();
+            definition.setStatus("Active".equals(item.getStatus().getPhase()));
+            definition.setName(item.getMetadata().getName());
+            definition.setTime(item.getMetadata().getCreationTimestamp().replaceAll("[TZ]", " "));
+
+            result.add(definition);
+        }
+
+        return result;
 
     }
 

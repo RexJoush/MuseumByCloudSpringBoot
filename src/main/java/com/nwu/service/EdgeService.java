@@ -6,7 +6,7 @@ package com.nwu.service;
  */
 
 
-import com.nwu.entity.cluster.ClusterGraph;
+import com.nwu.entity.cluster.graph.ClusterGraph;
 import io.fabric8.kubernetes.api.model.Node;
 
 import java.io.FileNotFoundException;

@@ -6,7 +6,7 @@ package com.nwu.controller;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.entity.cluster.ClusterGraph;
+import com.nwu.entity.cluster.graph.ClusterGraph;
 import com.nwu.service.impl.EdgeServiceImpl;
 import io.fabric8.kubernetes.api.model.Node;
 import io.kubernetes.client.openapi.ApiException;

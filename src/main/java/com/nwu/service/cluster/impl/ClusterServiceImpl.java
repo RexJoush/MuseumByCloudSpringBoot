@@ -5,7 +5,7 @@ package com.nwu.service.cluster.impl;
  * @time 2021.04.13
  */
 
-import com.nwu.entity.cluster.*;
+import com.nwu.entity.cluster.graph.*;
 import com.nwu.service.cluster.ClusterService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Node;
@@ -42,8 +42,12 @@ public class ClusterServiceImpl implements ClusterService {
         // 类别列表
         List<GraphCategory> categories = new ArrayList<>();
 
-        categories.add(new GraphCategory("主节点"));
-        categories.add(new GraphCategory("节点"));
+        categories.add(new GraphCategory(new ItemStyle("#da723c"),"主节点"));         // 0
+        categories.add(new GraphCategory(new ItemStyle("#b68973"),"节点"));           // 1
+        categories.add(new GraphCategory(new ItemStyle("#32CD32"),"容器（运行中）"));  // 2
+        categories.add(new GraphCategory(new ItemStyle("#F56C6C"),"容器（失败）"));    // 3
+        categories.add(new GraphCategory(new ItemStyle("#409EFF"),"容器（成功）"));    // 4
+        int defaultValue = 0;
 
         int index = 0; // 所有图节点的 id 序列
 
@@ -58,8 +62,6 @@ public class ClusterServiceImpl implements ClusterService {
         for (int i = 0; i < items.size(); i++) {
             GraphNode node = new GraphNode();
             String name = items.get(i).getMetadata().getName();
-            GraphCategory category = new GraphCategory("容器"+(i+1));
-            categories.add(category);
             node.setId(index);
             node.setValue(name);
 
@@ -108,7 +110,22 @@ public class ClusterServiceImpl implements ClusterService {
                 Coordinate subNodeCoordinate = getSubNodeCoordinate(coordinates.get(i));
                 subNode.setX(subNodeCoordinate.getX());
                 subNode.setY(subNodeCoordinate.getY());
-                subNode.setCategory(i + 2);
+
+                // 设置类别
+                switch (pod.getStatus().getPhase()){
+                    case "Running" :
+                        subNode.setCategory(2);
+                        break;
+                    case "Pending" :
+                        subNode.setCategory(3);
+                        break;
+                    case "Succeeded" :
+                        subNode.setCategory(4);
+                        break;
+                    default:
+                        defaultValue++;
+                        subNode.setCategory(5);
+                }
 
                 // 新建连接线
                 GraphLink link = new GraphLink();
@@ -122,6 +139,11 @@ public class ClusterServiceImpl implements ClusterService {
                 index++;
             }
 
+        }
+
+        // 如果有例外的类别，则添加此类别
+        if (defaultValue > 0){
+            categories.add(new GraphCategory(new ItemStyle("#03506f"), "容器"));           // 5
         }
 
         graph.setNodes(nodes);
@@ -142,7 +164,7 @@ public class ClusterServiceImpl implements ClusterService {
         double low = coordinate.getSpanLow();
         double high = coordinate.getSpanHigh();
 
-        double rho = Math.round(Math.random() * 100 + 50);
+        double rho = Math.round(Math.random() * 1000 + 200);
         double theta = Math.random() * (high - low) + low;
 
         return new Coordinate(rho * Math.cos(theta), rho * Math.sin(theta), 0.0, 0.0);
@@ -165,7 +187,7 @@ public class ClusterServiceImpl implements ClusterService {
             Coordinate coordinate = new Coordinate();
 
             // ρ 值
-            double rho = 10;
+            double rho = 100;
 
             // θ 值，通过旋转 span 个角度获取每个角度值
             double theta = i * span;

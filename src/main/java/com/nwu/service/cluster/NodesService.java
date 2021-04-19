@@ -1,11 +1,10 @@
 package com.nwu.service.cluster;
 
-import com.nwu.entity.cluster.NodeDefinition;
+import com.nwu.entity.cluster.Definition.NodeDefinition;
 import com.nwu.entity.cluster.NodeUsage;
 import io.fabric8.kubernetes.api.model.Node;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author zqy

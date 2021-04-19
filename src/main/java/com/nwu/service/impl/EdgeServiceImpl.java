@@ -1,12 +1,11 @@
 package com.nwu.service.impl;
 
 
-import com.nwu.entity.cluster.*;
+import com.nwu.entity.cluster.graph.*;
 import com.nwu.service.EdgeService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.VolumeDevice;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -57,13 +56,17 @@ public class EdgeServiceImpl implements EdgeService {
         // 类别列表
         List<GraphCategory> categories = new ArrayList<>();
 
-        categories.add(new GraphCategory("边缘节点"));
+        categories.add(new GraphCategory(new ItemStyle("#b68973"),"节点"));           // 0
+        categories.add(new GraphCategory(new ItemStyle("#32CD32"),"容器（运行中）"));  // 1
+        categories.add(new GraphCategory(new ItemStyle("#F56C6C"),"容器（失败）"));    // 2
+        categories.add(new GraphCategory(new ItemStyle("#409EFF"),"容器（成功）"));    // 3
+        categories.add(new GraphCategory(new ItemStyle("#91684a"),"设备"));           // 4
 
+        int defaultValue = 0;
         int index = 0; // 所有图节点的 id 序列
 
         // 获取所有边缘节点
         List<Node> items = KubernetesUtils.client.nodes().withLabelIn("node-type", "edge-node").list().getItems();
-
 
         // 获取主节点坐标
         List<Coordinate> coordinates = getNodeCoordinate(items.size());
@@ -71,8 +74,6 @@ public class EdgeServiceImpl implements EdgeService {
         for (int i = 0; i < items.size(); i++) {
             GraphNode node = new GraphNode();
             String name = items.get(i).getMetadata().getName();
-            GraphCategory category = new GraphCategory("容器"+(i+1));
-            categories.add(category);
             node.setId(index);
             node.setValue(name);
 
@@ -116,7 +117,22 @@ public class EdgeServiceImpl implements EdgeService {
                 Coordinate subNodeCoordinate = getSubNodeCoordinate(coordinates.get(i));
                 subNode.setX(subNodeCoordinate.getX());
                 subNode.setY(subNodeCoordinate.getY());
-                subNode.setCategory(i + 1);
+
+                // 设置类别
+                switch (pod.getStatus().getPhase()){
+                    case "Running" :
+                        subNode.setCategory(1);
+                        break;
+                    case "Pending" :
+                        subNode.setCategory(2);
+                        break;
+                    case "Succeeded" :
+                        subNode.setCategory(3);
+                        break;
+                    default:
+                        defaultValue++;
+                        subNode.setCategory(5);
+                }
 
                 // 新建连接线
                 GraphLink link = new GraphLink();
@@ -156,7 +172,7 @@ public class EdgeServiceImpl implements EdgeService {
                 Coordinate subNodeCoordinate = getSubNodeCoordinate(coordinates.get(i));
                 deviceNode.setX(subNodeCoordinate.getX());
                 deviceNode.setY(subNodeCoordinate.getY());
-                deviceNode.setCategory(i + 2);
+                deviceNode.setCategory(4);
 
                 // 新建连接线
                 GraphLink link = new GraphLink();
@@ -171,7 +187,10 @@ public class EdgeServiceImpl implements EdgeService {
             }
         }
 
-        categories.add(new GraphCategory("设备"));
+        // 如果有例外的类别，则添加此类别
+        if (defaultValue > 0){
+            categories.add(new GraphCategory(new ItemStyle("#03506f"), "容器"));           // 5
+        }
 
         graph.setNodes(nodes);
         graph.setLinks(links);

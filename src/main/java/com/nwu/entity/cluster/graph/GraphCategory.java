@@ -1,4 +1,4 @@
-package com.nwu.entity.cluster;
+package com.nwu.entity.cluster.graph;
 
 /**
  * @author Rex Joush
@@ -6,7 +6,10 @@ package com.nwu.entity.cluster;
  */
 // 拓扑图中的图例
 public class GraphCategory {
+
+    private ItemStyle itemStyle;
     private String name;
+
 
     public String getName() {
         return name;
@@ -16,7 +19,16 @@ public class GraphCategory {
         this.name = name;
     }
 
-    public GraphCategory(String name) {
+    public ItemStyle getItemStyle() {
+        return itemStyle;
+    }
+
+    public void setItemStyle(ItemStyle itemStyle) {
+        this.itemStyle = itemStyle;
+    }
+
+    public GraphCategory(ItemStyle itemStyle, String name) {
+        this.itemStyle = itemStyle;
         this.name = name;
     }
 
@@ -29,4 +41,6 @@ public class GraphCategory {
                 "name='" + name + '\'' +
                 '}';
     }
+
+
 }

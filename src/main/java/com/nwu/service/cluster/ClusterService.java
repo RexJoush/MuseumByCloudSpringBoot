@@ -5,7 +5,7 @@ package com.nwu.service.cluster;
  * @time 2021.04.13
  */
 
-import com.nwu.entity.cluster.ClusterGraph;
+import com.nwu.entity.cluster.graph.ClusterGraph;
 
 /**
  * 集群整体部分的 service 层
