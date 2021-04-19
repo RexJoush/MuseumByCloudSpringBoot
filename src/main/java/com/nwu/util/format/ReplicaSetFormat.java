@@ -1,6 +1,64 @@
-package com.nwu.util.format;/**
+package com.nwu.util.format;
+
+import com.nwu.entity.workload.JobInformation;
+import com.nwu.entity.workload.ReplicaSetInformation;
+import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.FilterPodsByControllerUid;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
+import io.fabric8.kubernetes.api.model.batch.Job;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+/**
  * @author zqy
  * @time 2021.04.16
  */
 public class ReplicaSetFormat {
+    public static List<ReplicaSetInformation> formatReplicaSetList(List<ReplicaSet> replicaSetList){
+
+        List<ReplicaSetInformation> replicaSetInformationList = new ArrayList<>();
+
+
+        Iterator<ReplicaSet> iterator = replicaSetList.iterator();
+
+        while(iterator.hasNext()){
+
+            //获取ReplicaSet
+            ReplicaSet aReplicaSet = iterator.next();
+            Map<String, String> matchLabels = aReplicaSet.getSpec().getSelector().getMatchLabels();
+
+            //获取ReplicaSet 对应 Pods
+            PodsServiceImpl podsService = new PodsServiceImpl();
+            List<Pod> pods = podsService.findPodsByLabels(matchLabels);
+            pods = FilterPodsByControllerUid.filterPodsByControllerUid(aReplicaSet.getMetadata().getUid(), pods);
+
+            String status = "1";
+            int runningPods = 0;
+            for(int i = 0; i < pods.size(); i ++){
+                Pod tmpPod = pods.get(i);
+                if(tmpPod.getStatus().getPhase().equals("Running")){
+                    runningPods += 1;
+                }
+                else if(tmpPod.getStatus().getPhase().equals("Pending")){
+                    status = "0";
+                }
+            }
+
+            //标准化 ReplicaSet
+            ReplicaSetInformation replicaSetInformation = new ReplicaSetInformation();
+            replicaSetInformation.setName(aReplicaSet.getMetadata().getName());
+            replicaSetInformation.setNamespace(aReplicaSet.getMetadata().getNamespace());
+            replicaSetInformation.setCreationTimestamp(aReplicaSet.getMetadata().getCreationTimestamp());
+            replicaSetInformation.setStatus(status);
+            replicaSetInformation.setRunningPods(runningPods);
+            replicaSetInformation.setReplicas(aReplicaSet.getSpec().getReplicas());
+
+            replicaSetInformationList.add(replicaSetInformation);
+        }
+        return replicaSetInformationList;
+    }
 }

@@ -12,6 +12,7 @@ import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.StatefulSetsServiceImpl;
 import com.nwu.util.FilterPodsByControllerUid;
 import com.nwu.util.format.PodFormat;
+import com.nwu.util.format.StatefulSetFormat;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.Service;
@@ -54,7 +55,7 @@ public class StatefulSetsController {
 
         result.put("code", 1200);
         result.put("message", "获取 StatefulSet 列表成功");
-        result.put("data", statefulSetList);
+        result.put("data", StatefulSetFormat.formatStatefulSetList(statefulSetList));
 
         return JSON.toJSONString(result);
 

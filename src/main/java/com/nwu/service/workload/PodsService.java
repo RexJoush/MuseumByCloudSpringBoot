@@ -73,8 +73,7 @@ public interface PodsService {
 
     /**
      * 查找被匹配的 Pods
-     * @param labelsKey 标签键
-     * @param labelsValue 标签值
+     * @param labels 标签键:标签值
      * @return 返回被匹配的 Pods
      */
     List<Pod> findPodsByLabels(Map<String, String> labels);

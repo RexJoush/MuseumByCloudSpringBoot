@@ -1,8 +1,12 @@
 package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.workload.JobInformation;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
+import com.nwu.service.workload.impl.JobsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.KubernetesUtils;
+import com.nwu.util.format.JobFormat;
 import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
@@ -16,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -150,21 +155,53 @@ public class CronJobsController {
         return JSON.toJSONString(result);
     }
 
-//    @RequestMapping("/getCronJobPodsByNameAndNamespace")
-//    public String getCronJobPodsByNameAndNamespace(String name, String namespace){
-//
-//        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
-//        PodsServiceImpl podsService = new PodsServiceImpl();
-//        Map<String, String> matchLabels = aCronJob.getSpec().getSelector().getMatchLabels();
-//        List<Pod> pods = podsService.findPodsByLabels(matchLabels);
-//
-//        Map<String, Object> result = new HashMap<>();
-//
-//        result.put("code", 1200);
-//        result.put("message", "通过name和namespace获取 Job 和 Pods 成功");
-//        result.put("dataJob", aJob);
-//        result.put("dataPods", PodFormat.formatPodList(pods));
-//
-//        return JSON.toJSONString(result);
-//    }
+    @RequestMapping("/getCronJobResources")
+    public String getCronJobResources(String name, String namespace){
+
+        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
+        String cronJobUid = aCronJob.getMetadata().getUid();
+        List<Job> jobList = KubernetesUtils.client.batch().jobs().inAnyNamespace().list().getItems();
+        int amount = 0;
+        for(int i = 0; i < jobList.size(); i ++){
+            Job tmp = jobList.get(i);
+            for(int j = tmp.getMetadata().getOwnerReferences().size() - 1; j >= 0; j --){
+                if(tmp.getMetadata().getOwnerReferences().get(j).getUid().equals(cronJobUid)){
+                    jobList.set(amount ++, tmp);
+                    break;
+                }
+            }
+        }
+
+        List<JobInformation> jobInformationList = JobFormat.formatJobList(jobList.subList(0, amount));
+        System.out.println(jobInformationList);
+        System.out.println(amount);
+        int i = 0;
+        int j = amount - 1;
+        while(i < j){
+            while(i < j){
+                if(jobInformationList.get(i).getRunningPods() > 0) break;
+                i ++;
+            }
+            while(i < j){
+                if(jobInformationList.get(j).getRunningPods() == 0) break;
+                j --;
+            }
+            //交换，运行中Job在后
+            JobInformation jobInformation = new JobInformation();
+            jobInformation = jobInformationList.get(i);
+            jobInformationList.set(i, jobInformationList.get(j));
+            jobInformationList.set(j, jobInformation);
+        }
+        int mid = jobInformationList.get(i).getRunningPods() > 0 ? i : i + 1;
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过name和namespace获取 cronJob 的 Resources 成功");
+        result.put("dataCronJob", aCronJob);
+        result.put("dataJods", jobInformationList.subList(0, mid));
+        result.put("dataRunningJods", jobInformationList.subList(mid, amount));
+        System.out.println(jobInformationList);
+        return JSON.toJSONString(result);
+    }
 }
