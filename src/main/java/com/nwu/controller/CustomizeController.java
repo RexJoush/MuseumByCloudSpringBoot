@@ -154,7 +154,6 @@ public class CustomizeController {
     @RequestMapping("/getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace")
     public String getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws ApiException, FileNotFoundException {
 
-
         Map<String, Object> object = customizeService.getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(crdName, objName, nameSpace);
         Map<String, Object> result = new HashMap<>();
         result.put("code", 1200);
@@ -175,4 +174,17 @@ public class CustomizeController {
 
         return JSON.toJSONString(result);
     }
+    @RequestMapping("/getObjectYamlByName")
+    public String getObjectYamlByName(String crdName, String objName, String nameSpace) throws FileNotFoundException {
+        String crdYaml = customizeService.getObjectYamlByName(crdName,objName,nameSpace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 CRD Yaml 成功");
+        result.put("data", crdYaml);
+
+        return JSON.toJSONString(result);
+    }
+
 }

@@ -8,7 +8,10 @@ package com.nwu.service.impl;
 import com.nwu.service.CommonService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.HasMetadata;
+
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
+
+import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -95,5 +98,41 @@ public class CommonServiceImpl implements CommonService {
             return 1202;
         }
     }
+    @Override
+    public int changeCrdObjectByYaml(File yaml) {
 
+        try {
+            InputStream inputStream = new FileInputStream(yaml);
+
+            Ingress ingress = KubernetesUtils.client.extensions().ingresses().load(inputStream).get();
+
+            Boolean delete = KubernetesUtils.client.extensions().ingresses().inNamespace(ingress.getMetadata().getNamespace()).withName(ingress.getMetadata().getName()).delete();
+
+            InputStream inputStream2 = new FileInputStream(yaml);
+            CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
+                    .Builder()
+                    .withGroup("devices.kubeedge.io")
+                    .withKind("Device")
+                    .withName("devices.devices.kubeedge.io")
+                    .withPlural("devices")
+                    .withScope("Namespaced")
+                    .withVersion("v1alpha2")
+                    .build();
+
+            List<HasMetadata> orReplace = (List<HasMetadata>) KubernetesUtils.client.customResource(context).createOrReplace(inputStream2);
+
+            inputStream.close();
+
+            yaml.delete();
+
+            if (orReplace != null) {
+                return 1200;
+            } else {
+                return 1201;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1202;
+        }
+    }
 }

@@ -1,53 +1,40 @@
-apiVersion: v1
-kind: Service
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
 metadata:
-  annotations:
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"creationTimestamp":"2021-04-01T09:57:39Z","labels":{"app":"nginx","bbb":"bbb"},"managedFields":[{"apiVersion":"v1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:labels":{".":{},"f:app":{}}},"f:spec":{"f:externalTrafficPolicy":{},"f:ports":{".":{},"k:{\"port\":88,\"protocol\":\"TCP\"}":{".":{},"f:nodePort":{},"f:port":{},"f:protocol":{},"f:targetPort":{}}},"f:selector":{".":{},"f:app":{}},"f:sessionAffinity":{},"f:type":{}}},"manager":"kubectl","operation":"Update","time":"2021-04-01T09:57:39Z"},{"apiVersion":"v1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:labels":{"f:bbb":{}}}},"manager":"dashboard","operation":"Update","time":"2021-04-12T10:31:23Z"}],"name":"nginx-service","namespace":"default","resourceVersion":"7596843","selfLink":"/api/v1/namespaces/default/services/nginx-service","uid":"01a10194-50ad-4dc2-8191-4791758c64d2"},"spec":{"clusterIP":"10.0.0.252","externalTrafficPolicy":"Cluster","ports":[{"nodePort":40058,"port":88,"protocol":"TCP","targetPort":80}],"selector":{"app":"nginx"},"sessionAffinity":"None","type":"NodePort"},"status":{"loadBalancer":{}}}
-  creationTimestamp: '2021-04-01T09:57:39Z'
-  finalizers: []
-  labels:
-    app: nginx
-    bbb: bbb
-  managedFields:
-    - apiVersion: v1
-      fieldsType: FieldsV1
-      fieldsV1: {}
-      manager: dashboard
-      operation: Update
-      time: '2021-04-12T10:31:23Z'
-    - apiVersion: v1
-      fieldsType: FieldsV1
-      fieldsV1: {}
-      manager: kubectl
-      operation: Update
-      time: '2021-04-12T10:32:53Z'
-  name: nginx-service
-  namespace: default
-  ownerReferences: []
-  resourceVersion: '7597171'
-  selfLink: /api/v1/namespaces/default/services/nginx-service
-  uid: 01a10194-50ad-4dc2-8191-4791758c64d2
+  # 名字必需与下面的 spec 字段匹配，并且格式为 '<名称的复数形式>.<组名>'
+  name: crontabs.stable.example.com
 spec:
-  type: NodePort
-  clusterIP: 10.0.0.252
-  clusterIPs: []
-  externalIPs: []
-  externalTrafficPolicy: Cluster
-  ipFamilies: []
-  loadBalancerSourceRanges: []
-  ports:
-    - nodePort: 40058
-      port: 88
-      protocol: TCP
-      targetPort:
-        kind: 0
-        intVal: 80
-  selector:
-    app: nginx
-  sessionAffinity: None
-  topologyKeys: []
-status:
-  conditions: []
-  loadBalancer:
-    ingress: []
+  # 组名称，用于 REST API: /apis/<组>/<版本>
+  group: stable.example.com
+  # 列举此 CustomResourceDefinition 所支持的版本
+  versions:
+    - name: v1
+      # 每个版本都可以通过 served 标志来独立启用或禁止
+      served: true
+      # 其中一个且只有一个版本必需被标记为存储版本
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                cronSpec:
+                  type: string
+                image:
+                  type: string
+                replicas:
+                  type: integer
+  # 可以是 Namespaced 或 Cluster
+  scope: Namespaced
+  names:
+    # 名称的复数形式，用于 URL：/apis/<组>/<版本>/<名称的复数形式>
+    plural: crontabs
+    # 名称的单数形式，作为命令行使用时和显示时的别名
+    singular: crontab
+    # kind 通常是单数形式的驼峰编码（CamelCased）形式。你的资源清单会使用这一形式。
+    kind: CronTab
+    # shortNames 允许你在命令行使用较短的字符串来匹配资源
+    shortNames:
+      - ct

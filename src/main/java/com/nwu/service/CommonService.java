@@ -43,5 +43,6 @@ public interface CommonService {
      *          1202 表示文件有问题
      */
     int changeIngressesByYaml(File yaml);
+    int changeCrdObjectByYaml(File yaml);
 
 }

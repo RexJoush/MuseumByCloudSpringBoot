@@ -1,12 +1,10 @@
 package com.nwu.util;
 
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.*;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.*;
+import io.kubernetes.client.proto.Resource;
 
 /**
  * @author Rex Joush
@@ -35,13 +33,13 @@ public class KubernetesUtils {
     // 创建 Kubernetes Official RbacAuthorizationV1Api 客户端
     public static RbacAuthorizationV1Api rbacAuthorizationV1Api = new RbacAuthorizationV1Api();
 
+//    public static ApiextensionsV1Api apiextensionsV1Api= new ApiextensionsV1Api().getAPIResources().re;
 
     // 创建 Kubernetes Official CoreV1Api 客户端
     public static CoreV1Api coreV1Api = new CoreV1Api();
 
     // 创建 Kubernetes Official ExtensionsV1Beta1Api 客户端
     public static ExtensionsV1beta1Api extensionsV1beta1Api = new ExtensionsV1beta1Api();
-
     // 创建 Kubernetes Official BatchApi 客户端
     public static BatchV1Api batchV1Api = new BatchV1Api();
 
