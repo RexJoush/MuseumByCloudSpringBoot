@@ -2,14 +2,9 @@ package com.nwu.entity.workload;
 
 /**
  * @author zqy
- * @time 2021.04.16
+ * @time 2021.04.19
  */
-
-/**
- * Job 类
- * 保存前端需要信息
- */
-public class JobInformation {
+public class DaemonSetInformation {
     private String status;//状态
     private String name;//名称
     private String namespace;//命名空间
@@ -17,10 +12,10 @@ public class JobInformation {
     private int replicas;//期望的Pods数量
     private String creationTimestamp;//创建时间
 
-    public JobInformation() {
+    public DaemonSetInformation() {
     }
 
-    public JobInformation(String status, String name, String namespace, int runningPods, int replicas, String creationTimestamp) {
+    public DaemonSetInformation(String status, String name, String namespace, int runningPods, int replicas, String creationTimestamp) {
         this.status = status;
         this.name = name;
         this.namespace = namespace;
@@ -79,7 +74,7 @@ public class JobInformation {
 
     @Override
     public String toString() {
-        return "JobInformation{" +
+        return "DaemonSetInformation{" +
                 "status='" + status + '\'' +
                 ", name='" + name + '\'' +
                 ", namespace='" + namespace + '\'' +

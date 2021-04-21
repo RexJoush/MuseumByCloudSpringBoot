@@ -12,6 +12,7 @@ import com.nwu.service.workload.impl.DaemonSetsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.FilterPodsByControllerUid;
 import com.nwu.util.KubernetesUtils;
+import com.nwu.util.format.DaemonSetFormat;
 import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
@@ -53,7 +54,7 @@ public class DaemonSetsController {
 
         result.put("code", 1200);
         result.put("message", "获取 DaemonSet 列表成功");
-        result.put("data", daemonSets);
+        result.put("data", DaemonSetFormat.formatDaemonSetList(daemonSets));
 
         return JSON.toJSONString(result);
 
@@ -92,7 +93,6 @@ public class DaemonSetsController {
     @RequestMapping("/getDaemonSetResources")
     public String getDaemonSetResources(String name, String namespace){
 
-//        System.out.println(name + namespace);
         //获取 DaemonSet
         DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace(name, namespace);
         Map<String, String> matchLabels = aDaemonSet.getSpec().getSelector().getMatchLabels();
