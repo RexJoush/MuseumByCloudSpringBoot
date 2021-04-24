@@ -221,67 +221,100 @@ public class PodsServiceImpl implements PodsService {
     //command
     @Override
     public List<Pod> createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
-                                       String secretName, String images, String imagePullPolicy, String[] command, String[] args,
+                                       String secretName, String image, String imagePullPolicy, String[] command, String[] args,
                                        String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
 
-        String generateName = "";
-        String containerName = name;
-        if (amount > 1) {
-            generateName = name;
-            name = "";
-        }
+/**
+ * 测试的
+ */
+        System.out.println(name);
+        System.out.println(namespace);
+        System.out.println(image);
+        Pod testPod = new PodBuilder()
+                .withNewMetadata()
+                .withNamespace(namespace)
+                .withName(name)
+//                .withLabels(labels)
+//                .withAnnotations(annotations)
+                .endMetadata()
+                .withNewSpec()
+                .addNewContainer()
+                .withName(name)
+                .withImage(image)
+//                .withNewResources()
+//                .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
+//                .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
+//                .endResources()
+//                .withEnv(envVarList)
+                //addNewPort().withContainerPort(80).endPort()
+                .endContainer()
+                .endSpec().build();
+        testPod = KubernetesUtils.client.pods().inNamespace(namespace).create(testPod);
 
-        LocalObjectReference localObjectReference = new LocalObjectReference();
-        localObjectReference.setName(secretName);
-
-        ResourceRequirements resourceRequirements = new ResourceRequirements();
-        Quantity cpuLimitQu = new QuantityBuilder().withAmount(cpuLimit).build();
-        Quantity cpuRequestQu = new QuantityBuilder().withAmount(cpuRequest).build();
-        Quantity memoryLimitQu = new QuantityBuilder().withAmount(memoryLimit).build();
-        Quantity memoryRequestQu = new QuantityBuilder().withAmount(memoryRequest).build();
-
-        List<EnvVar> envVarList = new ArrayList<EnvVar>();
-        Set<String> keySet = envVar.keySet();
-
-        for (String key : keySet) {
-            String value = envVar.get(key);
-            EnvVar tmpEnvVar = new EnvVar();
-            tmpEnvVar.setName(key);
-            tmpEnvVar.setValue(value);
-            envVarList.add(tmpEnvVar);
-        }
-
-        List<Pod> podList = new ArrayList<Pod>();
-        while (amount > 0) {
-            amount -= 1;
-            Pod tmpPod = new PodBuilder()
-                    .withNewMetadata()
-                    //.withNamespace(namespace)
-                    .withGenerateName(generateName)
-                    .withName(name)
-                    .withLabels(labels)
-                    .withAnnotations(annotations)
-                    .endMetadata()
-                    .withNewSpec()
-                    .withImagePullSecrets(localObjectReference)
-                    .addNewContainer()
-                    .withName(containerName)
-                    .withImage(images)
-                    .withImagePullPolicy(imagePullPolicy)
-                    .withCommand(command)
-                    .withArgs(args)
-                    .withNewResources()
-                    .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
-                    .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
-                    .endResources()
-                    .withEnv(envVarList)
-                    //addNewPort().withContainerPort(80).endPort()
-                    .endContainer()
-                    .endSpec().build();
-            Pod pod = KubernetesUtils.client.pods().inNamespace(namespace).create(tmpPod);
-            podList.add(pod);
-        }
-        return podList;
+        List<Pod> p = new ArrayList<Pod>();
+        p.add(testPod);
+        return p;
+/**
+ * 原来的
+ */
+//        String generateName = "";
+//        String containerName = name;
+//        if (amount > 1) {
+//            generateName = name;
+//            name = "";
+//        }
+//
+//        LocalObjectReference localObjectReference = new LocalObjectReference();
+//        localObjectReference.setName(secretName);
+//
+//        ResourceRequirements resourceRequirements = new ResourceRequirements();
+//        Quantity cpuLimitQu = new QuantityBuilder().withAmount(cpuLimit).build();
+//        Quantity cpuRequestQu = new QuantityBuilder().withAmount(cpuRequest).build();
+//        Quantity memoryLimitQu = new QuantityBuilder().withAmount(memoryLimit).build();
+//        Quantity memoryRequestQu = new QuantityBuilder().withAmount(memoryRequest).build();
+//
+//        List<EnvVar> envVarList = new ArrayList<EnvVar>();
+//        Set<String> keySet = envVar.keySet();
+//
+//        for (String key : keySet) {
+//            String value = envVar.get(key);
+//            EnvVar tmpEnvVar = new EnvVar();
+//            tmpEnvVar.setName(key);
+//            tmpEnvVar.setValue(value);
+//            envVarList.add(tmpEnvVar);
+//        }
+//
+//        List<Pod> podList = new ArrayList<Pod>();
+//        while (amount > 0) {
+//            amount -= 1;
+//            Pod tmpPod = new PodBuilder()
+//                    .withNewMetadata()
+//                    //.withNamespace(namespace)
+//                    .withGenerateName(generateName)
+//                    .withName(name)
+//                    .withLabels(labels)
+//                    .withAnnotations(annotations)
+//                    .endMetadata()
+//                    .withNewSpec()
+//                    .withImagePullSecrets(localObjectReference)
+//                    .addNewContainer()
+//                    .withName(containerName)
+//                    .withImage(image)
+//                    .withImagePullPolicy(imagePullPolicy)
+//                    .withCommand(command)
+//                    .withArgs(args)
+//                    .withNewResources()
+//                    .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
+//                    .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
+//                    .endResources()
+//                    .withEnv(envVarList)
+//                    //addNewPort().withContainerPort(80).endPort()
+//                    .endContainer()
+//                    .endSpec().build();
+//            Pod pod = KubernetesUtils.client.pods().inNamespace(namespace).create(tmpPod);
+//            podList.add(pod);
+//        }
+//        return podList;
     }
 
 

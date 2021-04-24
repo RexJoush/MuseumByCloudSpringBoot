@@ -49,8 +49,8 @@ public class CronJobsController {
             cronJobList = cronJobsService.findAllCronJobs();
         }else{
             cronJobList = cronJobsService.findCronJobsByNamespace(namespace);
-        }
 
+        }
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);

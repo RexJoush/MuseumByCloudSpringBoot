@@ -233,10 +233,10 @@ public class PodsController {
 
     @RequestMapping("/createPodFromForm")
     public String createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
-                                    String secretName, String images, String imagePullPolicy, String[] command, String[] args,
+                                    String secretName, String image, String imagePullPolicy, String[] command, String[] args,
                                     String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
         List<Pod> podList = podsService.createPodFromForm(name, namespace, labels, annotations,
-                secretName, images, imagePullPolicy, command, args,
+                secretName, image, imagePullPolicy, command, args,
                 cpuLimit, cpuRequest, memoryLimit, memoryRequest, envVar, amount);
 
         Map<String, Object> result = new HashMap<>();
