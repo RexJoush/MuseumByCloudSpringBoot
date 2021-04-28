@@ -12,6 +12,7 @@ import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.ReplicaSetsServiceImpl;
 import com.nwu.util.FilterPodsByControllerUid;
 import com.nwu.util.format.PodFormat;
+import com.nwu.util.format.ReplicaSetFormat;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.ServiceList;
@@ -53,7 +54,7 @@ public class ReplicaSetsController {
 
         result.put("code", 1200);
         result.put("message", "获取 ReplicaSet 列表成功");
-        result.put("data", replicaSetList);
+        result.put("data", ReplicaSetFormat.formatReplicaSetList(replicaSetList));
 
         return JSON.toJSONString(result);
 
@@ -171,24 +172,31 @@ public class ReplicaSetsController {
 
     @RequestMapping("/getReplicaSetResources")
     public String getReplicaSetResources(String name,String namespace){
-        System.out.println(name + namespace);
 
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        ServicesServiceImpl servicesService = new ServicesServiceImpl();
+        //获取 ReplicaSet
         ReplicaSet replicaSet = replicaSetsService.getReplicaSetByNameAndNamespace(name, namespace);
         String uid = replicaSet.getMetadata().getUid();
         Map<String, String> matchLabels = replicaSet.getSpec().getSelector().getMatchLabels();
-//        System.out.println(matchLabels);
 
-        List<Service> services = servicesService.getServicesByLabels(matchLabels);
+        //获取 Pods
+        PodsServiceImpl podsService = new PodsServiceImpl();
         List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
+
+        //获取 Services
+        ServicesServiceImpl servicesService = new ServicesServiceImpl();
+        List<Service> services = servicesService.getServicesByLabels(matchLabels);
+
+        //封装数据
+        Map<String, Object> data = new HashMap<>();
+        data.put("replicaSet", replicaSet);
+        data.put("pods", PodFormat.formatPodList(pods));
+        data.put("services", services);
+
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
         result.put("message", "获取 ReplicaSet Resources 成功");
-        result.put("dataReplicaSet", replicaSet);
-        result.put("dataPods", PodFormat.formatPodList(pods));
-        result.put("dataServices", services);
+        result.put("data", data);
 
         return JSON.toJSONString(result);
     }

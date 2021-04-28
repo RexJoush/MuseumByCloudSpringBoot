@@ -2,6 +2,7 @@ package com.nwu.controller.cluster;
 
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.cluster.Definition.NamespaceDefinition;
 import com.nwu.entity.cluster.NamespaceDetails;
 import com.nwu.entity.cluster.NamespaceName;
 import com.nwu.service.cluster.impl.NamespacesServiceImpl;
@@ -44,7 +45,7 @@ public class NamespacesController {
     @RequestMapping("/getAllNamespaces")
     public String getAllNamespaces() throws ApiException {
 
-        List<Namespace> namespacesList = namespacesService.getAllNamespaces();
+        List<NamespaceDefinition> namespacesList = namespacesService.getAllNamespaces();
 
         Map<String, Object> result = new HashMap<>();
 

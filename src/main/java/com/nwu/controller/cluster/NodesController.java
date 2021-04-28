@@ -1,11 +1,10 @@
 package com.nwu.controller.cluster;
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.entity.cluster.NodeDefinition;
+import com.nwu.entity.cluster.Definition.NodeDefinition;
 import com.nwu.entity.cluster.NodeUsage;
 import com.nwu.service.cluster.impl.NodesServiceImpl;
 import io.fabric8.kubernetes.api.model.Node;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

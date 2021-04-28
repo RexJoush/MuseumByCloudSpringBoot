@@ -10,6 +10,7 @@ import com.nwu.service.workload.JobsService;
 import com.nwu.service.workload.impl.DeploymentsServiceImpl;
 import com.nwu.service.workload.impl.JobsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.format.JobFormat;
 import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
@@ -46,11 +47,14 @@ public class JobsController {
             jobs = jobsService.findJobsByNamespace(namespace);
         }
 
+        System.out.println(JobFormat.formatJobList(jobs));
+
         Map<String, Object> result = new HashMap<>();
 
+        System.out.println("进入了findAllJobs");
         result.put("code", 1200);
         result.put("message", "获取 Job 列表成功");
-        result.put("data", jobs);
+        result.put("data", JobFormat.formatJobList(jobs));
 
         return JSON.toJSONString(result);
 

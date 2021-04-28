@@ -6,12 +6,16 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
 import com.nwu.service.workload.impl.DaemonSetsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.FilterPodsByControllerUid;
+import com.nwu.util.KubernetesUtils;
+import com.nwu.util.format.DaemonSetFormat;
 import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
@@ -50,7 +54,7 @@ public class DaemonSetsController {
 
         result.put("code", 1200);
         result.put("message", "获取 DaemonSet 列表成功");
-        result.put("data", daemonSets);
+        result.put("data", DaemonSetFormat.formatDaemonSetList(daemonSets));
 
         return JSON.toJSONString(result);
 
@@ -86,22 +90,33 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("/getDaemonSetPodsByNameAndNamespace")
-    public String getDaemonSetPodsByNameAndNamespace(String name, String namespace){
+    @RequestMapping("/getDaemonSetResources")
+    public String getDaemonSetResources(String name, String namespace){
 
-        System.out.println(name + namespace);
-        PodsServiceImpl podsService = new PodsServiceImpl();
+        //获取 DaemonSet
         DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace(name, namespace);
         Map<String, String> matchLabels = aDaemonSet.getSpec().getSelector().getMatchLabels();
         String uid = aDaemonSet.getMetadata().getUid();
+
+        //获取 Pods
+        PodsServiceImpl podsService = new PodsServiceImpl();
         List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
+
+        //获取 Services
+        ServicesServiceImpl servicesService = new ServicesServiceImpl();
+        List<Service> services = KubernetesUtils.client.services().withLabels(matchLabels).list().getItems();
+
+        //封装数据
+        Map<String, Object> data = new HashMap<>();
+        data.put("daemonSet", aDaemonSet);
+        data.put("pods", PodFormat.formatPodList(pods));
+        data.put("services", services);
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "通过name和namespace获取 DaemonSet 和 Pods 成功");
-        result.put("dataDaemonSet", aDaemonSet);
-        result.put("dataPods", PodFormat.formatPodList(pods));
+        result.put("message", "通过name和namespace获取 DaemonSet 的 Resources 成功");
+        result.put("data", data);
 
         return JSON.toJSONString(result);
     }

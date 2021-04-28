@@ -25,7 +25,7 @@ public interface CustomizeService {
     List<CustomResourceDefinition> getCustomResourceDefinition();
 
     /**
-     * 通过自定义资源的名字货期自定义资源
+     * 通过自定义资源的名字获取自定义资源
      *
      * @param name 自定义资源的名字
      * @return
@@ -83,7 +83,7 @@ public interface CustomizeService {
      * @return
      * @throws FileNotFoundException
      */
-    public Map<String, Object> getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException;
+    Map<String, Object> getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException;
 
     /**
      * 通过自定义资源的名字获取该自定义资源的对象列表
@@ -92,7 +92,7 @@ public interface CustomizeService {
      * @return
      * @throws FileNotFoundException
      */
-    public Map<String, Object> getCustomResourceDefinitionObjectListbyName(String crdName) throws FileNotFoundException;
+    Map<String, Object> getCustomResourceDefinitionObjectListByName(String crdName) throws FileNotFoundException;
 
     /**
      * 通过crdname获取crdYaml

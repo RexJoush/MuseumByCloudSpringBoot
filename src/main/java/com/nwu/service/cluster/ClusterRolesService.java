@@ -1,5 +1,6 @@
 package com.nwu.service.cluster;
 
+import com.nwu.entity.cluster.Definition.ClusterRoleDefinition;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface ClusterRolesService {
      * 获取所有集群角色
      * @return 集群角色列表
      */
-    List<ClusterRole> getAllClusterRoles();
+    List<ClusterRoleDefinition> getAllClusterRoles();
 
     /**
      * 根据名称获取集群角色详情

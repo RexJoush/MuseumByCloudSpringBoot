@@ -1,5 +1,6 @@
 package com.nwu.service.cluster;
 
+import com.nwu.entity.cluster.Definition.NamespaceDefinition;
 import com.nwu.entity.cluster.NamespaceDetails;
 import com.nwu.entity.cluster.NamespaceName;
 import io.fabric8.kubernetes.api.model.Namespace;
@@ -17,7 +18,7 @@ public interface NamespacesService {
      * 获取所有 Namespace
      * @return Namespace列表
      */
-    List<Namespace> getAllNamespaces();
+    List<NamespaceDefinition> getAllNamespaces();
 
     /**
      * 获取所有 namespace 名称列表

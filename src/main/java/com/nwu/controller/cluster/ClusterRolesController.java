@@ -1,6 +1,7 @@
 package com.nwu.controller.cluster;
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.cluster.Definition.ClusterRoleDefinition;
 import com.nwu.service.cluster.impl.ClusterRolesServiceImpl;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
@@ -27,7 +28,7 @@ public class ClusterRolesController {
     @RequestMapping("/getAllClusterRoles")
     public String getAllClusterRoles(){
 
-        List<ClusterRole> clusterRoleList = clusterRolesService.getAllClusterRoles();
+        List<ClusterRoleDefinition> clusterRoleList = clusterRolesService.getAllClusterRoles();
 
         Map<String, Object> result = new HashMap<>();
 

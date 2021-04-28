@@ -5,13 +5,8 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.*;
-import io.kubernetes.client.openapi.models.ExtensionsV1beta1Ingress;
-import io.kubernetes.client.openapi.models.V1ClusterRole;
-import io.kubernetes.client.proto.V1Rbac;
-import io.kubernetes.client.util.Yaml;
 
 /**
  * @author Rex Joush

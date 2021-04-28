@@ -12,6 +12,7 @@ import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.ReplicationControllersServiceImpl;
 import com.nwu.util.FilterPodsByControllerUid;
 import com.nwu.util.format.PodFormat;
+import com.nwu.util.format.ReplicationControllerFormat;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.kubernetes.api.model.Service;
@@ -53,7 +54,7 @@ public class ReplicationControllersController {
 
         result.put("code", 1200);
         result.put("message", "获取 ReplicationController 列表成功");
-        result.put("data", replicationControllerList);
+        result.put("data", ReplicationControllerFormat.formatReplicationControllerList(replicationControllerList));
 
         return JSON.toJSONString(result);
 
@@ -163,7 +164,6 @@ public class ReplicationControllersController {
         ReplicationController replicationController = replicationControllersService.getReplicationControllerByNameAndNamespace(name, namespace);
         String uid = replicationController.getMetadata().getUid();
         Map<String, String> matchLabel = replicationController.getSpec().getSelector();
-//        System.out.println(matchLabels);
         List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabel));
         Map<String, Object> result = new HashMap<>();
         List<Service> services = servicesService.getServicesByLabels(matchLabel);

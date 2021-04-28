@@ -1,7 +1,7 @@
 package com.nwu.service.cluster.impl;
 
 import com.nwu.dao.cluster.NodeUsageDao;
-import com.nwu.entity.cluster.NodeDefinition;
+import com.nwu.entity.cluster.Definition.NodeDefinition;
 import com.nwu.entity.cluster.NodeUsage;
 import com.nwu.entity.workload.Usage;
 import com.nwu.service.cluster.NodesService;
@@ -44,7 +44,7 @@ public class NodesServiceImpl implements NodesService {
          */
 
         // 获取当前 node 节点信息
-        List<Node> items = KubernetesUtils.client.nodes().withLabel("node-type", "normal-node").list().getItems();
+        List<Node> items = KubernetesUtils.client.nodes().withLabelIn("node-type", "normal-node", "master-node").list().getItems();
         // 获取 top 信息，封装成map集合
         List<NodeMetrics> tops = KubernetesUtils.client.top().nodes().metrics().getItems();
 

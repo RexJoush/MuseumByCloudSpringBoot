@@ -6,8 +6,10 @@ package com.nwu.service;
  */
 
 
+import com.nwu.entity.cluster.graph.ClusterGraph;
 import io.fabric8.kubernetes.api.model.Node;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
@@ -29,6 +31,12 @@ public interface EdgeService {
      * @return 当前节点信息
      */
     Node findEdgeNodeByName(String nodeName);
+
+    /**
+     * 获取边缘节点的拓扑图
+     * @return 图表
+     */
+    ClusterGraph initEdgeGraph() throws FileNotFoundException;
 
     /**
      * 保存 node 节点的资源利用率信息

@@ -1,4 +1,4 @@
-package com.nwu.entity.cluster;
+package com.nwu.entity.cluster.graph;
 
 /**
  * @author Rex Joush
@@ -32,5 +32,13 @@ public class GraphLink  {
     }
 
     public GraphLink() {
+    }
+
+    @Override
+    public String toString() {
+        return "GraphLink{" +
+                "source=" + source +
+                ", target=" + target +
+                '}';
     }
 }
