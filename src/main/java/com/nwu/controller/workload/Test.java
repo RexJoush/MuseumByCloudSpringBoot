@@ -30,15 +30,28 @@ public class Test {
 
 
     public static void main(String[] args) throws ApiException, IOException {
+        String generateName = "";
+        String containerName = "podForm.getName();";
+        List<String> name = new ArrayList<String>(Collections.singleton(containerName));
+        System.out.println(name);
+        int amount = 3;
+        if (amount > 1) {
+            generateName = containerName + '-';
+            for(int i = 0; i < amount; i ++){
+//                name[i] = generateName + i;
+
+            }
+        }
+        System.out.println(name);
         //CronJob
 //        CronJobsServiceImpl cronJobsService = new CronJobsServiceImpl();
 //        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace("cronjob-demo", "default");
 //        System.out.println(aCronJob);
 
         //DaemonSet
-        DaemonSetsServiceImpl daemonSetsService = new DaemonSetsServiceImpl();
-        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace("nginx-ingress-controller", "ingress-nginx");
-        System.out.println(aDaemonSet);
+//        DaemonSetsServiceImpl daemonSetsService = new DaemonSetsServiceImpl();
+//        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace("nginx-ingress-controller", "ingress-nginx");
+//        System.out.println(aDaemonSet);
 
         //Job
 //        JobsServiceImpl jobsService = new JobsServiceImpl();

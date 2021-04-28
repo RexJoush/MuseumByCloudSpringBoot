@@ -3,6 +3,7 @@ package com.nwu.service.workload.impl;
 import com.nwu.dao.workload.PodUsageDao;
 import com.nwu.entity.workload.PodDefinition;
 import com.nwu.entity.workload.PodDetails;
+import com.nwu.entity.workload.PodForm;
 import com.nwu.entity.workload.PodUsage;
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesUtils;
@@ -220,101 +221,110 @@ public class PodsServiceImpl implements PodsService {
     // imagePullSecret minCPURequirement minMemoryRequirement
     //command
     @Override
-    public List<Pod> createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
-                                       String secretName, String image, String imagePullPolicy, String[] command, String[] args,
-                                       String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
+    public List<Pod> createPodFromForm(PodForm podForm) {
 
-/**
- * 测试的
- */
-        System.out.println(name);
-        System.out.println(namespace);
-        System.out.println(image);
-        Pod testPod = new PodBuilder()
-                .withNewMetadata()
-                .withNamespace(namespace)
-                .withName(name)
-//                .withLabels(labels)
-//                .withAnnotations(annotations)
-                .endMetadata()
-                .withNewSpec()
-                .addNewContainer()
-                .withName(name)
-                .withImage(image)
-//                .withNewResources()
-//                .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
-//                .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
-//                .endResources()
-//                .withEnv(envVarList)
-                //addNewPort().withContainerPort(80).endPort()
-                .endContainer()
-                .endSpec().build();
-        testPod = KubernetesUtils.client.pods().inNamespace(namespace).create(testPod);
-
-        List<Pod> p = new ArrayList<Pod>();
-        p.add(testPod);
-        return p;
-/**
- * 原来的
- */
-//        String generateName = "";
-//        String containerName = name;
-//        if (amount > 1) {
-//            generateName = name;
-//            name = "";
-//        }
+///**
+// * 测试的
+// */
 //
-//        LocalObjectReference localObjectReference = new LocalObjectReference();
-//        localObjectReference.setName(secretName);
-//
-//        ResourceRequirements resourceRequirements = new ResourceRequirements();
-//        Quantity cpuLimitQu = new QuantityBuilder().withAmount(cpuLimit).build();
-//        Quantity cpuRequestQu = new QuantityBuilder().withAmount(cpuRequest).build();
-//        Quantity memoryLimitQu = new QuantityBuilder().withAmount(memoryLimit).build();
-//        Quantity memoryRequestQu = new QuantityBuilder().withAmount(memoryRequest).build();
-//
-//        List<EnvVar> envVarList = new ArrayList<EnvVar>();
-//        Set<String> keySet = envVar.keySet();
-//
-//        for (String key : keySet) {
-//            String value = envVar.get(key);
-//            EnvVar tmpEnvVar = new EnvVar();
-//            tmpEnvVar.setName(key);
-//            tmpEnvVar.setValue(value);
-//            envVarList.add(tmpEnvVar);
-//        }
-//
-//        List<Pod> podList = new ArrayList<Pod>();
-//        while (amount > 0) {
-//            amount -= 1;
-//            Pod tmpPod = new PodBuilder()
+//        Pod testPod = new PodBuilder()
 //                    .withNewMetadata()
 //                    //.withNamespace(namespace)
-//                    .withGenerateName(generateName)
-//                    .withName(name)
-//                    .withLabels(labels)
-//                    .withAnnotations(annotations)
+////                    .withGenerateName(generateName)
+//                    .withName(podform.name)
+//                    .withLabels(podform.labels)
+//                    .withAnnotations(podform.annotations)
 //                    .endMetadata()
 //                    .withNewSpec()
-//                    .withImagePullSecrets(localObjectReference)
+////                    .withImagePullSecrets(localObjectReference)
 //                    .addNewContainer()
-//                    .withName(containerName)
-//                    .withImage(image)
-//                    .withImagePullPolicy(imagePullPolicy)
-//                    .withCommand(command)
-//                    .withArgs(args)
+////                    .withName(containerName)
+//                    .withImage(podform.image)
+////                    .withImagePullPolicy(imagePullPolicy)
+//                    .withCommand(podform.command)
+//                    .withArgs(podform.args)
 //                    .withNewResources()
-//                    .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
-//                    .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
+////                    .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
+////                    .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
 //                    .endResources()
-//                    .withEnv(envVarList)
+////                    .withEnv(envVarList)
 //                    //addNewPort().withContainerPort(80).endPort()
 //                    .endContainer()
 //                    .endSpec().build();
-//            Pod pod = KubernetesUtils.client.pods().inNamespace(namespace).create(tmpPod);
-//            podList.add(pod);
-//        }
-//        return podList;
+//        System.out.println(testPod);
+//        testPod = KubernetesUtils.client.pods().create(testPod);
+//
+//        List<Pod> p = new ArrayList<Pod>();
+//        p.add(testPod);
+//        return p;
+/**
+ * 原来的
+ */
+        String generateName = "";
+        String containerName = podForm.getName();
+        List<String> name = new ArrayList<String>(Collections.singleton(containerName));
+        int amount = podForm.getAmount();
+        if (amount > 1) {
+            generateName = containerName + '-';
+            name.set(0, generateName + 0);
+            for(int i = 1; i < amount; i ++){
+                name.add(generateName + i);
+            }
+        }
+
+        LocalObjectReference localObjectReference = new LocalObjectReference();
+        localObjectReference.setName(podForm.getSecretName());
+
+        ResourceRequirements resourceRequirements = new ResourceRequirements();
+        Quantity cpuLimitQu = new QuantityBuilder().withAmount(podForm.getCpuLimit()).build();
+        Quantity cpuRequestQu = new QuantityBuilder().withAmount(podForm.getCpuRequest()).build();
+        Quantity memoryLimitQu = new QuantityBuilder().withAmount(podForm.getMemoryLimit()).build();
+        Quantity memoryRequestQu = new QuantityBuilder().withAmount(podForm.getMemoryRequest()).build();
+
+        List<EnvVar> envVarList = new ArrayList<EnvVar>();
+        Set<String> keySet = podForm.getEnvVar().keySet();
+
+        for (String key : keySet) {
+            String value = podForm.getEnvVar().get(key);
+            EnvVar tmpEnvVar = new EnvVar();
+            tmpEnvVar.setName(key);
+            tmpEnvVar.setValue(value);
+            envVarList.add(tmpEnvVar);
+        }
+
+        List<Pod> podList = new ArrayList<Pod>();
+        while (amount > 0) {
+            amount -= 1;
+            Pod tmpPod = new PodBuilder()
+                    .withNewMetadata()
+                    //.withNamespace(namespace)
+                    .withGenerateName(generateName)
+                    .withName(podForm.getName() + '-' + amount)
+                    .withLabels(podForm.getLabels())
+                    .withAnnotations(podForm.getAnnotations())
+                    .endMetadata()
+                    .withNewSpec()
+                    .withImagePullSecrets(localObjectReference)
+                    .addNewContainer()
+                    .withName(containerName)
+                    .withImage(podForm.getImage())
+                    .withImagePullPolicy(podForm.getImagePullPolicy())
+//                    .withCommand(podForm.getCommand())
+//                    .withArgs(podForm.getArgs())
+                    .withNewResources()
+                    .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
+                    .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
+                    .endResources()
+                    .withEnv(envVarList)
+                    //addNewPort().withContainerPort(80).endPort()
+                    .endContainer()
+                    .endSpec().build();
+            System.out.println(amount);
+            System.out.println(tmpPod);
+            Pod pod = KubernetesUtils.client.pods().inNamespace(podForm.getNamespace()).createOrReplace(tmpPod);
+            podList.add(pod);
+        }
+        return podList;
     }
 
 

@@ -3,6 +3,7 @@ package com.nwu.controller.workload;
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.PodDefinition;
 import com.nwu.entity.workload.PodDetails;
+import com.nwu.entity.workload.PodForm;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
@@ -231,13 +232,49 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
+//    @RequestMapping("/createPodFromForm")
+//    public String createPodFromForm(String name, String namespace, List<Object> labels, List<Object> annotations,
+//                                    String secretName, String image, String imagePullPolicy, String command, String[] args,
+//                                    String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
     @RequestMapping("/createPodFromForm")
-    public String createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
-                                    String secretName, String image, String imagePullPolicy, String[] command, String[] args,
-                                    String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
-        List<Pod> podList = podsService.createPodFromForm(name, namespace, labels, annotations,
-                secretName, image, imagePullPolicy, command, args,
-                cpuLimit, cpuRequest, memoryLimit, memoryRequest, envVar, amount);
+    public String createPodFromForm(@RequestParam String podForm){
+        System.out.println(podForm);
+
+//        System.out.println( name);
+//        System.out.println(namespace);
+//        System.out.println(image);
+//        System.out.println(labels);
+//        System.out.println(annotations);
+//        System.out.println(command);
+//        System.out.println(args);
+//        System.out.println(cpuLimit);
+//        System.out.println(cpuRequest);
+//        System.out.println(memoryLimit);
+//        System.out.println(memoryRequest);
+//        System.out.println(envVar);
+//        System.out.println(amount);
+
+        String name = "zqytest18";
+        String namespace = "default";
+        Map<String, String> labels = new HashMap<>();
+        labels.put("name", "zqytest111");
+        Map<String, String> annotations = new HashMap<>();
+        annotations.put("name", "zqytest111");
+        String secretName = "";
+        String image = "nginx";
+        String imagePullPolicy = "Always";
+        String[] command = {""};
+        String[] args ={""};
+        String cpuLimit = "500m";
+        String cpuRequest = "300m";
+        String memoryLimit = "1000Gi";
+        String memoryRequest = "512Mi";
+        Map<String, String> envVar = new HashMap<>();
+        envVar.put("name", "zqytest111");
+        Integer amount = 2;
+        PodForm podForm1 = new PodForm(name, namespace, labels, annotations, secretName = "", image, imagePullPolicy, command, args, cpuLimit, cpuRequest, memoryLimit, memoryRequest, envVar, amount);
+
+        List<Pod> podList = podsService.createPodFromForm(podForm1);
 
         Map<String, Object> result = new HashMap<>();
 
