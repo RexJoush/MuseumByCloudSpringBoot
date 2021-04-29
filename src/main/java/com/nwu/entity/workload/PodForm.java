@@ -17,7 +17,7 @@ public class PodForm {
     private String secretName;//下载Pod所用镜像需要的secret名称 String
     private String image;//Pod里容器镜像 String
     private String imagePullPolicy;//Pod里容器镜像下载策略 String
-    private String[] command;//Pod里容器启动后执行的命令列表 String[]
+    private String[] commands;//Pod里容器启动后执行的命令列表 String[]
     private String[] args;//Pod里容器的启动命令参数列表 String[]
     private String cpuLimit;//Pod里容器Cpu的限制，单位为core数 String
     private String cpuRequest;//Pod里容器Cpu请求，容器启动的初始可用数量 String
@@ -26,7 +26,7 @@ public class PodForm {
     private Map<String, String> envVar;//Pod里容器环境变量名称和值 Map<String, String>
     private Integer amount;//Pod副本数量 Integer
 
-    public PodForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations, String secretName, String image, String imagePullPolicy, String[] command, String[] args, String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
+    public PodForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations, String secretName, String image, String imagePullPolicy, String[] commands, String[] args, String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
         this.name = name;
         this.namespace = namespace;
         this.labels = labels;
@@ -34,7 +34,7 @@ public class PodForm {
         this.secretName = secretName;
         this.image = image;
         this.imagePullPolicy = imagePullPolicy;
-        this.command = command;
+        this.commands = commands;
         this.args = args;
         this.cpuLimit = cpuLimit;
         this.cpuRequest = cpuRequest;
@@ -100,12 +100,12 @@ public class PodForm {
         this.imagePullPolicy = imagePullPolicy;
     }
 
-    public String[] getCommand() {
-        return command;
+    public String[] getCommands() {
+        return commands;
     }
 
-    public void setCommand(String[] command) {
-        this.command = command;
+    public void setCommands(String[] commands) {
+        this.commands = commands;
     }
 
     public String[] getArgs() {

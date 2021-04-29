@@ -5,6 +5,11 @@ spring:
     url: jdbc:mysql://www.rexjoush.com:3306/museum?serverTimezone=UTC
     username: root
     password: liyihang123
+# 配置上传文件大小
+  servlet:
+    multipart:
+      max-file-size: 500KB
+      max-request-size: 500KB
 
 # mybatis 信息
 mybatis:

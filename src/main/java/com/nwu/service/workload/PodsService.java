@@ -5,9 +5,9 @@ import com.nwu.entity.workload.PodDetails;
 import com.nwu.entity.workload.PodForm;
 import com.nwu.entity.workload.PodUsage;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -113,11 +113,18 @@ public interface PodsService {
     Pod loadPodFromYaml(String path) throws FileNotFoundException;
 
     /**
-     * 通过yaml文件创建Pod
+     * 通过yaml文件路径创建Pod
      * @param path yaml文件输入路径 String
      * @return 创建的Pod
      */
-    Pod createPodByYaml(String path) throws FileNotFoundException;
+    Pod createPodByYamlPath(String path) throws FileNotFoundException;
+
+    /**
+     * 通过 yaml 文件创建 Pod
+     * @param yaml File 类型 yaml 文件
+     * @return 创建的代码
+     */
+    int createPodByYamlFile(File yaml) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新Pod
