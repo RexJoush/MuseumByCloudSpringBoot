@@ -236,11 +236,8 @@ public class PodsServiceImpl implements PodsService {
         return log;
     }
 
-    // name image amount  Service annotation label:key-value namespace
-    // imagePullSecret minCPURequirement minMemoryRequirement
-    //command
     @Override
-    public List<Pod> createPodFromForm(PodForm podForm) {
+    public int createPodFromForm(PodForm podForm) {
         //Name
         String generateName = "";
         String containerName = podForm.getName();
@@ -259,7 +256,7 @@ public class PodsServiceImpl implements PodsService {
         localObjectReference.setName(podForm.getSecretName());
 
         //CPU Memory
-        ResourceRequirements resourceRequirements = new ResourceRequirements();
+//        ResourceRequirements resourceRequirements = new ResourceRequirements();
         Quantity cpuLimitQu = new QuantityBuilder().withAmount(podForm.getCpuLimit()).build();
         Quantity cpuRequestQu = new QuantityBuilder().withAmount(podForm.getCpuRequest()).build();
         Quantity memoryLimitQu = new QuantityBuilder().withAmount(podForm.getMemoryLimit()).build();
@@ -267,12 +264,12 @@ public class PodsServiceImpl implements PodsService {
 
         //Env
         List<EnvVar> envVarList = new ArrayList<EnvVar>();
-        Set<String> keySet = podForm.getEnvVar().keySet();
-        for (String key : keySet) {
-            String value = podForm.getEnvVar().get(key);
+        String[] envKeys = podForm.getEnvKeys();
+        String envValues[] = podForm.getEnvValues();
+        for(int i = 0; i < envKeys.length; i++){
             EnvVar tmpEnvVar = new EnvVar();
-            tmpEnvVar.setName(key);
-            tmpEnvVar.setValue(value);
+            tmpEnvVar.setName(envKeys[i]);
+            tmpEnvVar.setValue(envValues[i]);
             envVarList.add(tmpEnvVar);
         }
 
@@ -298,6 +295,20 @@ public class PodsServiceImpl implements PodsService {
             }
         }
 
+        //labels
+        String[] labelsKeys = podForm.getLabelsKeys();
+        String[] labelsValues = podForm.getLabelsValues();
+        Map<String, String> labels = new HashMap<>();
+        for(int i = 0; i < labelsKeys.length; i++)
+            labels.put(labelsKeys[i], labelsValues[i]);
+
+        //annotations
+        String[] annotationsKeys = podForm.getAnnotationsKeys();
+        String[] annotationsValues = podForm.getAnnotationsValues();
+        Map<String, String> annotations = new HashMap<>();
+        for(int i = 0; i < annotationsKeys.length; i++)
+            labels.put(annotationsKeys[i], annotationsValues[i]);
+
         List<Pod> podList = new ArrayList<Pod>();
         while (amount > 0) {
             amount -= 1;
@@ -306,8 +317,8 @@ public class PodsServiceImpl implements PodsService {
                     //.withNamespace(namespace)
                     .withGenerateName(generateName)
                     .withName(podForm.getName() + '-' + amount)
-                    .withLabels(podForm.getLabels())
-                    .withAnnotations(podForm.getAnnotations())
+                    .withLabels(labels)
+                    .withAnnotations(annotations)
                     .endMetadata()
                     .withNewSpec()
                     .withImagePullSecrets(localObjectReference)
@@ -327,10 +338,15 @@ public class PodsServiceImpl implements PodsService {
                     .endSpec().build();
             if(commandFlag) tmpPod.getSpec().getContainers().get(0).setCommand(commandsList);
             if(argsFlag) tmpPod.getSpec().getContainers().get(0).setArgs(argsList);
-            Pod pod = KubernetesUtils.client.pods().inNamespace(podForm.getNamespace()).createOrReplace(tmpPod);
-            podList.add(pod);
+            try{
+                Pod pod = KubernetesUtils.client.pods().inNamespace(podForm.getNamespace()).createOrReplace(tmpPod);
+                podList.add(pod);
+            }catch (Exception e){
+                return 1201;
+            }
+
         }
-        return podList;
+        return 1200;
     }
 
 

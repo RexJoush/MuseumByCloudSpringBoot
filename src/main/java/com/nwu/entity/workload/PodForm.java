@@ -12,8 +12,13 @@ import java.util.Map;
 public class PodForm {
     private String name;//Pod名称 String
     private String namespace;//Pod命名空间 String
-    private Map<String, String> labels;//Pod标签 Map<String, String>
-    private Map<String, String> annotations;//Pod描述信息 Map<String, String>
+
+    private String[] labelsKeys;//前端传过来的数据，需要处理成Map
+    private String[] labelsValues;//前端传过来的数据，需要处理成Map
+
+    private String[] annotationsKeys;//前端传过来的数据，需要处理成Map
+    private String[] annotationsValues;//前端传过来的数据，需要处理成Map
+
     private String secretName;//下载Pod所用镜像需要的secret名称 String
     private String image;//Pod里容器镜像 String
     private String imagePullPolicy;//Pod里容器镜像下载策略 String
@@ -23,14 +28,19 @@ public class PodForm {
     private String cpuRequest;//Pod里容器Cpu请求，容器启动的初始可用数量 String
     private String memoryLimit;//Pod里容内存限制，单位可能为Mib/Gib或者Mi/Gi  String
     private String memoryRequest;//Pod里容器内存请求,容器启动的初始可用数量 String
-    private Map<String, String> envVar;//Pod里容器环境变量名称和值 Map<String, String>
+
+    private String[] envKeys;//前端传过来的数据，需要处理成Map
+    private String[] envValues;//前端传过来的数据，需要处理成Map
+
     private Integer amount;//Pod副本数量 Integer
 
-    public PodForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations, String secretName, String image, String imagePullPolicy, String[] commands, String[] args, String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
+    public PodForm(String name, String namespace, String[] labelsKeys, String[] labelsValues, String[] annotationsKeys, String[] annotationsValues, String secretName, String image, String imagePullPolicy, String[] commands, String[] args, String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, String[] envVarKeys, String[] envVarValues, Integer amount) {
         this.name = name;
         this.namespace = namespace;
-        this.labels = labels;
-        this.annotations = annotations;
+        this.labelsKeys = labelsKeys;
+        this.labelsValues = labelsValues;
+        this.annotationsKeys = annotationsKeys;
+        this.annotationsValues = annotationsValues;
         this.secretName = secretName;
         this.image = image;
         this.imagePullPolicy = imagePullPolicy;
@@ -40,7 +50,8 @@ public class PodForm {
         this.cpuRequest = cpuRequest;
         this.memoryLimit = memoryLimit;
         this.memoryRequest = memoryRequest;
-        this.envVar = envVar;
+        this.envKeys = envVarKeys;
+        this.envValues = envVarValues;
         this.amount = amount;
     }
 
@@ -60,20 +71,36 @@ public class PodForm {
         this.namespace = namespace;
     }
 
-    public Map<String, String> getLabels() {
-        return labels;
+    public String[] getLabelsKeys() {
+        return labelsKeys;
     }
 
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
+    public void setLabelsKeys(String[] labelsKeys) {
+        this.labelsKeys = labelsKeys;
     }
 
-    public Map<String, String> getAnnotations() {
-        return annotations;
+    public String[] getLabelsValues() {
+        return labelsValues;
     }
 
-    public void setAnnotations(Map<String, String> annotations) {
-        this.annotations = annotations;
+    public void setLabelsValues(String[] labelsValues) {
+        this.labelsValues = labelsValues;
+    }
+
+    public String[] getAnnotationsKeys() {
+        return annotationsKeys;
+    }
+
+    public void setAnnotationsKeys(String[] annotationsKeys) {
+        this.annotationsKeys = annotationsKeys;
+    }
+
+    public String[] getAnnotationsValues() {
+        return annotationsValues;
+    }
+
+    public void setAnnotationsValues(String[] annotationsValues) {
+        this.annotationsValues = annotationsValues;
     }
 
     public String getSecretName() {
@@ -148,12 +175,20 @@ public class PodForm {
         this.memoryRequest = memoryRequest;
     }
 
-    public Map<String, String> getEnvVar() {
-        return envVar;
+    public String[] getEnvKeys() {
+        return envKeys;
     }
 
-    public void setEnvVar(Map<String, String> envVar) {
-        this.envVar = envVar;
+    public void setEnvKeys(String[] envKeys) {
+        this.envKeys = envKeys;
+    }
+
+    public String[] getEnvValues() {
+        return envValues;
+    }
+
+    public void setEnvValues(String[] envValues) {
+        this.envValues = envValues;
     }
 
     public Integer getAmount() {

@@ -144,7 +144,7 @@ public interface PodsService {
     /**
      *从表单创建Pod
      * @param podForm Pod 表单
-     * @return 生成的Pod列表
+     * @return 生成的 Pod 结果
      */
-    List<Pod> createPodFromForm(PodForm podForm);
+    int createPodFromForm(PodForm podForm);
 }

@@ -197,33 +197,7 @@ public class PodsController {
 
     @PostMapping("/createPodFromYamlFile")
     public String createPodFromYamlFile(@RequestParam("yaml") MultipartFile originalFile) throws FileNotFoundException {
-
-        Map<String, Object> result = new HashMap<>();
-        if(originalFile.isEmpty()){
-            result.put("code", 1201);
-            result.put("message", "文件为空");
-            return JSON.toJSONString(result);
-        }
-
-        int code = 1200;
-        File file = null;
-        try {
-            String originalFileName = originalFile.getOriginalFilename();
-            String fileName[] = originalFileName.split("\\.",2);
-            System.out.println(fileName[1]);
-            file = File.createTempFile(fileName[0], fileName[1]);
-            originalFile.transferTo(file);
-            file.deleteOnExit();
-            code = podsService.createPodByYamlFile(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-            code = 1204;
-        }
-
-        result.put("code", code);
-        result.put("message", code == 1200 ? "创建成功" : code == 1202 ? "创建失败 请检查云平台相关信息" : "创建失败 请查看Yaml文件（name namespace等）");
-
-        return JSON.toJSONString(result);
+        return JSON.toJSONString("弃用，在establish中使用");
     }
 
     @RequestMapping("/createOrReplacePod")
@@ -252,58 +226,9 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
-//    @RequestMapping("/createPodFromForm")
-//    public String createPodFromForm(String name, String namespace, List<Object> labels, List<Object> annotations,
-//                                    String secretName, String image, String imagePullPolicy, String command, String[] args,
-//                                    String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
     @RequestMapping("/createPodFromForm")
-    public String createPodFromForm(@RequestParam String podForm){
-        System.out.println(podForm);
-
-//        System.out.println( name);
-//        System.out.println(namespace);
-//        System.out.println(image);
-//        System.out.println(labels);
-//        System.out.println(annotations);
-//        System.out.println(command);
-//        System.out.println(args);
-//        System.out.println(cpuLimit);
-//        System.out.println(cpuRequest);
-//        System.out.println(memoryLimit);
-//        System.out.println(memoryRequest);
-//        System.out.println(envVar);
-//        System.out.println(amount);
-
-        String name = "zqytest19";
-        String namespace = "default";
-        Map<String, String> labels = new HashMap<>();
-        labels.put("name", "zqytest111");
-        Map<String, String> annotations = new HashMap<>();
-        annotations.put("name", "zqytest111");
-        String secretName = "";
-        String image = "nginx";
-        String imagePullPolicy = "Always";
-        String[] command = {""};
-        String[] args ={""};
-        String cpuLimit = "500m";
-        String cpuRequest = "300m";
-        String memoryLimit = "1000Gi";
-        String memoryRequest = "512Mi";
-        Map<String, String> envVar = new HashMap<>();
-        envVar.put("name", "zqytest111");
-        Integer amount = 2;
-        PodForm podForm1 = new PodForm(name, namespace, labels, annotations, secretName, image, imagePullPolicy, command, args, cpuLimit, cpuRequest, memoryLimit, memoryRequest, envVar, amount);
-
-        List<Pod> podList = podsService.createPodFromForm(podForm1);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 Pod 成功");
-        result.put("data", podList);
-
-        return JSON.toJSONString(result);
-
+    public String createPodFromForm(PodForm podForm){
+        return "弃用方法，在establish中使用";
     }
 
 }
