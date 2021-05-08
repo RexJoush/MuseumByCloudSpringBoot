@@ -114,7 +114,7 @@ public class CommonController {
         int code = 0;
         // 将 \" 转换为 " 将 \\ 转换为 \
         // 即，去掉前后端传值时自动添加的转义字符
-        String s = yaml.substring(8, yaml.length() - 2).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
+        String s = yaml.substring(9, yaml.length() - 2).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
         File file = new File(KubernetesUtils.path);
         if (!file.getParentFile().exists()){
             file.getParentFile().mkdir();
@@ -182,14 +182,14 @@ public class CommonController {
 
         return JSON.toJSONString(result);
     }
-    @RequestMapping("/changeCrdObjectByYaml")
-    public String changeCrdObjectByYaml(@RequestBody String yaml) {
-        System.out.println(yaml);
+    @PostMapping("/changeCrdObjectByYaml")
+    public String changeCrdObjectByYaml(@RequestParam String yaml, @RequestParam String crdName) {
         Map<String, Object> result = new HashMap<>();
         int code = 0;
         // 将 \" 转换为 " 将 \\ 转换为 \
         // 即，去掉前后端传值时自动添加的转义字符
-        String s = yaml.substring(12, yaml.length() - 2).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
+        String s = yaml.substring(0, yaml.length()-1).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
+        System.out.println(s);
         File file = new File(KubernetesUtils.path);
         if (!file.getParentFile().exists()){
             file.getParentFile().mkdir();
@@ -207,7 +207,8 @@ public class CommonController {
             }
             fileWriter.close();
 
-            code = commonService.changeCrdObjectByYaml(file);
+            code = commonService.changeCrdObjectByYaml(file,crdName);
+            //code = commonService.changeResourceByYaml(file);
 
         } catch (IOException e) {
             e.printStackTrace();

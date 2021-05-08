@@ -1,16 +1,26 @@
 package com.nwu.service.impl;
 
+import com.nwu.entity.cluster.NamespaceDetails;
+import com.nwu.entity.common.EventDefinition;
+import com.nwu.entity.customize.ObjectDefinition;
 import com.nwu.service.CustomizeService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Event;
+import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
+import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.util.Yaml;
+import org.glassfish.jersey.internal.inject.Custom;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -112,6 +122,7 @@ public class CustomizeServiceImpl implements CustomizeService {
                 .withVersion(customResourceDefinition.getSpec().getVersions().get(0).getName())
                 .build();
         return Yaml.dump(KubernetesUtils.client.customResource(context).get(nameSpace, objName));
+
     }
 
     @Override
@@ -135,7 +146,7 @@ public class CustomizeServiceImpl implements CustomizeService {
     }
 
     @Override
-    public Map<String, Object> getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException {
+    public ObjectDefinition getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException {
         CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
         CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
                 .Builder()
@@ -147,7 +158,15 @@ public class CustomizeServiceImpl implements CustomizeService {
                 .withVersion(customResourceDefinition.getSpec().getVersions().get(0).getName())
                 .build();
 
-        return KubernetesUtils.client.customResource(context).get(nameSpace, objName);
+        // 获取事件信息
+        //Event events = KubernetesUtils.client.v1().events().inNamespace(nameSpace).withName(objName).get();
+
+        Map<String, Object> stringObjectMap = KubernetesUtils.client.customResource(context).get(nameSpace, objName);
+
+        ObjectDefinition objectDefinition= new ObjectDefinition();
+        objectDefinition.setObjectdefinition(stringObjectMap);
+        //objectDefinition.setEvent(events);
+        return  objectDefinition;
     }
 
 

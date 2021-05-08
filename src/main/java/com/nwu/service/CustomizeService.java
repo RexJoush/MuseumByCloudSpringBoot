@@ -5,6 +5,7 @@ package com.nwu.service;
  * @time 2021.03.22
  */
 
+import com.nwu.entity.customize.ObjectDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 
 import java.io.FileNotFoundException;
@@ -84,7 +85,7 @@ public interface CustomizeService {
      * @return
      * @throws FileNotFoundException
      */
-    Map<String, Object> getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException;
+    ObjectDefinition getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException;
 
     /**
      * 通过自定义资源的名字获取该自定义资源的对象列表

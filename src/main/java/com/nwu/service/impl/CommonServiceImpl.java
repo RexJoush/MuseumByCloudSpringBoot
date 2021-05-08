@@ -9,6 +9,7 @@ import com.nwu.service.CommonService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -99,29 +100,23 @@ public class CommonServiceImpl implements CommonService {
         }
     }
     @Override
-    public int changeCrdObjectByYaml(File yaml) {
-
+    public int changeCrdObjectByYaml(File yaml,String crdName) {
         try {
-            InputStream inputStream = new FileInputStream(yaml);
-
-            Ingress ingress = KubernetesUtils.client.extensions().ingresses().load(inputStream).get();
-
-            Boolean delete = KubernetesUtils.client.extensions().ingresses().inNamespace(ingress.getMetadata().getNamespace()).withName(ingress.getMetadata().getName()).delete();
-
             InputStream inputStream2 = new FileInputStream(yaml);
+
+            CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
+
             CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
                     .Builder()
-                    .withGroup("devices.kubeedge.io")
-                    .withKind("Device")
-                    .withName("devices.devices.kubeedge.io")
-                    .withPlural("devices")
-                    .withScope("Namespaced")
-                    .withVersion("v1alpha2")
+                    .withGroup(customResourceDefinition.getSpec().getGroup())
+                    .withKind(customResourceDefinition.getSpec().getNames().getKind())
+                    .withName(customResourceDefinition.getMetadata().getName())
+                    .withPlural(customResourceDefinition.getSpec().getNames().getPlural())
+                    .withScope(customResourceDefinition.getSpec().getScope())
+                    .withVersion(customResourceDefinition.getSpec().getVersions().get(0).getName())
                     .build();
-
             List<HasMetadata> orReplace = (List<HasMetadata>) KubernetesUtils.client.customResource(context).createOrReplace(inputStream2);
-
-            inputStream.close();
+            inputStream2.close();
 
             yaml.delete();
 
@@ -135,4 +130,5 @@ public class CommonServiceImpl implements CommonService {
             return 1202;
         }
     }
+
 }

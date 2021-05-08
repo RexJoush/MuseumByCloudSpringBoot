@@ -6,6 +6,7 @@ package com.nwu.controller;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.entity.customize.ObjectDefinition;
 import com.nwu.service.CustomizeService;
 import com.nwu.service.workload.impl.JobsServiceImpl;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
@@ -154,11 +155,11 @@ public class CustomizeController {
     @RequestMapping("/getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace")
     public String getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws ApiException, FileNotFoundException {
 
-        Map<String, Object> object = customizeService.getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(crdName, objName, nameSpace);
+        ObjectDefinition objectDefinition = customizeService.getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(crdName, objName, nameSpace);
         Map<String, Object> result = new HashMap<>();
         result.put("code", 1200);
         result.put("message", "加载 object 成功");
-        result.put("data", object);
+        result.put("data", objectDefinition);
 
         return JSON.toJSONString(result);
     }

@@ -160,7 +160,6 @@ public class ServicesServiceImpl implements ServicesService {
 
         // 获取 event
         Event event = KubernetesUtils.client.v1().events().inNamespace(namespace).withName(name).get();
-
         // 封装对象
         ServiceDefinition serviceDefinition = new ServiceDefinition();
 
