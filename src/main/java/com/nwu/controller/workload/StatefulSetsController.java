@@ -55,7 +55,7 @@ public class StatefulSetsController {
 
         result.put("code", 1200);
         result.put("message", "获取 StatefulSet 列表成功");
-        result.put("data", StatefulSetFormat.formatStatefulSetList(statefulSetList));
+        result.put("data", (statefulSetList));
 
         return JSON.toJSONString(result);
 

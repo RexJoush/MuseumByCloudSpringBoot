@@ -53,12 +53,12 @@ public class JobFormat {
 
             //标准化Job
             JobInformation jobInformation = new JobInformation();
-            jobInformation.setName(aJob.getMetadata().getName());
-            jobInformation.setNamespace(aJob.getMetadata().getNamespace());
-            jobInformation.setCreationTimestamp(aJob.getMetadata().getCreationTimestamp());
+            jobInformation.setName(aJob.getMetadata().getName() == null ? "未知" : aJob.getMetadata().getName());
+            jobInformation.setNamespace(aJob.getMetadata().getNamespace() == null ? "未知" : aJob.getMetadata().getNamespace());
+            jobInformation.setCreationTimestamp(aJob.getMetadata().getCreationTimestamp() == null ? "未知" : aJob.getMetadata().getCreationTimestamp());
             jobInformation.setStatus(status);
             jobInformation.setRunningPods(runningPods);
-            jobInformation.setReplicas(aJob.getSpec().getCompletions());
+            jobInformation.setReplicas(aJob.getSpec().getCompletions() == null ? 0 : aJob.getSpec().getCompletions());
 
             jobInformationList.add(jobInformation);
         }

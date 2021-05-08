@@ -29,33 +29,33 @@ public class ReplicationControllerFormat {
 
             //获取 ReplicationController
             ReplicationController aReplicationController = iterator.next();
-            Map<String, String> matchLabels = aReplicationController.getSpec().getSelector();
+//            Map<String, String> matchLabels = aReplicationController.getSpec().getSelector();
 
             //获取Job 对应 Pods
-            PodsServiceImpl podsService = new PodsServiceImpl();
-            List<Pod> pods = podsService.findPodsByLabels(matchLabels);
-            pods = FilterPodsByControllerUid.filterPodsByControllerUid(aReplicationController.getMetadata().getUid(), pods);
+//            PodsServiceImpl podsService = new PodsServiceImpl();
+//            List<Pod> pods = podsService.findPodsByLabels(matchLabels);
+//            pods = FilterPodsByControllerUid.filterPodsByControllerUid(aReplicationController.getMetadata().getUid(), pods);
+//
+//            String status = "1";
+//            int runningPods = 0;
+//            for(int i = 0; i < pods.size(); i ++){
+//                Pod tmpPod = pods.get(i);
+//                if(tmpPod.getStatus().getPhase().equals("Running")){
+//                    runningPods += 1;
+//                }
+//                else if(tmpPod.getStatus().getPhase().equals("Pending")){
+//                    status = "0";
+//                }
+//            }
 
-            String status = "1";
-            int runningPods = 0;
-            for(int i = 0; i < pods.size(); i ++){
-                Pod tmpPod = pods.get(i);
-                if(tmpPod.getStatus().getPhase().equals("Running")){
-                    runningPods += 1;
-                }
-                else if(tmpPod.getStatus().getPhase().equals("Pending")){
-                    status = "0";
-                }
-            }
-
-            //标准化Job
+            //标准化ReplicationController
             ReplicationControllerInformation replicationControllerInformation = new ReplicationControllerInformation();
-            replicationControllerInformation.setName(aReplicationController.getMetadata().getName());
-            replicationControllerInformation.setNamespace(aReplicationController.getMetadata().getNamespace());
-            replicationControllerInformation.setCreationTimestamp(aReplicationController.getMetadata().getCreationTimestamp());
-            replicationControllerInformation.setStatus(status);
-            replicationControllerInformation.setRunningPods(runningPods);
-            replicationControllerInformation.setReplicas(aReplicationController.getSpec().getReplicas());
+            replicationControllerInformation.setName(aReplicationController.getMetadata().getName() == null ? "未知" : aReplicationController.getMetadata().getName());
+            replicationControllerInformation.setNamespace(aReplicationController.getMetadata().getNamespace() == null ? "未知" : aReplicationController.getMetadata().getNamespace());
+            replicationControllerInformation.setCreationTimestamp(aReplicationController.getMetadata().getCreationTimestamp() == null ? "未知" : aReplicationController.getMetadata().getCreationTimestamp());
+            replicationControllerInformation.setStatus(aReplicationController.getStatus().getReplicas() == aReplicationController.getStatus().getAvailableReplicas() ? "1" : "0");
+            replicationControllerInformation.setRunningPods(aReplicationController.getStatus().getAvailableReplicas() == null ? 0 : aReplicationController.getStatus().getAvailableReplicas());
+            replicationControllerInformation.setReplicas(aReplicationController.getSpec().getReplicas() == null ? 0 : aReplicationController.getSpec().getReplicas());
 
             replicationControllerInformationList.add(replicationControllerInformation);
         }

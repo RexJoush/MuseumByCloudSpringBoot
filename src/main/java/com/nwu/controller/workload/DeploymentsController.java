@@ -11,6 +11,7 @@ import com.nwu.service.workload.impl.DeploymentsServiceImpl;
 import com.nwu.service.workload.impl.ReplicaSetsServiceImpl;
 import com.nwu.util.FilterReplicaSetByControllerUid;
 import com.nwu.util.KubernetesUtils;
+import com.nwu.util.format.DeploymentFormat;
 import com.nwu.util.format.ReplicaSetFormat;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
@@ -48,7 +49,7 @@ public class DeploymentsController {
 
         result.put("code", 1200);
         result.put("message", "获取 Deployment 列表成功");
-        result.put("data", deployments);
+        result.put("data", DeploymentFormat.formatDeploymentList(deployments));
 
         return JSON.toJSONString(result);
 

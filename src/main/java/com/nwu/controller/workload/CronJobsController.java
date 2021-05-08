@@ -6,6 +6,7 @@ import com.nwu.service.workload.impl.CronJobsServiceImpl;
 import com.nwu.service.workload.impl.JobsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.KubernetesUtils;
+import com.nwu.util.format.CronJobFormat;
 import com.nwu.util.format.JobFormat;
 import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -48,13 +49,13 @@ public class CronJobsController {
             cronJobList = cronJobsService.findAllCronJobs();
         }else{
             cronJobList = cronJobsService.findCronJobsByNamespace(namespace);
-        }
 
+        }
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
         result.put("message", "获取 CronJob 列表成功");
-        result.put("data", cronJobList);
+        result.put("data", CronJobFormat.formatCronJobList(cronJobList));
 
         return JSON.toJSONString(result);
 
@@ -160,21 +161,28 @@ public class CronJobsController {
 
         CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
         String cronJobUid = aCronJob.getMetadata().getUid();
+
+        //获取CronJob下的Jobs 并放在前amount个位置
         List<Job> jobList = KubernetesUtils.client.batch().jobs().inAnyNamespace().list().getItems();
         int amount = 0;
         for(int i = 0; i < jobList.size(); i ++){
             Job tmp = jobList.get(i);
             for(int j = tmp.getMetadata().getOwnerReferences().size() - 1; j >= 0; j --){
-                if(tmp.getMetadata().getOwnerReferences().get(j).getUid().equals(cronJobUid)){
-                    jobList.set(amount ++, tmp);
-                    break;
+                try{
+                    if(tmp.getMetadata().getOwnerReferences().get(j).getUid().equals(cronJobUid)){
+                        jobList.set(amount ++, tmp);
+                        break;
+                    }
+                }catch(Exception e){
+                    System.out.println("CronJobController-getCronJobResources-可能Job没有OwnerReferences及以下选项");
                 }
             }
         }
 
+        //标准化Job,并截取CronJob下的Job 前amount个
         List<JobInformation> jobInformationList = JobFormat.formatJobList(jobList.subList(0, amount));
-        System.out.println(jobInformationList);
-        System.out.println(amount);
+
+        //将正在运行的Jobs放在列表后面
         int i = 0;
         int j = amount - 1;
         while(i < j){
@@ -192,16 +200,21 @@ public class CronJobsController {
             jobInformationList.set(i, jobInformationList.get(j));
             jobInformationList.set(j, jobInformation);
         }
-        int mid = jobInformationList.get(i).getRunningPods() > 0 ? i : i + 1;
+        int mid = jobInformationList.get(i).getRunningPods() > 0 ? i : i + 1;//分割非运行与运行中
+
+        //放入数据
+        Map<String, Object> data = new HashMap<>();
+        data.put("cronJob", aCronJob);
+        data.put("jods", jobInformationList.subList(0, mid));
+        data.put("runningJods", jobInformationList.subList(mid, amount));
+
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
         result.put("message", "通过name和namespace获取 cronJob 的 Resources 成功");
-        result.put("dataCronJob", aCronJob);
-        result.put("dataJods", jobInformationList.subList(0, mid));
-        result.put("dataRunningJods", jobInformationList.subList(mid, amount));
-        System.out.println(jobInformationList);
+        result.put("data", data);
+
         return JSON.toJSONString(result);
     }
 }

@@ -3,13 +3,17 @@ package com.nwu.controller.workload;
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.PodDefinition;
 import com.nwu.entity.workload.PodDetails;
+import com.nwu.entity.workload.PodForm;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,18 +195,9 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/createPodFromYaml")
-    public String createPodFromYaml(String path) throws FileNotFoundException {
-
-        Pod aPod = podsService.createPodByYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 Pod 成功");
-        result.put("data", aPod);
-
-        return JSON.toJSONString(result);
+    @PostMapping("/createPodFromYamlFile")
+    public String createPodFromYamlFile(@RequestParam("yaml") MultipartFile originalFile) throws FileNotFoundException {
+        return JSON.toJSONString("弃用，在establish中使用");
     }
 
     @RequestMapping("/createOrReplacePod")
@@ -232,21 +227,8 @@ public class PodsController {
     }
 
     @RequestMapping("/createPodFromForm")
-    public String createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
-                                    String secretName, String images, String imagePullPolicy, String[] command, String[] args,
-                                    String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount) {
-        List<Pod> podList = podsService.createPodFromForm(name, namespace, labels, annotations,
-                secretName, images, imagePullPolicy, command, args,
-                cpuLimit, cpuRequest, memoryLimit, memoryRequest, envVar, amount);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 Pod 成功");
-        result.put("data", podList);
-
-        return JSON.toJSONString(result);
-
+    public String createPodFromForm(PodForm podForm){
+        return "弃用方法，在establish中使用";
     }
 
 }

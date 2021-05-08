@@ -29,33 +29,34 @@ public class StatefulSetFormat {
 
             //获取 StatefulSet
             StatefulSet aStatefulSet = iterator.next();
-            Map<String, String> matchLabels = aStatefulSet.getSpec().getSelector().getMatchLabels();
+//            Map<String, String> matchLabels = aStatefulSet.getSpec().getSelector().getMatchLabels();
 
             //获取 StatefulSet 对应 Pods
-            PodsServiceImpl podsService = new PodsServiceImpl();
-            List<Pod> pods = podsService.findPodsByLabels(matchLabels);
-            pods = FilterPodsByControllerUid.filterPodsByControllerUid(aStatefulSet.getMetadata().getUid(), pods);
-
-            String status = "1";
-            int runningPods = 0;
-            for(int i = 0; i < pods.size(); i ++){
-                Pod tmpPod = pods.get(i);
-                if(tmpPod.getStatus().getPhase().equals("Running")){
-                    runningPods += 1;
-                }
-                else if(tmpPod.getStatus().getPhase().equals("Pending")){
-                    status = "0";
-                }
-            }
+//            PodsServiceImpl podsService = new PodsServiceImpl();
+//            List<Pod> pods = podsService.findPodsByLabels(matchLabels);
+//            pods = FilterPodsByControllerUid.filterPodsByControllerUid(aStatefulSet.getMetadata().getUid(), pods);
+//
+//            String status = "1";
+//            int runningPods = 0;
+//            for(int i = 0; i < pods.size(); i ++){
+//                Pod tmpPod = pods.get(i);
+//                if(tmpPod.getStatus().getPhase().equals("Running")){
+//                    runningPods += 1;
+//                }
+//                else if(tmpPod.getStatus().getPhase().equals("Pending")){
+//                    status = "0";
+//                }
+//            }
 
             //标准化StatefulSet
             StatefulSetInformation statefulSetInformation = new StatefulSetInformation();
-            statefulSetInformation.setName(aStatefulSet.getMetadata().getName());
-            statefulSetInformation.setNamespace(aStatefulSet.getMetadata().getNamespace());
-            statefulSetInformation.setCreationTimestamp(aStatefulSet.getMetadata().getCreationTimestamp());
-            statefulSetInformation.setStatus(status);
-            statefulSetInformation.setRunningPods(runningPods);
-            statefulSetInformation.setReplicas(aStatefulSet.getSpec().getReplicas());
+            String name = null == aStatefulSet.getMetadata().getName() ? "未知" : aStatefulSet.getMetadata().getName();
+            statefulSetInformation.setName(name);
+            statefulSetInformation.setNamespace(aStatefulSet.getMetadata().getNamespace() == null ? "未知" : aStatefulSet.getMetadata().getNamespace());
+            statefulSetInformation.setCreationTimestamp(aStatefulSet.getMetadata().getCreationTimestamp() == null ? "未知" : aStatefulSet.getMetadata().getCreationTimestamp());
+            statefulSetInformation.setStatus(aStatefulSet.getStatus().getCurrentReplicas() == aStatefulSet.getStatus().getReplicas() ? "1" : "0");
+            statefulSetInformation.setRunningPods(aStatefulSet.getStatus().getCurrentReplicas() == null ? 0 : aStatefulSet.getStatus().getCurrentReplicas());
+            statefulSetInformation.setReplicas(aStatefulSet.getSpec().getReplicas() == null ? 0 : aStatefulSet.getSpec().getReplicas());
 
             statefulSetInformationList.add(statefulSetInformation);
         }

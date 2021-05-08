@@ -2,11 +2,12 @@ package com.nwu.service.workload;
 
 import com.nwu.entity.workload.PodDefinition;
 import com.nwu.entity.workload.PodDetails;
+import com.nwu.entity.workload.PodForm;
 import com.nwu.entity.workload.PodUsage;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
@@ -112,11 +113,18 @@ public interface PodsService {
     Pod loadPodFromYaml(String path) throws FileNotFoundException;
 
     /**
-     * 通过yaml文件创建Pod
+     * 通过yaml文件路径创建Pod
      * @param path yaml文件输入路径 String
      * @return 创建的Pod
      */
-    Pod createPodByYaml(String path) throws FileNotFoundException;
+    Pod createPodByYamlPath(String path) throws FileNotFoundException;
+
+    /**
+     * 通过 yaml 文件创建 Pod
+     * @param yaml File 类型 yaml 文件
+     * @return 创建的代码
+     */
+    int createPodByYamlFile(File yaml) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新Pod
@@ -135,24 +143,8 @@ public interface PodsService {
 
     /**
      *从表单创建Pod
-     * @param name Pod名称 String
-     * @param namespace Pod命名空间 String
-     * @param labels Pod标签 Map<String, String>
-     * @param annotations Pod描述信息 Map<String, String>
-     * @param secretName 下载Pod所用镜像需要的secret名称 String
-     * @param images Pod里容器镜像 String
-     * @param imagePullPolicy Pod里容器镜像下载策略 String
-     * @param command Pod里容器启动后执行的命令列表 String[]
-     * @param args Pod里容器的启动命令参数列表 String[]
-     * @param cpuLimit Pod里容器Cpu的限制，单位为core数 String
-     * @param cpuRequest Pod里容器Cpu请求，容器启动的初始可用数量 String
-     * @param memoryLimit Pod里容内存限制，单位可能为Mib/Gib或者Mi/Gi  String
-     * @param memoryRequest Pod里容器内存请求,容器启动的初始可用数量 String
-     * @param envVar Pod里容器环境变量名称和值 Map<String, String>
-     * @param amount Pod副本数量 Integer
-     * @return 生成的Pod列表
+     * @param podForm Pod 表单
+     * @return 生成的 Pod 结果
      */
-    List<Pod> createPodFromForm(String name, String namespace, Map<String, String> labels, Map<String, String> annotations,
-                        String secretName, String images, String imagePullPolicy, String[] command, String[] args,
-                        String cpuLimit, String cpuRequest, String memoryLimit, String memoryRequest, Map<String, String> envVar, Integer amount);
+    int createPodFromForm(PodForm podForm);
 }

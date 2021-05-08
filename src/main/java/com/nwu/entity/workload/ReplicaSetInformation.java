@@ -7,7 +7,7 @@ package com.nwu.entity.workload;
 public class ReplicaSetInformation {
     private String status;//状态
     private String name;//名称
-    private String namespace;//明明空间
+    private String namespace;//命名空间
     private int runningPods;//正在运行的Pods数量
     private int replicas;//期望的Pods数量
     private String creationTimestamp;//创建时间
