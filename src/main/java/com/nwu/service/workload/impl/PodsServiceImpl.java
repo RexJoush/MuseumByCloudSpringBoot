@@ -309,6 +309,10 @@ public class PodsServiceImpl implements PodsService {
         for(int i = 0; i < annotationsKeys.length; i++)
             labels.put(annotationsKeys[i], annotationsValues[i]);
 
+        //NodeSelect
+        Map<String, String> nodeSelect = new HashMap<>();
+        nodeSelect.put("type", "node");
+
         List<Pod> podList = new ArrayList<Pod>();
         while (amount > 0) {
             amount -= 1;
@@ -321,6 +325,7 @@ public class PodsServiceImpl implements PodsService {
                     .withAnnotations(annotations)
                     .endMetadata()
                     .withNewSpec()
+                    .withNodeSelector(nodeSelect)
                     .withImagePullSecrets(localObjectReference)
                     .addNewContainer()
                     .withName(containerName)
