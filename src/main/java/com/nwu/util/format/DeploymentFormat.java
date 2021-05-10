@@ -21,7 +21,7 @@ public class DeploymentFormat {
 
             deploymentInformation.setName(deploymentList.get(i).getMetadata().getName() == null ? "未知" : deploymentList.get(i).getMetadata().getName());
             deploymentInformation.setNamespace(deploymentList.get(i).getMetadata().getNamespace() == null ? "未知" : deploymentList.get(i).getMetadata().getNamespace());
-            deploymentInformation.setStatus("True".equals(deploymentList.get(i).getStatus().getConditions().get(1).getStatus()) ? "0" : "1");
+            deploymentInformation.setStatus("True".equals(deploymentList.get(i).getStatus().getConditions().size() >= 2 ? deploymentList.get(i).getStatus().getConditions().get(1).getStatus() : "") ? "1" : "0");
             deploymentInformation.setRunningPods(deploymentList.get(i).getStatus().getReadyReplicas() == null ? 0 : deploymentList.get(i).getStatus().getReadyReplicas());
             deploymentInformation.setReplicas(deploymentList.get(i).getSpec().getReplicas() == null ? 0 : deploymentList.get(i).getSpec().getReplicas());
             deploymentInformation.setCreationTimestamp(deploymentList.get(i).getMetadata().getCreationTimestamp() == null ? "未知" : deploymentList.get(i).getMetadata().getCreationTimestamp());

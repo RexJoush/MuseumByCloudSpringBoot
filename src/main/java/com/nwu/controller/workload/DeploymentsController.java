@@ -150,15 +150,18 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/setReplicas")
-    public String setReplicas(String name, String namespace, Integer replicas){
+    @RequestMapping("/setReplica")
+    public String setReplica(String name, String namespace, String replica){
 
-        deploymentsService.setReplicas(name, namespace, replicas);
+        System.out.println(name);
+        System.out.println(namespace);
+        System.out.println(replica);
+        deploymentsService.setReplicas(name, namespace, Integer.parseInt(replica));
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "可能设置 Deployment的replicas 成功");
+        result.put("message", "可能设置 Deployment的replica 成功");
         result.put("data", "未明确");
 
         return JSON.toJSONString(result);

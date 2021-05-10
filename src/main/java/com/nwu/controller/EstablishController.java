@@ -7,6 +7,7 @@ package com.nwu.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.PodForm;
+import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import io.fabric8.kubernetes.api.model.Pod;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class EstablishController {
 
     @Resource
     private PodsServiceImpl podsService;
+    private CommonServiceImpl commonService;
 
     @PostMapping("/createPodFromYamlFile")
     public String createPodFromYamlFile(@RequestParam("yaml") MultipartFile originalFile) throws FileNotFoundException {
@@ -50,7 +52,8 @@ public class EstablishController {
             file = File.createTempFile(fileName[0], fileName[1]);
             originalFile.transferTo(file);
             file.deleteOnExit();
-            code = podsService.createPodByYamlFile(file);
+//            code = podsService.createPodByYamlFile(file);
+            code = commonService.changeResourceByYaml(file);
         } catch (IOException e) {
             e.printStackTrace();
             code = 1204;

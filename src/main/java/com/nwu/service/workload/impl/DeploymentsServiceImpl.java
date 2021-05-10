@@ -57,6 +57,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
 
         InputStream yamlInputStream = byPath(path);
 
+
         Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
 
         return deployment;
@@ -108,9 +109,15 @@ public class DeploymentsServiceImpl implements DeploymentsService {
 
     @Override
     public void setReplicas(String name, String namespace, Integer replicas){
+        System.out.println(replicas);
         try{
-            KubernetesUtils.client.apps().deployments().inNamespace(namespace)
-                    .withName(name).edit().getSpec().setReplicas(replicas);
+            Deployment deployment = KubernetesUtils.client.apps().deployments().inNamespace(namespace)
+                    .withName(name).get();
+            deployment.getSpec().setReplicas(replicas);
+            KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).delete();
+            KubernetesUtils.client.apps().deployments().createOrReplace(deployment);
+//            KubernetesUtils.client.apps().deployments().inNamespace(namespace)
+//                    .withName(name).edit().getSpec().setReplicas(replicas);
         }catch(Exception e){
             System.out.println("设置Deployment的replicas失败");
         }
