@@ -42,6 +42,8 @@ public class DaemonSetsController {
     @RequestMapping("/getAllDaemonSets")
     public String findAllDaemonSets(String namespace) throws ApiException {
 
+        System.out.println(namespace);
+
         List<DaemonSet> daemonSets;
 
         if("".equals(namespace)){

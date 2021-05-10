@@ -53,7 +53,7 @@ public class ReplicaSetFormat {
             replicaSetInformation.setName(aReplicaSet.getMetadata().getName() != null ? aReplicaSet.getMetadata().getName() : "未知");
             replicaSetInformation.setNamespace(aReplicaSet.getMetadata().getNamespace() == null ? "未知" : aReplicaSet.getMetadata().getNamespace());
             replicaSetInformation.setCreationTimestamp(aReplicaSet.getMetadata().getCreationTimestamp() == null ? "未知" : aReplicaSet.getMetadata().getCreationTimestamp());
-            replicaSetInformation.setStatus(aReplicaSet.getStatus().getReplicas() == aReplicaSet.getStatus().getAvailableReplicas() ? "1" : "0");
+            replicaSetInformation.setStatus(aReplicaSet.getStatus().getReplicas() == null || aReplicaSet.getStatus().getAvailableReplicas() == null || aReplicaSet.getStatus().getReplicas() != aReplicaSet.getStatus().getAvailableReplicas() ? "0" : "1");
             replicaSetInformation.setRunningPods(aReplicaSet.getStatus().getReadyReplicas() == null ? 0 : aReplicaSet.getStatus().getReadyReplicas());
             replicaSetInformation.setReplicas(aReplicaSet.getSpec().getReplicas() == null ? 0 : aReplicaSet.getSpec().getReplicas());
 

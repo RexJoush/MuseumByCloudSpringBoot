@@ -54,7 +54,7 @@ public class StatefulSetFormat {
             statefulSetInformation.setName(name);
             statefulSetInformation.setNamespace(aStatefulSet.getMetadata().getNamespace() == null ? "未知" : aStatefulSet.getMetadata().getNamespace());
             statefulSetInformation.setCreationTimestamp(aStatefulSet.getMetadata().getCreationTimestamp() == null ? "未知" : aStatefulSet.getMetadata().getCreationTimestamp());
-            statefulSetInformation.setStatus(aStatefulSet.getStatus().getCurrentReplicas() == aStatefulSet.getStatus().getReplicas() ? "1" : "0");
+            statefulSetInformation.setStatus(aStatefulSet.getStatus().getCurrentReplicas() == null || aStatefulSet.getStatus().getReplicas() == null || aStatefulSet.getStatus().getCurrentReplicas() != aStatefulSet.getStatus().getReplicas() ? "0" : "1");
             statefulSetInformation.setRunningPods(aStatefulSet.getStatus().getCurrentReplicas() == null ? 0 : aStatefulSet.getStatus().getCurrentReplicas());
             statefulSetInformation.setReplicas(aStatefulSet.getSpec().getReplicas() == null ? 0 : aStatefulSet.getSpec().getReplicas());
 

@@ -53,7 +53,7 @@ public class ReplicationControllerFormat {
             replicationControllerInformation.setName(aReplicationController.getMetadata().getName() == null ? "未知" : aReplicationController.getMetadata().getName());
             replicationControllerInformation.setNamespace(aReplicationController.getMetadata().getNamespace() == null ? "未知" : aReplicationController.getMetadata().getNamespace());
             replicationControllerInformation.setCreationTimestamp(aReplicationController.getMetadata().getCreationTimestamp() == null ? "未知" : aReplicationController.getMetadata().getCreationTimestamp());
-            replicationControllerInformation.setStatus(aReplicationController.getStatus().getReplicas() == aReplicationController.getStatus().getAvailableReplicas() ? "1" : "0");
+            replicationControllerInformation.setStatus(aReplicationController.getStatus().getReplicas() == null || aReplicationController.getStatus().getAvailableReplicas() == null || aReplicationController.getStatus().getReplicas() == aReplicationController.getStatus().getAvailableReplicas() ? "0" : "1");
             replicationControllerInformation.setRunningPods(aReplicationController.getStatus().getAvailableReplicas() == null ? 0 : aReplicationController.getStatus().getAvailableReplicas());
             replicationControllerInformation.setReplicas(aReplicationController.getSpec().getReplicas() == null ? 0 : aReplicationController.getSpec().getReplicas());
 
