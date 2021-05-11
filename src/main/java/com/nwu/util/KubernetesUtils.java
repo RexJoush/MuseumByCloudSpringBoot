@@ -25,6 +25,7 @@ public class KubernetesUtils {
 
         // kubernetes 连接地址
         //中期测试时连接的平台
+//        String kubernetesUrl = "https://172.18.7.23:6443";
         String kubernetesUrl = "https://172.18.7.25:7443";
 
         config = new ConfigBuilder().withMasterUrl(kubernetesUrl).withTrustCerts(true).withOauthToken(token).build();

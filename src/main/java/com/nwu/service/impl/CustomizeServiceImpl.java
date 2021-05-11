@@ -1,26 +1,16 @@
 package com.nwu.service.impl;
 
-import com.nwu.entity.cluster.NamespaceDetails;
-import com.nwu.entity.common.EventDefinition;
 import com.nwu.entity.customize.ObjectDefinition;
 import com.nwu.service.CustomizeService;
 import com.nwu.util.KubernetesUtils;
-import io.fabric8.kubernetes.api.model.Event;
-import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
-import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
-import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.util.Yaml;
-import org.glassfish.jersey.internal.inject.Custom;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
