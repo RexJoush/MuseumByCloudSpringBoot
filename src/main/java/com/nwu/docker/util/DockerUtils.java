@@ -1,4 +1,4 @@
-package com.docker.util;
+package com.nwu.docker.util;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
@@ -16,7 +16,7 @@ public class DockerUtils {
 
     static {
 
-        String url = "tcp://192.168.29.139:2376";
+        String url = "tcp://172.18.7.15:2376";
 
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(url)
