@@ -16,11 +16,15 @@ import com.nwu.util.format.ReplicaSetFormat;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.kubernetes.client.openapi.ApiException;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,10 +114,10 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/createDeploymentByYaml")
-    public String createDeploymentByYaml(String path) throws FileNotFoundException {
+    @RequestMapping("/createOrReplaceDeploymentByPath")
+    public String createOrReplaceDeploymentByPath(String path) throws FileNotFoundException {
 
-        Deployment aDeployment = deploymentsService.createDeploymentByYaml(path);
+        Deployment aDeployment = deploymentsService.createOrReplaceDeploymentByPath(path);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -124,15 +128,46 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/createOrReplaceDeployment")
-    public String createOrReplaceDeployment(String path) throws FileNotFoundException {
-        Deployment aDeployment = deploymentsService.createOrReplaceDeployment(path);
-
+    @RequestMapping("/changeDeploymentByYaml")
+    public String changeDeploymentByYaml(@RequestBody String yaml)  {
+        System.out.println(yaml);
         Map<String, Object> result = new HashMap<>();
+        int code = 0;
+        // 将 \" 转换为 " 将 \\ 转换为 \
+        // 即，去掉前后端传值时自动添加的转义字符
+        String s1 = yaml.replaceFirst("[{]\"[A-Za-z]+\":\"", "");
+        String substring = s1.substring(0, s1.length() - 2);
+        System.out.println(substring);
+        String s = substring.replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
+        System.out.println(s);
 
-        result.put("code", 1200);
-        result.put("message", "创建或更新 Deployment 成功");
-        result.put("data", aDeployment);
+        File file = new File(KubernetesUtils.path);
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdir();
+        }
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(file);
+            for (char c : s.toCharArray()) {
+                if (c == '%'){
+                    fileWriter.append("\r\n");
+                }
+                else {
+                    fileWriter.append(c);
+                }
+            }
+            fileWriter.close();
+
+            deploymentsService.createOrReplaceDeploymentByFile(file);
+            code= 1200;
+
+        } catch (IOException | ApiException e) {
+            e.printStackTrace();
+            code = 1203;
+        }
+
+        result.put("code", code);
+        result.put("message", "请求成功");
 
         return JSON.toJSONString(result);
     }

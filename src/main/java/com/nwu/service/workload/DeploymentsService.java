@@ -10,6 +10,7 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
@@ -60,14 +61,14 @@ public interface DeploymentsService {
      * @param path yaml文件输入路径 String
      * @return 创建的Deployment
      */
-    Deployment createDeploymentByYaml(String path) throws FileNotFoundException;
+    Deployment createOrReplaceDeploymentByPath(String path) throws FileNotFoundException;
 
     /**
      * 通过yaml文件创建或更新Deployment
-     * @param path yaml文件输入路径 String
+     * @param file yaml文件
      * @return 创建或更新的Deployment
      */
-    Deployment createOrReplaceDeployment(String path) throws FileNotFoundException;
+    Deployment createOrReplaceDeploymentByFile(File file) throws FileNotFoundException, ApiException;
 
     /**
      * 通过Deployment name和namespace获取Deployment的日志信息
