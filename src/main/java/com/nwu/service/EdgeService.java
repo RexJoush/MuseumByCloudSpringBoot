@@ -50,4 +50,5 @@ public interface EdgeService {
      * @return 利用率列表
      */
     // List<NodeUsage> findRecentTwenty(String nodeName);
+    String getLogs(String podName,String nameSpace);
 }

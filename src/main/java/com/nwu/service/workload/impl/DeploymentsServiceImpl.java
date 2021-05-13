@@ -9,10 +9,11 @@ import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
+import io.kubernetes.client.openapi.models.ExtensionsV1beta1Ingress;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
-
+import io.kubernetes.client.openapi.models.V1Deployment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -156,9 +157,17 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     }
 
     @Override
-    public String getDeploymentYamlByNameAndNamespace(String name ,String namespace){
-        Deployment item = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).get();
+    public String getDeploymentYamlByNameAndNamespace(String name ,String namespace) throws ApiException {
+       //Deployment item = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).get();
 //        KubernetesUtils.extensionsV1beta1Api.
-        return Yaml.dump(item);
+        V1Deployment v1Deployment = null;
+        try {
+            v1Deployment = KubernetesUtils.appsV1Api.readNamespacedDeployment(name,namespace, null, null, null);
+
+
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        return Yaml.dump(v1Deployment);
     }
 }

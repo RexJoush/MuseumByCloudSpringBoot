@@ -203,7 +203,7 @@ public class DeploymentsController {
     }
 
     @RequestMapping("/getDeploymentYamlByNameAndNamespace")
-    public String getDeploymentYamlByNameAndNamespace(String name, String namespace){
+    public String getDeploymentYamlByNameAndNamespace(String name, String namespace) throws ApiException {
 
         String deploymentYaml = deploymentsService.getDeploymentYamlByNameAndNamespace(name, namespace);
         Map<String, Object> result = new HashMap<>();

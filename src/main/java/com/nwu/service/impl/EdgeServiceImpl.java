@@ -40,6 +40,13 @@ public class EdgeServiceImpl implements EdgeService {
     }
 
     @Override
+    public String getLogs(String podName,String nameSpace) {
+        String log = KubernetesUtils.client.pods().inNamespace(nameSpace).withName(podName).getLog();
+        return log;
+    }
+
+
+    @Override
     public Node findEdgeNodeByName(String nodeName) {
         return KubernetesUtils.client.nodes().withName(nodeName).get();
     }

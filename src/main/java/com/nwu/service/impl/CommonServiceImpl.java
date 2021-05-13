@@ -10,6 +10,7 @@ import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -71,6 +72,34 @@ public class CommonServiceImpl implements CommonService {
         }
     }
 
+    @Override
+    public int changeDeploymentByYaml(File yaml) {
+
+        try {
+            InputStream inputStream = new FileInputStream(yaml);
+
+            io.fabric8.kubernetes.api.model.apps.Deployment orReplace1 = KubernetesUtils.client.apps().deployments().load(inputStream).get();
+
+            Boolean delete = KubernetesUtils.client.apps().deployments().inNamespace(orReplace1.getMetadata().getNamespace()).withName(orReplace1.getMetadata().getName()).delete();
+
+            InputStream inputStream2 = new FileInputStream(yaml);
+
+            List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream2).createOrReplace();
+
+            inputStream.close();
+
+            yaml.delete();
+
+            if (orReplace != null) {
+                return 1200;
+            } else {
+                return 1201;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1202;
+        }
+    }
     @Override
     public int changeIngressesByYaml(File yaml) {
 

@@ -92,5 +92,5 @@ public interface DeploymentsService {
      * @param namespace Deployment 的命名空间
      * @return Yaml 格式的 Deployment
      */
-    String getDeploymentYamlByNameAndNamespace(String name, String namespace);
+    String getDeploymentYamlByNameAndNamespace(String name, String namespace) throws ApiException;
 }

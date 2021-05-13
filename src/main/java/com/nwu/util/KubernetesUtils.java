@@ -47,6 +47,8 @@ public class KubernetesUtils {
     // 创建 Kubernetes Official BatchApi 客户端
     public static BatchV1Api batchV1Api = new BatchV1Api();
 
+    public static AppsV1Api appsV1Api = new AppsV1Api();
+
     // 创建 Fabric8 Kubernetes客户端
     public static KubernetesClient client = new DefaultKubernetesClient(config);
 

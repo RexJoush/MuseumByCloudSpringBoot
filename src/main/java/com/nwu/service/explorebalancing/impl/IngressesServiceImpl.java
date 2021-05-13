@@ -142,6 +142,7 @@ public class IngressesServiceImpl implements IngressesService {
         ExtensionsV1beta1Ingress extensionsV1beta1Ingress = null;
         try {
             extensionsV1beta1Ingress = KubernetesUtils.extensionsV1beta1Api.readNamespacedIngress(name, namespace, null, null, null);
+
         } catch (ApiException e) {
             e.printStackTrace();
         }

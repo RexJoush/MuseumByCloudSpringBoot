@@ -23,7 +23,7 @@ public interface CommonService {
      */
     int changeResourceByYaml(File yaml);
 
-
+    public int changeDeploymentByYaml(File yaml);
     /**
      * 根据传入的 yaml 文件进行资源的修改
      * @param yaml yaml 文件字符串
