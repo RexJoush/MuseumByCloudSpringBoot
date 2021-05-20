@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class ImageDefinition {
 
+    private String name;        // 镜像名称
     private String id;          // 镜像id
     private String[] tags;      // 镜像标签
     private double size;        // 镜像大小
