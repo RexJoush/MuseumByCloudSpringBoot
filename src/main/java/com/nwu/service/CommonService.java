@@ -23,7 +23,7 @@ public interface CommonService {
      */
     int changeResourceByYaml(File yaml);
 
-
+    public int changeDeploymentByYaml(File yaml);
     /**
      * 根据传入的 yaml 文件进行资源的修改
      * @param yaml yaml 文件字符串
@@ -43,5 +43,6 @@ public interface CommonService {
      *          1202 表示文件有问题
      */
     int changeIngressesByYaml(File yaml);
+    int changeCrdObjectByYaml(File yaml,String crdName);
 
 }

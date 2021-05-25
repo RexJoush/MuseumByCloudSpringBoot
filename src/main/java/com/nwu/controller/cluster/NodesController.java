@@ -66,10 +66,11 @@ public class NodesController {
 
     @RequestMapping("/getNodeYamlByName")
     public String getPodYamlByNameAndNamespace(String nodeName){
+        System.out.println(nodeName);
         String nodeYaml = nodesService.findPodYamlByName(nodeName);
 
         Map<String, Object> result = new HashMap<>();
-
+System.out.println(nodeYaml);
         result.put("code", 1200);
         result.put("message", "获取 Node Yaml 成功");
         result.put("data", nodeYaml);

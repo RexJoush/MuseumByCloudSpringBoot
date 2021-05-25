@@ -30,15 +30,19 @@ public class Test {
 
 
     public static void main(String[] args) throws ApiException, IOException {
+        String a[] = {};
+        for(int i = 0; i < a.length; i++){
+            System.out.println(a[i]);
+        }
         //CronJob
 //        CronJobsServiceImpl cronJobsService = new CronJobsServiceImpl();
 //        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace("cronjob-demo", "default");
 //        System.out.println(aCronJob);
 
         //DaemonSet
-        DaemonSetsServiceImpl daemonSetsService = new DaemonSetsServiceImpl();
-        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace("nginx-ingress-controller", "ingress-nginx");
-        System.out.println(aDaemonSet);
+//        DaemonSetsServiceImpl daemonSetsService = new DaemonSetsServiceImpl();
+//        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace("nginx-ingress-controller", "ingress-nginx");
+//        System.out.println(aDaemonSet);
 
         //Job
 //        JobsServiceImpl jobsService = new JobsServiceImpl();

@@ -19,7 +19,7 @@ public class DaemonSetFormat {
 
             daemonSetInformation.setName(daemonSetList.get(i).getMetadata().getName() == null ? "未知" : daemonSetList.get(i).getMetadata().getName());
             daemonSetInformation.setNamespace(daemonSetList.get(i).getMetadata().getNamespace() == null ? "未知" : daemonSetList.get(i).getMetadata().getNamespace());
-            daemonSetInformation.setStatus(daemonSetList.get(i).getStatus().getNumberAvailable() < daemonSetList.get(i).getStatus().getNumberReady() ? "0" : "1");
+            daemonSetInformation.setStatus(daemonSetList.get(i).getStatus().getNumberAvailable() == null || daemonSetList.get(i).getStatus().getNumberReady() == null || daemonSetList.get(i).getStatus().getNumberAvailable() < daemonSetList.get(i).getStatus().getNumberReady() ? "0" : "1");
             daemonSetInformation.setRunningPods(daemonSetList.get(i).getStatus().getNumberReady() == null ? 0 : daemonSetList.get(i).getStatus().getNumberReady());
             daemonSetInformation.setReplicas(daemonSetList.get(i).getStatus().getNumberAvailable() == null ? 0 : daemonSetList.get(i).getStatus().getNumberAvailable());
             daemonSetInformation.setCreationTimestamp(daemonSetList.get(i).getMetadata().getCreationTimestamp() == null ? "未知" : daemonSetList.get(i).getMetadata().getCreationTimestamp());

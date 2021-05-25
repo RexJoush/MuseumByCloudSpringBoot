@@ -1,5 +1,6 @@
 package com.nwu.service.impl;
 
+import com.nwu.entity.customize.ObjectDefinition;
 import com.nwu.service.CustomizeService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
@@ -8,6 +9,7 @@ import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +100,43 @@ public class CustomizeServiceImpl implements CustomizeService {
     }
 
     @Override
-    public Map<String, Object> getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException {
+    public String getObjectYamlByName(String crdName, String objName, String nameSpace) throws FileNotFoundException {
+        CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
+        CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
+                .Builder()
+                .withGroup(customResourceDefinition.getSpec().getGroup())
+                .withKind(customResourceDefinition.getSpec().getNames().getKind())
+                .withName(customResourceDefinition.getMetadata().getName())
+                .withPlural(customResourceDefinition.getSpec().getNames().getPlural())
+                .withScope(customResourceDefinition.getSpec().getScope())
+                .withVersion(customResourceDefinition.getSpec().getVersions().get(0).getName())
+                .build();
+        return Yaml.dump(KubernetesUtils.client.customResource(context).get(nameSpace, objName));
+
+    }
+
+    @Override
+    public boolean deleteCustomResourceDefinitionObject(String crdName, String objName, String nameSpace) throws IOException {
+        CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
+        CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
+                .Builder()
+                .withGroup(customResourceDefinition.getSpec().getGroup())
+                .withKind(customResourceDefinition.getSpec().getNames().getKind())
+                .withName(customResourceDefinition.getMetadata().getName())
+                .withPlural(customResourceDefinition.getSpec().getNames().getPlural())
+                .withScope(customResourceDefinition.getSpec().getScope())
+                .withVersion(customResourceDefinition.getSpec().getVersions().get(0).getName())
+                .build();
+        Map<String, Object> delete = KubernetesUtils.client.customResource(context).delete(nameSpace, objName);
+        if (delete.isEmpty()) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    @Override
+    public ObjectDefinition getCustomResourceDefinitionObjectByCrdNameAndObjNameAndNamespace(String crdName, String objName, String nameSpace) throws FileNotFoundException {
         CustomResourceDefinition customResourceDefinition = new CustomizeServiceImpl().getCustomResourceDefinitionByName(crdName);
         CustomResourceDefinitionContext context = new CustomResourceDefinitionContext
                 .Builder()
@@ -110,8 +148,17 @@ public class CustomizeServiceImpl implements CustomizeService {
                 .withVersion(customResourceDefinition.getSpec().getVersions().get(0).getName())
                 .build();
 
-        return KubernetesUtils.client.customResource(context).get(nameSpace, objName);
+        // 获取事件信息
+        //Event events = KubernetesUtils.client.v1().events().inNamespace(nameSpace).withName(objName).get();
+
+        Map<String, Object> stringObjectMap = KubernetesUtils.client.customResource(context).get(nameSpace, objName);
+
+        ObjectDefinition objectDefinition= new ObjectDefinition();
+        objectDefinition.setObjectdefinition(stringObjectMap);
+        //objectDefinition.setEvent(events);
+        return  objectDefinition;
     }
+
 
 
     @Override

@@ -1,12 +1,10 @@
 package com.nwu.util;
 
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.*;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.*;
+import io.kubernetes.client.proto.Resource;
 
 /**
  * @author Rex Joush
@@ -18,13 +16,23 @@ import io.kubernetes.client.openapi.apis.*;
  */
 public class KubernetesUtils {
 
-    private static Config config;
+    private static final Config config;
 
     static {
         // kubernetes 连接 token
-        String token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IlhOc2N4Q000WEZoZHJGanNfWkg1UXNhRkJfNHFESk1JenB5T1ptNnBUMTAifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWJja3NwIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJkYjE2NTMyZi00OWIxLTQ4ZDEtYWI5Ni1kOGM4NWI1MGFhMWUiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.rJ6HLq7BCFGn-aZ6lu4CYqVKksPHJSwwI04Hnlt8yhM3w0ReOCRp4HD-K1zkfih7hcDedGcPVQyjS9B57YCHJkgIAcYO3UghiHo-hyOycbPpBukxpiuao5LuZJKthMlVrgf0wD9utiYBUek_ngB0mJNX4GrtZ3E5gtBRYFWdfA_9j60zxeEcYcHH4spd5KXFOV0lRUg_McVZPOKsFJCRRWbGbJWkGOAr8TlbAtMEQA03dz6Kw6zCR6al2dfLufXoavIq2RKvg8_eX8I6tHQfiExMC5uafeVBLXTrMYMKzCom1A3kVMIaxG3YqS91gg1uCaqJdRK3U91xECaQjiPGdA";
+        // 新平台
+        String token = "eyJhbGciOiJSUzI1NiIsImtpZCI6ImlmY1hHeVB2dVJ6M2hKdDFyTzAyWDJZMTlEUFhZQ29VMlVRMVZ2VmZXT00ifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLXdtcGNwIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJlN2QxMTk2Mi1iNjhhLTQ1MDQtOGVkZC0yZWI0OGUwZjAzYzEiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.U09IXkrWn5LhidpYzZCPP0-iC_TwgCGZPG63Pccu7Hwzll_0KmSCRfIlw-7s-Q2zbtEnI-I8MLn_tqDTYfinvflz24NXBgaU9UvYt-NIKjuXGhPQgxN8KO-Uhu5QX2oEypDQY8K3TJvVGoS3WSOufLvVqqz5ozPCqDAhex0645CQ97GbuHSh0DT_q0Atnrvi3x3tuoUSfvJ-_8i6wzE39FZaYWiSJya4Y5Kq8ZnG9v_keEe3x2eog2qkLrDODtwQmg14kapLVXXQAMb92RqHpIhh1nnO4BdjVKoYzqPpnMnCZR7c1Pc2QOzFjoXScFPHrbe_qbdBDp93j7i14rfjgg";
+
+        // 旧平台
+//        String token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IlhOc2N4Q000WEZoZHJGanNfWkg1UXNhRkJfNHFESk1JenB5T1ptNnBUMTAifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLWJja3NwIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJkYjE2NTMyZi00OWIxLTQ4ZDEtYWI5Ni1kOGM4NWI1MGFhMWUiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.rJ6HLq7BCFGn-aZ6lu4CYqVKksPHJSwwI04Hnlt8yhM3w0ReOCRp4HD-K1zkfih7hcDedGcPVQyjS9B57YCHJkgIAcYO3UghiHo-hyOycbPpBukxpiuao5LuZJKthMlVrgf0wD9utiYBUek_ngB0mJNX4GrtZ3E5gtBRYFWdfA_9j60zxeEcYcHH4spd5KXFOV0lRUg_McVZPOKsFJCRRWbGbJWkGOAr8TlbAtMEQA03dz6Kw6zCR6al2dfLufXoavIq2RKvg8_eX8I6tHQfiExMC5uafeVBLXTrMYMKzCom1A3kVMIaxG3YqS91gg1uCaqJdRK3U91xECaQjiPGdA";
+
         // kubernetes 连接地址
-        String kubernetesUrl = "https://172.18.7.23:6443";
+        // 新平台
+        String kubernetesUrl = "https://172.18.7.25:7443";
+
+        // 旧平台
+//        String kubernetesUrl = "https://172.18.7.23:6443";
+
 
         config = new ConfigBuilder().withMasterUrl(kubernetesUrl).withTrustCerts(true).withOauthToken(token).build();
 
@@ -35,15 +43,17 @@ public class KubernetesUtils {
     // 创建 Kubernetes Official RbacAuthorizationV1Api 客户端
     public static RbacAuthorizationV1Api rbacAuthorizationV1Api = new RbacAuthorizationV1Api();
 
+//    public static ApiextensionsV1Api apiextensionsV1Api= new ApiextensionsV1Api().getAPIResources().re;
 
     // 创建 Kubernetes Official CoreV1Api 客户端
     public static CoreV1Api coreV1Api = new CoreV1Api();
 
     // 创建 Kubernetes Official ExtensionsV1Beta1Api 客户端
     public static ExtensionsV1beta1Api extensionsV1beta1Api = new ExtensionsV1beta1Api();
-
     // 创建 Kubernetes Official BatchApi 客户端
     public static BatchV1Api batchV1Api = new BatchV1Api();
+
+    public static AppsV1Api appsV1Api = new AppsV1Api();
 
     // 创建 Fabric8 Kubernetes客户端
     public static KubernetesClient client = new DefaultKubernetesClient(config);

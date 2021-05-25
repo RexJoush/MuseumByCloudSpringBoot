@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Secrets 的 controller 层
@@ -45,6 +42,49 @@ public class SecretsController {
         result.put("code", 1200);
         result.put("message", "获取 Secret 列表成功");
         result.put("data", secrets);
+
+        return JSON.toJSONString(result);
+
+    }
+
+    @RequestMapping("/getAllSecretsName")
+    public String findAllSecretsName(String namespace) throws ApiException{
+
+        List<Secret> secrets;
+
+        if ("".equals(namespace)){
+            secrets = secretsService.findAllSecrets();
+        }else {
+            secrets = secretsService.findSecretsByNamespace(namespace);
+        }
+
+        int amount = 0;
+        boolean flag[] = new boolean[secrets.size()];
+        List<List<String>> secretsInNamespace = new ArrayList<>();
+        Map<String, Integer> index = new HashMap<>();
+        for(Secret secret : secrets){
+            if(index.get(secret.getMetadata().getNamespace()) == null){
+                List<String> tmpSecretsList = new ArrayList<String>(Collections.singleton(secret.getMetadata().getName()));
+                secretsInNamespace.add(tmpSecretsList);
+                index.put(secret.getMetadata().getNamespace(), amount ++);
+            }else{
+                secretsInNamespace.get(index.get(secret.getMetadata().getNamespace())).add(secret.getMetadata().getName());
+            }
+        }
+        Map<String, List<String>> secretsName = new HashMap<>();
+        Set<String> strings = index.keySet();
+        Iterator<String> iterator = strings.iterator();
+        while(iterator.hasNext()){
+            String tmpNamespace = iterator.next();
+            secretsName.put(tmpNamespace, secretsInNamespace.get(index.get(tmpNamespace)));
+        }
+
+
+        Map<String,Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Secret 名字成功");
+        result.put("data", secretsName);
 
         return JSON.toJSONString(result);
 

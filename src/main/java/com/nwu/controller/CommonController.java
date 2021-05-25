@@ -6,6 +6,7 @@ package com.nwu.controller;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.service.CustomizeService;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.util.KubernetesUtils;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +28,6 @@ public class CommonController {
 
     @RequestMapping("/changeResourceByYaml")
     public String changeResourceByYaml(@RequestBody String yaml) {
-
-        System.out.println(yaml);
-
         Map<String, Object> result = new HashMap<>();
         int code = 0;
         // 将 \" 转换为 " 将 \\ 转换为 \
@@ -72,8 +70,46 @@ public class CommonController {
     }
 
 
+    @RequestMapping("/changeDeploymentByYaml")
+    public String changeDeploymentByYaml(@RequestBody String yaml) {
+
+        Map<String, Object> result = new HashMap<>();
+        int code = 0;
+        // 将 \" 转换为 " 将 \\ 转换为 \
+        // 即，去掉前后端传值时自动添加的转义字符
+        String s = yaml.substring(12, yaml.length() - 2).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
+        File file = new File(KubernetesUtils.path);
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdir();
+        }
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(file);
+            for (char c : s.toCharArray()) {
+                if (c == '%'){
+                    fileWriter.append("\r\n");
+                }
+                else {
+                    fileWriter.append(c);
+                }
+            }
+            fileWriter.close();
+
+            code = commonService.changeDeploymentByYaml(file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            code = 1203;
+        }
+
+        result.put("code", code);
+        result.put("message", "请求成功");
+
+        return JSON.toJSONString(result);
+    }
     @RequestMapping("/changeServicesByYaml")
     public String changeServicesByYaml(@RequestBody String yaml) {
+
         Map<String, Object> result = new HashMap<>();
         int code = 0;
         // 将 \" 转换为 " 将 \\ 转换为 \
@@ -107,6 +143,44 @@ public class CommonController {
         result.put("message", "请求成功");
 
         return JSON.toJSONString(result);
+    }
+    @RequestMapping("/changeResourceByYaml_v1beta")
+    public String changeResourceByYaml_v1beta(@RequestBody String yaml) {
+        yaml=yaml.replaceFirst("v1(beta1)*","v1beta1");
+        Map<String, Object> result = new HashMap<>();
+        int code = 0;
+        // 将 \" 转换为 " 将 \\ 转换为 \
+        // 即，去掉前后端传值时自动添加的转义字符
+        String s = yaml.substring(9, yaml.length() - 2).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
+        File file = new File(KubernetesUtils.path);
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdir();
+        }
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(file);
+            for (char c : s.toCharArray()) {
+                if (c == '%'){
+                    fileWriter.append("\r\n");
+                }
+                else {
+                    fileWriter.append(c);
+                }
+            }
+            fileWriter.close();
+
+            code = commonService.changeResourceByYaml(file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            code = 1203;
+        }
+
+        result.put("code", code);
+        result.put("message", "请求成功");
+
+        return JSON.toJSONString(result);
+
     }
 
     @RequestMapping("/changeIngressesByYaml")
@@ -143,6 +217,43 @@ public class CommonController {
         result.put("code", code);
         result.put("message", "请求成功");
 
+        return JSON.toJSONString(result);
+    }
+    @PostMapping("/changeCrdObjectByYaml")
+    public String changeCrdObjectByYaml(@RequestParam String yaml, @RequestParam String crdName) {
+        Map<String, Object> result = new HashMap<>();
+        int code = 0;
+        // 将 \" 转换为 " 将 \\ 转换为 \
+        // 即，去掉前后端传值时自动添加的转义字符
+        String s = yaml.substring(0, yaml.length()-1).replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
+        System.out.println(s);
+        File file = new File(KubernetesUtils.path);
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdir();
+        }
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(file);
+            for (char c : s.toCharArray()) {
+                if (c == '%'){
+                    fileWriter.append("\r\n");
+                }
+                else {
+                    fileWriter.append(c);
+                }
+            }
+            fileWriter.close();
+
+            code = commonService.changeCrdObjectByYaml(file,crdName);
+            //code = commonService.changeResourceByYaml(file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            code = 1203;
+        }
+
+        result.put("code", code);
+        result.put("message", "请求成功");
         return JSON.toJSONString(result);
     }
 

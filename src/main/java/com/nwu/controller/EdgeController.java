@@ -57,6 +57,19 @@ public class EdgeController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getLogs")
+    public String getLogs(String podName,String nameSpace) throws ApiException {
+
+        String log=new EdgeServiceImpl().getLogs(podName,nameSpace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Edge Node 列表成功");
+        result.put("data", log);
+
+        return JSON.toJSONString(result);
+    }
     @RequestMapping("/initEdgeGraph")
     public String initEdgeGraph() throws FileNotFoundException {
         Map<String, Object> result = new HashMap<>();

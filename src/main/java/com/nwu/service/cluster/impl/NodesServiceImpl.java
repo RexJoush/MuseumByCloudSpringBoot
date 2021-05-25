@@ -173,6 +173,6 @@ public class NodesServiceImpl implements NodesService {
     }
 
     public static void main(String[] args) {
-        new NodesServiceImpl().findPodYamlByName("master-1");
+        System.out.println(new NodesServiceImpl().findPodYamlByName("master-1"));
     }
 }
