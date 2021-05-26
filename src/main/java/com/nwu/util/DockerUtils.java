@@ -17,7 +17,7 @@ public class DockerUtils {
     static {
 
 //        String url = "tcp://172.18.7.15:2376";
-        String url = "tcp://192.168.29.142:2376";
+        String url = "tcp://192.168.29.145:2376";
 
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(url)

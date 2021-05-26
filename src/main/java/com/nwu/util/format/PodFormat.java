@@ -29,18 +29,18 @@ public class PodFormat {
         // 返回结果列表
         List<PodDefinition> result = new ArrayList<>();
 
-        List<PodMetrics> tops = KubernetesUtils.client.top().pods().metrics().getItems();
+        //List<PodMetrics> tops = KubernetesUtils.client.top().pods().metrics().getItems();
 
         Map<String, Usage> usage = new HashMap<>();
 
-        for (PodMetrics top : tops) {
-            if (top.getContainers().size() > 0) {
-                usage.put(top.getMetadata().getName() + top.getMetadata().getNamespace(),
-                        new Usage(top.getContainers().get(0).getUsage()
-                                .get("cpu").getAmount(), top.getContainers().get(0).getUsage()
-                                .get("memory").getAmount()));
-            }
-        }
+//        for (PodMetrics top : tops) {
+//            if (top.getContainers().size() > 0) {
+//                usage.put(top.getMetadata().getName() + top.getMetadata().getNamespace(),
+//                        new Usage(top.getContainers().get(0).getUsage()
+//                                .get("cpu").getAmount(), top.getContainers().get(0).getUsage()
+//                                .get("memory").getAmount()));
+//            }
+//        }
 
         // 封装 pod 列表
         for (Pod item : items) {
