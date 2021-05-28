@@ -67,7 +67,8 @@ public class ImageServiceImpl implements ImageService {
         ImageDetailsDefinition definition = new ImageDetailsDefinition();
 
         RestTemplate template = new RestTemplate();
-        String layers = template.getForObject("http://192.168.29.142:2376/images/" + id + "/history", String.class);
+
+        String layers = template.getForObject("http://192.168.29.145:2376/images/" + id + "/history", String.class);
 
         definition.setLayers(layers);
         definition.setImage(DockerUtils.docker.inspectImageCmd(id).exec());
@@ -76,6 +77,6 @@ public class ImageServiceImpl implements ImageService {
     }
 
     public static void main(String[] args) {
-        new ImageServiceImpl().getImageById("sha256:f0b8a9a541369db503ff3b9d4fa6de561b300f7363920c2bff4577c6c24c5cf6");
+        System.out.println(new ImageServiceImpl().getImageById("sha256:f0b8a9a541369db503ff3b9d4fa6de561b300f7363920c2bff4577c6c24c5cf6"));
     }
 }

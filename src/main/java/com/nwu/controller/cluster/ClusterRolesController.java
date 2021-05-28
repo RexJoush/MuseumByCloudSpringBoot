@@ -75,7 +75,7 @@ public class ClusterRolesController {
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "获取 Cluster Role 详情成功");
+        result.put("message", "删除 Cluster Role 成功");
         result.put("data", aBoolean);
 
         return JSON.toJSONString(result);
