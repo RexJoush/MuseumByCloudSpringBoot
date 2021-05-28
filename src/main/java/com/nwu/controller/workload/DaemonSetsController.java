@@ -7,25 +7,22 @@ package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
-import com.nwu.service.workload.impl.CronJobsServiceImpl;
+import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.DaemonSetsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
-import com.nwu.util.FilterPodsByControllerUid;
-import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.DaemonSetFormat;
 import com.nwu.util.format.PodFormat;
+import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
-import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,22 +94,23 @@ public class DaemonSetsController {
 
         //获取 DaemonSet
         DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace(name, namespace);
-        Map<String, String> matchLabels = aDaemonSet.getSpec().getSelector().getMatchLabels();
-        String uid = aDaemonSet.getMetadata().getUid();
 
-        //获取 Pods
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
+        //获取 DaemonSet 有关的 Pods
+        List<Pod> pods = daemonSetsService.getPodDaemonSetInvolved(name, namespace);
 
         //获取 Services
         ServicesServiceImpl servicesService = new ServicesServiceImpl();
-        List<Service> services = KubernetesUtils.client.services().withLabels(matchLabels).list().getItems();
+        List<Service> services = servicesService.getServicesByLabels(aDaemonSet.getSpec().getSelector().getMatchLabels());
+
+        //获取事件
+        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(aDaemonSet.getMetadata().getUid());
 
         //封装数据
         Map<String, Object> data = new HashMap<>();
         data.put("daemonSet", aDaemonSet);
         data.put("pods", PodFormat.formatPodList(pods));
         data.put("services", services);
+        data.put("events", events);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -138,35 +136,6 @@ public class DaemonSetsController {
 
     }
 
-    @RequestMapping("/loadDaemonSetFromYaml")
-    public String loadDaemonSetFromYaml(String path) throws ApiException, FileNotFoundException {
-
-        DaemonSet daemonSet = daemonSetsService.loadDaemonSetFromYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "加载 DaemonSet 成功");
-        result.put("data", daemonSet);
-
-        return JSON.toJSONString(result);
-
-    }
-
-    @RequestMapping("/createDaemonSetByYaml")
-    public String createDaemonSetByYaml(String path) throws ApiException, FileNotFoundException {
-
-        DaemonSet daemonSet = daemonSetsService.createDaemonSetByYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 DaemonSet 成功");
-        result.put("data", daemonSet);
-
-        return JSON.toJSONString(result);
-    }
-
     @RequestMapping("/createOrReplaceDaemonSet")
     public String createOrReplaceDaemonSet(String path) throws FileNotFoundException {
         DaemonSet aDaemonSet = daemonSetsService.createOrReplaceDaemonSet(path);
@@ -180,6 +149,18 @@ public class DaemonSetsController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/createOrReplaceDaemonSetByYaml")
+    public String createOrReplaceDaemonSetByYaml(String yaml) throws IOException {
+        Boolean ok = daemonSetsService.createOrReplaceDaemonSetByYaml(yaml);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", ok ? "创建或更新 DaemonSet 成功" : "创建或更新 DaemonSet 失败");
+
+        return JSON.toJSONString(result);
+    }
+
     @RequestMapping("/getDaemonSetYamlByNameAndNamespace")
     public String getDaemonSetYamlByNameAndNamespace(String name, String namespace){
 
@@ -189,6 +170,28 @@ public class DaemonSetsController {
         result.put("code", 1200);
         result.put("message", "获取 DaemonSet Yaml 成功");
         result.put("data", daemonSetYaml);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getDaemonSetLogs")
+    public String getDaemonSetLogs(String name ,String namespace){
+
+        //获取 DaemonSet 包含的 Pods
+        List<Pod> pods = daemonSetsService.getPodDaemonSetInvolved(name, namespace);
+        System.out.println(pods.get(0));
+        // 获取每个 Pod 的所有 Logs
+        Map<String, Map<String, String>> podLogs = new HashMap<>();
+        PodsServiceImpl podsService = new PodsServiceImpl();
+        for(int i = 0; i < pods.size(); i++){
+            podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
+        }
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 DaemonSet 日志成功");
+        result.put("data", podLogs);
 
         return JSON.toJSONString(result);
     }

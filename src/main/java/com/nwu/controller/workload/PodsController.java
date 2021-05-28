@@ -4,16 +4,16 @@ import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.PodDefinition;
 import com.nwu.entity.workload.PodDetails;
 import com.nwu.entity.workload.PodForm;
+import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
+import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -213,9 +213,9 @@ public class PodsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/getPodLogByNameAndNamespace")
-    public String getPodLogByNameAndNamespace(String name, String namespace){
-        String str = podsService.getPodLogByNameAndNamespace(name, namespace);
+    @RequestMapping("/getPodLogFromContainer")
+    public String getPodLogByNameAndNamespace(String name, String namespace, String containerName){
+        String str = podsService.getPodLogFromContainer(name, namespace, containerName);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -231,4 +231,35 @@ public class PodsController {
         return "弃用方法，在establish中使用";
     }
 
+    @RequestMapping("/getPodResources")
+    public String getPodResources(String name, String namespace){
+        PodDetails podDetails = podsService.findPodByNameAndNamespace(name, namespace);
+
+        //获取事件
+        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(podDetails.getPod().getMetadata().getUid());
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("podDetails", podDetails);
+        data.put("events", events);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Pod资源 成功");
+        result.put("data", data);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getPodAllLogs")
+    public String getPodAllLogs(String name, String namespace){
+        Map<String, String> logs = podsService.getPodAllLogs(name, namespace);
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Pod 日志成功");
+        result.put("data", logs);
+
+        return JSON.toJSONString(result);
+    }
 }

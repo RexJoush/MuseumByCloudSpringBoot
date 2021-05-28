@@ -70,13 +70,14 @@ public interface DeploymentsService {
      */
     Deployment createOrReplaceDeploymentByFile(File file) throws FileNotFoundException, ApiException;
 
-    /**
-     * 通过Deployment name和namespace获取Deployment的日志信息
-     * @param name Deployment名称
-     * @param namespace Deployment命名空间
-     * @return 日志信息
-     */
-    String getDeploymentLogByNameAndNamespace(String name, String namespace);
+    //弃用
+//    /**
+//     * 通过Deployment name和namespace获取Deployment的日志信息
+//     * @param name Deployment名称
+//     * @param namespace Deployment命名空间
+//     * @return 日志信息
+//     */
+//    String getDeploymentLogByNameAndNamespace(String name, String namespace);
 
     /**
      * 设置Deployment控制的Pod副本数量
@@ -84,7 +85,7 @@ public interface DeploymentsService {
      * @param namespace Deployment命名空间
      * @param replicas Pod副本数量
      */
-    void setReplicas(String name, String namespace, Integer replicas);
+    Boolean setReplicas(String name, String namespace, Integer replicas);
 
     /**
      * 通过名字和命名空间获取 Yaml 格式的 Deployment

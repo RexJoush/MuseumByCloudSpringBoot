@@ -1,19 +1,15 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.DeploymentsService;
-import com.nwu.util.GetYamlInputStream;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
-import io.kubernetes.client.openapi.models.ExtensionsV1beta1Ingress;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
-import io.kubernetes.client.openapi.models.V1Deployment;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -115,45 +111,47 @@ public class DeploymentsServiceImpl implements DeploymentsService {
     }
 
 
-    @Override
-    public String getDeploymentLogByNameAndNamespace(String name, String namespace){
-        String log = "";
-        try{
-            log = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).getLog();
-        }catch(Exception e){
-            System.out.println("未获取到Deployment的日志");
-        }
+//    @Override //弃用，不获取Log，获取Event，因为在这获取的是container的Log
+//    public String getDeploymentLogByNameAndNamespace(String name, String namespace){
+//        String log = "";
+//        try{
+//            log = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).getLog();
+//        }catch(Exception e){
+//            System.out.println("未获取到Deployment的日志");
+//        }
+//        return log;
+//    }
 
-        return log;
-    }
-
     @Override
-    public void setReplicas(String name, String namespace, Integer replicas){
+    public Boolean setReplicas(String name, String namespace, Integer replicas){
+
+        /**
+         * 方法一
+         */
         AppsV1Api apiInstance = new AppsV1Api();
         // 更新副本的json串
         String jsonPatchStr = "[{\"op\":\"replace\",\"path\":\"/spec/replicas\", \"value\": " + replicas + " }]";
         V1Patch body = new V1Patch(jsonPatchStr);
         try {
-            V1Deployment result1 = apiInstance.patchNamespacedDeployment(name, namespace, body, null, null, null, null);
+            apiInstance.patchNamespacedDeployment(name, namespace, body, null, null, null, null);
         } catch (ApiException e) {
             e.printStackTrace();
             System.out.println("k8s副本更新失败！");
+            return false;
         }
 
-
-
-        System.out.println(replicas);
+        /**
+         * 方法二
+         */
 //        try{
-//            Deployment deployment = KubernetesUtils.client.apps().deployments().inNamespace(namespace)
-//                    .withName(name).get();
-//            deployment.getSpec().setReplicas(replicas);
-//            KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).delete();
-//            KubernetesUtils.client.apps().deployments().createOrReplace(deployment);
-////            KubernetesUtils.client.apps().deployments().inNamespace(namespace)
-////                    .withName(name).edit().getSpec().setReplicas(replicas);
+//            KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).scale(replicas);
 //        }catch(Exception e){
 //            System.out.println("设置Deployment的replicas失败");
+//            return false;
+//
 //        }
+
+        return true;
     }
 
     @Override

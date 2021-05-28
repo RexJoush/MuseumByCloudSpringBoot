@@ -2,6 +2,7 @@ package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.JobInformation;
+import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
 import com.nwu.service.workload.impl.JobsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
@@ -9,6 +10,7 @@ import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.CronJobFormat;
 import com.nwu.util.format.JobFormat;
 import com.nwu.util.format.PodFormat;
+import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
@@ -40,6 +42,50 @@ public class CronJobsController {
     @Resource
     private CronJobsServiceImpl cronJobsService;
 
+    //增方法
+    @RequestMapping("/createCronJobFromYaml")
+    public String createCronJobFromYaml(String path) throws FileNotFoundException {
+
+        CronJob aCronJob = cronJobsService.createCronJobByYaml(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 CronJob 成功");
+        result.put("data", aCronJob);
+
+        return JSON.toJSONString(result);
+    }
+
+    //删方法
+    @RequestMapping("/deleteCronJobByNameAndNamespace")
+    public String deleteCronJobByNameAndNamespace(String name, String namespace){
+        Boolean delete = cronJobsService.deleteCronJobByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "删除 CronJob 成功");
+        result.put("data", delete);
+
+        return JSON.toJSONString(result);
+    }
+
+    //改方法
+    @RequestMapping("/createOrReplaceCronJob")
+    public String createOrReplaceCronJob(String path) throws FileNotFoundException {
+        CronJob aCronJob = cronJobsService.createOrReplaceCronJob(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 CronJob 成功");
+        result.put("data", aCronJob);
+
+        return JSON.toJSONString(result);
+    }
+
+    //查方法
     @RequestMapping("/getAllCronJobs")
     public String findAllCronJobs(String namespace) throws ApiException {
 
@@ -60,76 +106,6 @@ public class CronJobsController {
         return JSON.toJSONString(result);
 
     }
-
-    @RequestMapping("/getCronJobsByNamespace")
-    public String findCronJobsByNamespace(String namespace) throws ApiException {
-
-        List<CronJob> v1CronJobList = cronJobsService.findCronJobsByNamespace(namespace);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "获取 CronJob 列表成功");
-        result.put("data", v1CronJobList);
-
-        return JSON.toJSONString(result);
-
-    }
-
-    @RequestMapping("/deleteCronJobByNameAndNamespace")
-    public String deleteCronJobByNameAndNamespace(String name, String namespace){
-        Boolean delete = cronJobsService.deleteCronJobByNameAndNamespace(name, namespace);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "删除 CronJob 成功");
-        result.put("data", delete);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/loadCronJobFromYaml")
-    public String loadCronJobFromYaml(String path) throws FileNotFoundException {
-
-        CronJob aCronJob = cronJobsService.loadCronJobFromYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "加载 CronJob 成功");
-        result.put("data", aCronJob);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/createCronJobFromYaml")
-    public String createCronJobFromYaml(String path) throws FileNotFoundException {
-
-        CronJob aCronJob = cronJobsService.createCronJobByYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 CronJob 成功");
-        result.put("data", aCronJob);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/createOrReplaceCronJob")
-    public String createOrReplaceCronJob(String path) throws FileNotFoundException {
-        CronJob aCronJob = cronJobsService.createOrReplaceCronJob(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建或更新 CronJob 成功");
-        result.put("data", aCronJob);
-
-        return JSON.toJSONString(result);
-    }
-
     @RequestMapping("/getCronJobByNameAndNamespace")
     public String getCronJobByNameAndNamespace(String name, String namespace){
         CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
@@ -142,7 +118,6 @@ public class CronJobsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getCronJobYamlByNameAndNamespace")
     public String getCronJobYamlByNameAndNamespace(String name, String namespace){
 
@@ -155,7 +130,6 @@ public class CronJobsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getCronJobResources")
     public String getCronJobResources(String name, String namespace){
 
@@ -202,12 +176,15 @@ public class CronJobsController {
         }
         int mid = jobInformationList.get(i).getRunningPods() > 0 ? i : i + 1;//分割非运行与运行中
 
+        //获取事件
+        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(cronJobUid);
+
         //放入数据
         Map<String, Object> data = new HashMap<>();
         data.put("cronJob", aCronJob);
         data.put("jods", jobInformationList.subList(0, mid));
         data.put("runningJods", jobInformationList.subList(mid, amount));
-
+        data.put("events",events);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -217,4 +194,5 @@ public class CronJobsController {
 
         return JSON.toJSONString(result);
     }
+
 }

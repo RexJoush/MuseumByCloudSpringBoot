@@ -1,16 +1,20 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.DaemonSetsService;
+import com.nwu.util.FilterPodsByControllerUid;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
-import io.fabric8.kubernetes.api.model.batch.Job;
+import io.kubernetes.client.openapi.models.V1DaemonSet;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.nwu.util.GetYamlInputStream.byPath;
 
@@ -57,34 +61,34 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
     }
 
     @Override
-    public DaemonSet createDaemonSetByYaml(String path) throws FileNotFoundException {
-
+    public DaemonSet createOrReplaceDaemonSet(String path) throws FileNotFoundException {
         InputStream yamlInputStream = byPath(path);
-
+        System.out.println(0);
         DaemonSet daemonSet = KubernetesUtils.client.apps().daemonSets().load(yamlInputStream).get();
-        String nameSpace = daemonSet.getMetadata().getNamespace();
+        String namespace = daemonSet.getMetadata().getNamespace();
+        System.out.println(1);
         try {
-            daemonSet = KubernetesUtils.client.apps().daemonSets().inNamespace(nameSpace).create(daemonSet);
+            daemonSet = KubernetesUtils.client.apps().daemonSets().inNamespace(namespace).createOrReplace(daemonSet);
         }catch(Exception e){
-            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DaemonSetsServiceImpl类的createDaemonSetByYaml方法");
+            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DaemonSetsServiceImpl类的createOrReplaceDaemonSet方法");
         }
         return daemonSet;
     }
 
     @Override
-    public DaemonSet createOrReplaceDaemonSet(String path) throws FileNotFoundException {
-
-        InputStream yamlInputStream = byPath(path);
-
-        DaemonSet daemonSet = KubernetesUtils.client.apps().daemonSets().load(yamlInputStream).get();
-        String nameSpace = daemonSet.getMetadata().getNamespace();
-
+    public Boolean createOrReplaceDaemonSetByYaml(String yaml) throws IOException {
+        V1DaemonSet load = (V1DaemonSet) Yaml.load(yaml);
+        System.out.println("1 + \n" + load);
+        DaemonSet daemonSet = KubernetesUtils.client.apps().daemonSets().load(yaml).get();
+        String namespace = daemonSet.getMetadata().getNamespace();
+        System.out.println(1);
         try {
-            daemonSet = KubernetesUtils.client.apps().daemonSets().inNamespace(nameSpace).createOrReplace(daemonSet);
+            KubernetesUtils.client.apps().daemonSets().inNamespace(namespace).createOrReplace(daemonSet);
+            return true;
         }catch(Exception e){
             System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DaemonSetsServiceImpl类的createOrReplaceDaemonSet方法");
+            return false;
         }
-        return daemonSet;
     }
 
     @Override
@@ -96,6 +100,25 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
     @Override
     public String getDaemonSetYamlByNameAndNamespace(String name ,String namespace){
         DaemonSet item = KubernetesUtils.client.apps().daemonSets().inNamespace(namespace).withName(name).get();
-        return Yaml.dump(item);
+        String s = Yaml.dump(item);
+        System.out.println(s);
+        return s;
+    }
+
+    @Override
+    public List<Pod> getPodDaemonSetInvolved(String name, String namespace){
+        //获取 DaemonSet
+        DaemonSet aDaemonSet = KubernetesUtils.client.apps().daemonSets().inNamespace(namespace).withName(name).get();
+        Map<String, String> matchLabels = aDaemonSet.getSpec().getSelector().getMatchLabels();
+        String uid = aDaemonSet.getMetadata().getUid();
+        List<Pod> pods = new ArrayList<>();
+        try{
+            //获取 Pods
+            PodsServiceImpl podsService = new PodsServiceImpl();
+            pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
+        }catch (Exception e){
+            System.out.println("未获取到相应 Pod");
+        }
+        return pods;
     }
 }

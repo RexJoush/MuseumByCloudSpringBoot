@@ -6,15 +6,13 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.service.workload.JobsService;
-import com.nwu.service.workload.impl.DeploymentsServiceImpl;
+import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.JobsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.format.JobFormat;
 import com.nwu.util.format.PodFormat;
+import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,20 +86,28 @@ public class JobsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/getJobPodsByNameAndNamespace")
-    public String getJobPodsByNameAndNamespace(String name, String namespace){
+    @RequestMapping("/getJobResources")
+    public String getJobResources(String name, String namespace){
 
         Job aJob = jobsService.getJobByNameAndNamespace(name, namespace);
         PodsServiceImpl podsService = new PodsServiceImpl();
         Map<String, String> matchLabels = aJob.getSpec().getSelector().getMatchLabels();
         List<Pod> pods = podsService.findPodsByLabels(matchLabels);
 
+        //获取事件
+        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(aJob.getMetadata().getUid());
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("job", aJob);
+        data.put("pods", PodFormat.formatPodList(pods));
+        data.put("events", events);
+
+
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
         result.put("message", "通过name和namespace获取 Job 和 Pods 成功");
-        result.put("dataJob", aJob);
-        result.put("dataPods", PodFormat.formatPodList(pods));
+        result.put("dataJob", data);
 
         return JSON.toJSONString(result);
     }
@@ -170,6 +175,27 @@ public class JobsController {
         result.put("code", 1200);
         result.put("message", "获取 Job Yaml 成功");
         result.put("data", jobYaml);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getJobLogs")
+    public String getJobLogs(String name ,String namespace){
+
+        //获取 Job 包含的 Pods
+        List<Pod> pods = jobsService.getPodJobInvolved(name, namespace);
+        // 获取每个 Pod 的所有 Logs
+        Map<String, Map<String, String>> podLogs = new HashMap<>();
+        PodsServiceImpl podsService = new PodsServiceImpl();
+        for(int i = 0; i < pods.size(); i++){
+            podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
+        }
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Job 日志成功");
+        result.put("data", podLogs);
 
         return JSON.toJSONString(result);
     }

@@ -5,14 +5,11 @@ package com.nwu.service.workload;
  * @time 2021.03.22
  */
 
-import io.fabric8.kubernetes.api.model.apps.DaemonSet;
-import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -77,4 +74,12 @@ public interface JobsService {
      * @return Yaml 格式的 Job
      */
     String getJobYamlByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 获取 Job 包含的 Pods
+     * @param name Job 名称
+     * @param namespace Job 命名空间
+     * @return Pods 列表
+     */
+    List<Pod> getPodJobInvolved(String name, String namespace);
 }

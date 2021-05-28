@@ -5,12 +5,12 @@ package com.nwu.service.workload;
  * @time 2021.03.22
  */
 
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -47,11 +47,11 @@ public interface DaemonSetsService {
     DaemonSet loadDaemonSetFromYaml(String path) throws FileNotFoundException;
 
     /**
-     * 通过yaml文件创建DaemonSet
-     * @param path yaml文件输入路径 String
+     * 通过yaml创建DaemonSet
+     * @param yaml yaml字符串
      * @return 创建的DaemonSet
      */
-    DaemonSet createDaemonSetByYaml(String path) throws FileNotFoundException;
+    Boolean createOrReplaceDaemonSetByYaml(String yaml) throws IOException;
 
     /**
      * 通过yaml文件创建或更新DaemonSet
@@ -75,4 +75,12 @@ public interface DaemonSetsService {
      * @return Yaml 格式的 DaemonSet
      */
     String getDaemonSetYamlByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 获取 DaemonSet 包含的 Pods
+     * @param name DaemonSet 名称
+     * @param namespace DaemonSet 命名空间
+     * @return Pods 列表
+     */
+    List<Pod> getPodDaemonSetInvolved(String name, String namespace);
 }

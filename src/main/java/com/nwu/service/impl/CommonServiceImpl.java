@@ -7,16 +7,17 @@ package com.nwu.service.impl;
 
 import com.nwu.service.CommonService;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.HasMetadata;
-
+import io.fabric8.kubernetes.api.model.ObjectReference;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
-import io.fabric8.kubernetes.api.model.extensions.Deployment;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
-
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -160,4 +161,19 @@ public class CommonServiceImpl implements CommonService {
         }
     }
 
+    public static List<Event> getEventByInvolvedObjectNNK(String name, String namespace, String kind){
+        ObjectReference objectReference = new ObjectReference();
+        objectReference.setName(name);
+        objectReference.setNamespace(namespace);
+        objectReference.setKind(kind);
+        List<Event> items = KubernetesUtils.client.v1().events().withInvolvedObject(objectReference).list().getItems();
+        return items;
+    }
+
+    public static List<Event> getEventByInvolvedObjectUid(String uid){
+        ObjectReference objectReference = new ObjectReference();
+        objectReference.setUid(uid);
+        List<Event> items = KubernetesUtils.client.v1().events().withInvolvedObject(objectReference).list().getItems();
+        return items;
+    }
 }

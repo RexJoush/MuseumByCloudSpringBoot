@@ -1,8 +1,9 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.service.workload.JobsService;
+import com.nwu.util.FilterPodsByControllerUid;
 import com.nwu.util.KubernetesUtils;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.models.V1Job;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static com.nwu.util.GetYamlInputStream.byPath;
 
@@ -107,5 +110,22 @@ public class JobsServiceImpl implements JobsService {
             e.printStackTrace();
         }
         return Yaml.dump(v1Job);
+    }
+
+    @Override
+    public List<Pod> getPodJobInvolved(String name, String namespace){
+        List<Pod> pods = new ArrayList<>();
+        try{
+            //获取 Job
+            Job aJob = KubernetesUtils.client.batch().jobs().inNamespace(namespace).withName(name).get();
+            Map<String, String> matchLabels = aJob.getSpec().getSelector().getMatchLabels();
+            String uid = aJob.getMetadata().getUid();
+            //获取 Pods
+            PodsServiceImpl podsService = new PodsServiceImpl();
+            pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
+        }catch (Exception e){
+            System.out.println("未获取到相应 Pod");
+        }
+        return pods;
     }
 }

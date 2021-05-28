@@ -4,6 +4,8 @@ import com.nwu.controller.workload.PodsController;
 import com.nwu.service.cluster.impl.ClusterRolesServiceImpl;
 import com.nwu.service.workload.impl.*;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Event;
+import io.fabric8.kubernetes.api.model.EventList;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
@@ -30,10 +32,17 @@ public class Test {
 
 
     public static void main(String[] args) throws ApiException, IOException {
-        String a[] = {};
-        for(int i = 0; i < a.length; i++){
-            System.out.println(a[i]);
+        PodsServiceImpl podsService = new PodsServiceImpl();
+        Event items = KubernetesUtils.client.v1().events().
+                inNamespace("default").withName("web-0.*").get();
+
+        {
+            System.out.println(items);
         }
+
+
+
+
         //CronJob
 //        CronJobsServiceImpl cronJobsService = new CronJobsServiceImpl();
 //        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace("cronjob-demo", "default");
