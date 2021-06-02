@@ -30,57 +30,70 @@ import static com.nwu.util.GetYamlInputStream.byPath;
 public class DeploymentsServiceImpl implements DeploymentsService {
     @Override
     public List<Deployment> findAllDeployments(){
-
-        List<Deployment> items = KubernetesUtils.client.apps().deployments().inAnyNamespace().list().getItems();
-
-        return items;
-
+        try{
+            List<Deployment> items = KubernetesUtils.client.apps().deployments().inAnyNamespace().list().getItems();
+            return items;
+        }catch(Exception e){
+            System.out.println("获取Deployments失败，在DeploymentsServiceImpl类的findAllDeployments方法中");
+        }
+        return null;
     }
 
     @Override
     public List<Deployment> findDeploymentsByNamespace(String namespace) {
-
-        return KubernetesUtils.client.apps().deployments().inNamespace(namespace).list().getItems();
-
+        try{
+            return KubernetesUtils.client.apps().deployments().inNamespace(namespace).list().getItems();
+        }catch (Exception e){
+            System.out.println("获取Deployments失败，在DeploymentsServiceImpl类的findDeploymentsByNamespace方法中");
+        }
+        return null;
     }
 
     @Override
     public Deployment getDeploymentByNameAndNamespace(String name, String namespace) {
-        return KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).get();
+        try{
+            return KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).get();
+        }catch(Exception e){
+            System.out.println("获取Deployment失败，在DeploymentsServiceImpl类的getDeploymentByNameAndNamespace方法中");
+        }
+        return null;
     }
 
     @Override
     public Boolean deleteDeploymentByNameAndNamespace(String name, String namespace){
-
-        Boolean delete = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).delete();
-
-        return delete;
+        try{
+            Boolean delete = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).delete();
+            return delete;
+        }catch(Exception e){
+            System.out.println("删除Deployment失败，在DeploymentsServiceImpl类的deleteDeploymentByNameAndNamespace方法中");
+        }
+        return null;
     }
 
     @Override
     public Deployment loadDeploymentFromYaml(String path) throws FileNotFoundException {
-
         InputStream yamlInputStream = byPath(path);
-
-
-        Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
-
-        return deployment;
+        try{
+            Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
+            return deployment;
+        }catch (Exception e){
+            System.out.println("加载Deployment失败，在DeploymentsServiceImpl类的loadDeploymentFromYaml方法中");
+        }
+        return null;
     }
 
     @Override
     public Deployment createOrReplaceDeploymentByPath(String path) throws FileNotFoundException {
-
         InputStream yamlInputStream = byPath(path);
-
-        Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
-        String nameSpace = deployment.getMetadata().getNamespace();
         try {
+            Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
+            String nameSpace = deployment.getMetadata().getNamespace();
             deployment = KubernetesUtils.client.apps().deployments().inNamespace(nameSpace).create(deployment);
+            return deployment;
         }catch(Exception e){
-            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DeploymentsServiceImpl类的createDeploymentByYaml方法");
+            System.out.println("创建Deployment失败，缺少必要的命名空间参数，或是已经有相同的资源对象，在DeploymentsServiceImpl类的createDeploymentByYaml方法");
         }
-        return deployment;
+        return null;
     }
 
     @Override
@@ -89,25 +102,27 @@ public class DeploymentsServiceImpl implements DeploymentsService {
         InputStream yamlInputStream = new FileInputStream(file);
 
 
+        try {
+
 //        String nameSpace = deployment.getMetadata().getNamespace();
-        Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
-        String name = deployment.getMetadata().getName();
-        String namespace = deployment.getMetadata().getNamespace();
+            Deployment deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).get();
+            String name = deployment.getMetadata().getName();
+            String namespace = deployment.getMetadata().getNamespace();
 
 //        Deployment deployment = new Deployment();
 
-        AppsV1Api appsV1Api = new AppsV1Api();
-        V1Deployment v1Deployment = appsV1Api.readNamespacedDeployment(name, namespace, "", false, false);
+            AppsV1Api appsV1Api = new AppsV1Api();
+            V1Deployment v1Deployment = appsV1Api.readNamespacedDeployment(name, namespace, "", false, false);
 //        appsV1Api.replaceNamespacedDeployment(name, namespace, new V1Deployment() = deployment)
 //        KubernetesUtils.client.apps().deployments().load(yamlInputStream).replace(deployment);
-        try {
             deployment = KubernetesUtils.client.apps().deployments().load(yamlInputStream).createOrReplace();
 
+            return deployment;
         }catch(Exception e){
             System.out.println(e);
-            System.out.println("缺少必要的命名空间参数，或是已经有相同的资源对象，在DeploymentsServiceImpl类的createOrReplaceDeployment方法");
+            System.out.println("创建Deployment失败，缺少必要的命名空间参数，或是已经有相同的资源对象，在DeploymentsServiceImpl类的createOrReplaceDeployment方法");
         }
-        return deployment;
+        return null;
     }
 
 
@@ -128,16 +143,16 @@ public class DeploymentsServiceImpl implements DeploymentsService {
         /**
          * 方法一
          */
-        AppsV1Api apiInstance = new AppsV1Api();
-        // 更新副本的json串
-        String jsonPatchStr = "[{\"op\":\"replace\",\"path\":\"/spec/replicas\", \"value\": " + replicas + " }]";
-        V1Patch body = new V1Patch(jsonPatchStr);
         try {
+            AppsV1Api apiInstance = new AppsV1Api();
+            // 更新副本的json串
+            String jsonPatchStr = "[{\"op\":\"replace\",\"path\":\"/spec/replicas\", \"value\": " + replicas + " }]";
+            V1Patch body = new V1Patch(jsonPatchStr);
             apiInstance.patchNamespacedDeployment(name, namespace, body, null, null, null, null);
+            return true;
         } catch (ApiException e) {
             e.printStackTrace();
-            System.out.println("k8s副本更新失败！");
-            return false;
+            System.out.println("更新Replicas失败，在DeploymentsServiceImpl的setReplicas方法中");
         }
 
         /**
@@ -145,27 +160,24 @@ public class DeploymentsServiceImpl implements DeploymentsService {
          */
 //        try{
 //            KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).scale(replicas);
+//            return true;
 //        }catch(Exception e){
 //            System.out.println("设置Deployment的replicas失败");
 //            return false;
 //
 //        }
-
-        return true;
+        return null;
     }
 
     @Override
-    public String getDeploymentYamlByNameAndNamespace(String name ,String namespace) throws ApiException {
-       //Deployment item = KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).get();
-//        KubernetesUtils.extensionsV1beta1Api.
-        V1Deployment v1Deployment = null;
+    public String getDeploymentYamlByNameAndNamespace(String name ,String namespace) {
         try {
-            v1Deployment = KubernetesUtils.appsV1Api.readNamespacedDeployment(name,namespace, null, null, null);
-
-
+            V1Deployment v1Deployment = KubernetesUtils.appsV1Api.readNamespacedDeployment(name,namespace, null, null, null);
+            return Yaml.dump(v1Deployment);
         } catch (ApiException e) {
             e.printStackTrace();
+            System.out.println("获取Yaml失败，在DeploymentsServiceImpl类的getDeploymentYamlByNameAndNamespace方法中");
         }
-        return Yaml.dump(v1Deployment);
+        return null;
     }
 }

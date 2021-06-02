@@ -36,6 +36,65 @@ public class ReplicaSetsController {
     @Resource
     private ReplicaSetsServiceImpl replicaSetsService;
 
+    //增
+    @RequestMapping("/createReplicaSetFromYaml")
+    public String createReplicaSetFromYaml(String path) throws FileNotFoundException {
+
+        ReplicaSet aReplicaSet = replicaSetsService.createReplicaSetByYaml(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 ReplicaSet 成功");
+        result.put("data", aReplicaSet);
+
+        return JSON.toJSONString(result);
+    }
+
+    //删
+    @RequestMapping("/deleteReplicaSetByNameAndNamespace")
+    public String deleteReplicaSetByNameAndNamespace(String name, String namespace){
+
+        Boolean delete = replicaSetsService.deleteReplicaSetByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "删除 ReplicaSet 成功");
+        result.put("data", delete);
+
+        return JSON.toJSONString(result);
+    }
+
+    //改
+    @RequestMapping("/createOrReplaceReplicaSet")
+    public String createOrReplaceReplicaSet(String path) throws FileNotFoundException {
+
+        ReplicaSet aReplicaSet = replicaSetsService.createOrReplaceReplicaSet(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 ReplicaSet 成功");
+        result.put("data", aReplicaSet);
+
+        return JSON.toJSONString(result);
+    }
+    @RequestMapping("/setReplicas")
+    public String setReplicas(String name, String namespace, Integer replicas){
+
+        replicaSetsService.setReplicas(name, namespace, replicas);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 ReplicaSet 成功");
+        result.put("data", "未明确");
+
+        return JSON.toJSONString(result);
+    }
+
+    //查
     @RequestMapping("/getAllReplicaSets")
     public String findAllReplicaSets(String namespace) throws ApiException {
 
@@ -54,9 +113,7 @@ public class ReplicaSetsController {
         result.put("data", ReplicaSetFormat.formatReplicaSetList(replicaSetList));
 
         return JSON.toJSONString(result);
-
     }
-
     @RequestMapping("/getReplicaSetsByNamespace")
     public String findReplicaSetsByNamespace(String namespace) throws ApiException {
 
@@ -69,9 +126,7 @@ public class ReplicaSetsController {
         result.put("data", replicaSetList);
 
         return JSON.toJSONString(result);
-
     }
-
     @RequestMapping("/getReplicaSetByNameAndNamespace")
     public String getReplicaSetByNameAndNamespace(String name, String namespace){
 
@@ -85,75 +140,6 @@ public class ReplicaSetsController {
 
         return JSON.toJSONString(result);
     }
-
-    @RequestMapping("/deleteReplicaSetByNameAndNamespace")
-    public String deleteReplicaSetByNameAndNamespace(String name, String namespace){
-        Boolean delete = replicaSetsService.deleteReplicaSetByNameAndNamespace(name, namespace);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "删除 ReplicaSet 成功");
-        result.put("data", delete);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/loadReplicaSetFromYaml")
-    public String loadReplicaSetFromYaml(String path) throws FileNotFoundException {
-
-        ReplicaSet aReplicaSet = replicaSetsService.loadReplicaSetFromYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "加载 ReplicaSet 成功");
-        result.put("data", aReplicaSet);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/createReplicaSetFromYaml")
-    public String createReplicaSetFromYaml(String path) throws FileNotFoundException {
-
-        ReplicaSet aReplicaSet = replicaSetsService.createReplicaSetByYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 ReplicaSet 成功");
-        result.put("data", aReplicaSet);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/createOrReplaceReplicaSet")
-    public String createOrReplaceReplicaSet(String path) throws FileNotFoundException {
-        ReplicaSet aReplicaSet = replicaSetsService.createOrReplaceReplicaSet(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建或更新 ReplicaSet 成功");
-        result.put("data", aReplicaSet);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/setReplicas")
-    public String setReplicas(String name, String namespace, Integer replicas){
-
-        replicaSetsService.setReplicas(name, namespace, replicas);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建或更新 ReplicaSet 成功");
-        result.put("data", "未明确");
-
-        return JSON.toJSONString(result);
-    }
-
     @RequestMapping("/getReplicaSetYamlByNameAndNamespace")
     public String getReplicaSetYamlByNameAndNamespace(String name, String namespace){
 
@@ -166,7 +152,6 @@ public class ReplicaSetsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getReplicaSetResources")
     public String getReplicaSetResources(String name,String namespace){
 
@@ -201,7 +186,6 @@ public class ReplicaSetsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getReplicaSetLogs")
     public String getReplicaSetLogs(String name ,String namespace){
 

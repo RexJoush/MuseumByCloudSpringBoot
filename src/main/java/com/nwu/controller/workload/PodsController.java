@@ -35,12 +35,53 @@ public class PodsController {
     @Resource
     private PodsServiceImpl podsService;
 
+    //增
+    @PostMapping("/createPodFromYamlFile")
+    public String createPodFromYamlFile(@RequestParam("yaml") MultipartFile originalFile) throws FileNotFoundException {
+        return JSON.toJSONString("弃用，在establish中使用");
+    }
+    @RequestMapping("/createPodFromForm")
+    public String createPodFromForm(PodForm podForm){
+        return "弃用方法，在establish中使用";
+    }
+
+    //删
+    @RequestMapping("/delPodByNameAndNamespace")
+    public String deletePodByNameAndNamespace(String name, String namespace){
+
+        Boolean delete = podsService.deletePodByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "删除 Pod 成功");
+        result.put("data", delete);
+
+        return JSON.toJSONString(result);
+    }
+
+    //改
     @RequestMapping("/changeResourceByYaml")
     public String changeResourceByYaml(@RequestBody String yaml){
+
         System.out.println(yaml);
         return "success";
     }
+    @RequestMapping("/createOrReplacePod")
+    public String createOrReplacePod(String path) throws FileNotFoundException {
 
+        Pod aPod = podsService.createOrReplacePod(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 Pod 成功");
+        result.put("data", aPod);
+
+        return JSON.toJSONString(result);
+    }
+
+    //查
     @RequestMapping("/getAllPods")
     public String findAllPods(String namespace) {
 
@@ -59,14 +100,11 @@ public class PodsController {
         result.put("data", pods);
 
         return JSON.toJSONString(result);
-
     }
-
     @RequestMapping("/getCompletePodsList")
     public String getCompletePodsList(String namespace) {
 
         List<Pod> pods;
-
 
         pods = podsService.findCompletePodsList();
 
@@ -77,9 +115,7 @@ public class PodsController {
         result.put("data", pods);
 
         return JSON.toJSONString(result);
-
     }
-
     @RequestMapping("/getPodsByNode")
     public String findPodsByNode(String nodeName) {
 
@@ -93,7 +129,6 @@ public class PodsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getPodByNameAndNamespace")
     public String findPodByNameAndNamespace(String name, String namespace) {
 
@@ -107,7 +142,6 @@ public class PodsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getPodYamlByNameAndNamespace")
     public String getPodYamlByNameAndNamespace(String name, String namespace) {
         String podYaml = podsService.findPodYamlByNameAndNamespace(name, namespace);
@@ -120,7 +154,6 @@ public class PodsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getPodsByNamespace")
     public String findPodsByNamespace(String namespace) throws ApiException {
 
@@ -133,10 +166,7 @@ public class PodsController {
         result.put("data", v1PodList);
 
         return JSON.toJSONString(result);
-
     }
-
-
     @RequestMapping("/getPodBySvcLabel")
     public String findPodBySvcLabel(String labelKey, String labelValue) {
 
@@ -150,10 +180,8 @@ public class PodsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getPodsByLabels")
     public String getPodsByLabels(String data) {
-
 
         System.out.println(data);
         Pod pods = new Pod();
@@ -167,54 +195,9 @@ public class PodsController {
 
         return JSON.toJSONString(result);
     }
-
-    @RequestMapping("/delPodByNameAndNamespace")
-    public String deletePodByNameAndNamespace(String name, String namespace){
-        Boolean delete = podsService.deletePodByNameAndNamespace(name, namespace);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "删除 Pod 成功");
-        result.put("data", delete);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/loadPodFromYaml")
-    public String loadPodFromYaml(String path) throws FileNotFoundException {
-
-        Pod aPod = podsService.loadPodFromYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "加载 Pod 成功");
-        result.put("data", aPod);
-
-        return JSON.toJSONString(result);
-    }
-
-    @PostMapping("/createPodFromYamlFile")
-    public String createPodFromYamlFile(@RequestParam("yaml") MultipartFile originalFile) throws FileNotFoundException {
-        return JSON.toJSONString("弃用，在establish中使用");
-    }
-
-    @RequestMapping("/createOrReplacePod")
-    public String createOrReplacePod(String path) throws FileNotFoundException {
-        Pod aPod = podsService.createOrReplacePod(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建或更新 Pod 成功");
-        result.put("data", aPod);
-
-        return JSON.toJSONString(result);
-    }
-
     @RequestMapping("/getPodLogFromContainer")
     public String getPodLogByNameAndNamespace(String name, String namespace, String containerName){
+
         String str = podsService.getPodLogFromContainer(name, namespace, containerName);
 
         Map<String, Object> result = new HashMap<>();
@@ -225,14 +208,9 @@ public class PodsController {
 
         return JSON.toJSONString(result);
     }
-
-    @RequestMapping("/createPodFromForm")
-    public String createPodFromForm(PodForm podForm){
-        return "弃用方法，在establish中使用";
-    }
-
     @RequestMapping("/getPodResources")
     public String getPodResources(String name, String namespace){
+
         PodDetails podDetails = podsService.findPodByNameAndNamespace(name, namespace);
 
         //获取事件
@@ -250,9 +228,9 @@ public class PodsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getPodAllLogs")
     public String getPodAllLogs(String name, String namespace){
+
         Map<String, String> logs = podsService.getPodAllLogs(name, namespace);
         Map<String, Object> result = new HashMap<>();
 

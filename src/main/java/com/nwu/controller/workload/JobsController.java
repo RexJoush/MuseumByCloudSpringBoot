@@ -33,6 +33,51 @@ public class JobsController {
     @Resource
     private JobsServiceImpl jobsService;
 
+    //增
+    @RequestMapping("/createJobFromYaml")
+    public String createJobFromYaml(String path) throws FileNotFoundException {
+
+        Job aJob = jobsService.createJobByYaml(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建 Job 成功");
+        result.put("data", aJob);
+
+        return JSON.toJSONString(result);
+    }
+
+    //删
+    @RequestMapping("/deleteJobByNameAndNamespace")
+    public String deleteJobByNameAndNamespace(String name, String namespace){
+
+        Boolean delete = jobsService.deleteJobByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "删除 Job 成功");
+        result.put("data", delete);
+
+        return JSON.toJSONString(result);
+    }
+
+    //改
+    @RequestMapping("/createOrReplaceJob")
+    public String createOrReplaceJob(String path) throws FileNotFoundException {
+        Job aJob = jobsService.createOrReplaceJob(path);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "创建或更新 Job 成功");
+        result.put("data", aJob);
+
+        return JSON.toJSONString(result);
+    }
+
+    //查
     @RequestMapping("/getAllJobs")
     public String findAllJobs(String namespace) throws ApiException {
 
@@ -54,9 +99,7 @@ public class JobsController {
         result.put("data", JobFormat.formatJobList(jobs));
 
         return JSON.toJSONString(result);
-
     }
-
     @RequestMapping("/getJobsByNamespace")
     public String findJobsByNamespace(String namespace) throws ApiException {
 
@@ -69,9 +112,7 @@ public class JobsController {
         result.put("data", v1JobList);
 
         return JSON.toJSONString(result);
-
     }
-
     @RequestMapping("/getJobByNameAndNamespace")
     public String getJobByNameAndNamespace(String name, String namespace){
 
@@ -85,7 +126,6 @@ public class JobsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getJobResources")
     public String getJobResources(String name, String namespace){
 
@@ -111,61 +151,6 @@ public class JobsController {
 
         return JSON.toJSONString(result);
     }
-
-    @RequestMapping("/deleteJobByNameAndNamespace")
-    public String deleteJobByNameAndNamespace(String name, String namespace){
-        Boolean delete = jobsService.deleteJobByNameAndNamespace(name, namespace);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "删除 Job 成功");
-        result.put("data", delete);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/loadJobFromYaml")
-    public String loadJobFromYaml(String path) throws FileNotFoundException {
-
-        Job aJob = jobsService.loadJobFromYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "加载 Job 成功");
-        result.put("data", aJob);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/createJobFromYaml")
-    public String createJobFromYaml(String path) throws FileNotFoundException {
-
-        Job aJob = jobsService.createJobByYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 Job 成功");
-        result.put("data", aJob);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/createOrReplaceJob")
-    public String createOrReplaceJob(String path) throws FileNotFoundException {
-        Job aJob = jobsService.createOrReplaceJob(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建或更新 Job 成功");
-        result.put("data", aJob);
-
-        return JSON.toJSONString(result);
-    }
-
     @RequestMapping("/getJobYamlByNameAndNamespace")
     public String getJobYamlByNameAndNamespace(String name, String namespace){
 
@@ -178,7 +163,6 @@ public class JobsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getJobLogs")
     public String getJobLogs(String name ,String namespace){
 
