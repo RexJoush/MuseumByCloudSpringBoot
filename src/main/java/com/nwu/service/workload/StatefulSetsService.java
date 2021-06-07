@@ -5,13 +5,11 @@ package com.nwu.service.workload;
  * @time 2021.03.22
  */
 
-import io.fabric8.kubernetes.api.model.ReplicationController;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -76,4 +74,12 @@ public interface StatefulSetsService {
      * @return Yaml 格式的 StatefulSet
      */
     String getStatefulSetYamlByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 获取 StatefulSet 包含的 Pods
+     * @param name StatefulSet 名称
+     * @param namespace StatefulSet 命名空间
+     * @return Pods 列表
+     */
+    List<Pod> getPodStatefulSetInvolved(String name, String namespace);
 }

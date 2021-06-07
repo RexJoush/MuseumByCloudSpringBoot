@@ -1,9 +1,6 @@
 package com.nwu.service.workload;
 
-import com.nwu.entity.workload.PodDefinition;
-import com.nwu.entity.workload.PodDetails;
-import com.nwu.entity.workload.PodForm;
-import com.nwu.entity.workload.PodUsage;
+import com.nwu.entity.workload.*;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
 
@@ -134,12 +131,21 @@ public interface PodsService {
     Pod createOrReplacePod(String path) throws FileNotFoundException;
 
     /**
-     * 通过Pod name和namespace获取Pod的日志信息
+     * 通过Pod 获取Pod中一个容器的日志信息
      * @param name Pod名称
      * @param namespace Pod命名空间
-     * @return 日志信息
+     * @param containerName 容器名
+     * @return 某一个容器的日志信息
      */
-    String getPodLogByNameAndNamespace(String name, String namespace);
+    String getPodLogFromContainer(String name, String namespace, String containerName);
+
+    /**
+     * 获取 Pod 所有容器的日志信息
+     * @param name Pod名称
+     * @param namespace Pod命名空间
+     * @return 所有容器的日志信息
+     */
+    Map<String, String> getPodAllLogs(String name, String namespace);
 
     /**
      *从表单创建Pod

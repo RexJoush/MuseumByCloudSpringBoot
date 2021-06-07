@@ -7,12 +7,9 @@ package com.nwu.service.workload;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
-import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -86,4 +83,12 @@ public interface ReplicaSetsService {
      * @return Yaml 格式的 ReplicaSet
      */
     String getReplicaSetYamlByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 获取 ReplicaSet 包含的 Pods
+     * @param name ReplicaSet 名称
+     * @param namespace ReplicaSet 命名空间
+     * @return Pods 列表
+     */
+    List<Pod> getPodReplicaSetInvolved(String name, String namespace);
 }

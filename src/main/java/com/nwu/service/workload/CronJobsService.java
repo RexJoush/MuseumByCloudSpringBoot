@@ -76,4 +76,5 @@ public interface CronJobsService {
      * @return Yaml 格式的 CronJob
      */
     String getCronJobYamlByNameAndNamespace(String name, String namespace);
+
 }

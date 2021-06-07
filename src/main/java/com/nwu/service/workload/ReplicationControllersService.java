@@ -5,13 +5,11 @@ package com.nwu.service.workload;
  * @time 2021.03.22
  */
 
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
-import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
 import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -84,4 +82,12 @@ public interface ReplicationControllersService {
      * @return Yaml 格式的 ReplicationController
      */
     String getReplicationControllerYamlByNameAndNamespace(String name, String namespace);
+
+    /**
+     * 获取 ReplicationController 包含的 Pods
+     * @param name ReplicationController 名称
+     * @param namespace ReplicationController 命名空间
+     * @return Pods 列表
+     */
+    List<Pod> getPodReplicationControllerInvolved(String name, String namespace);
 }

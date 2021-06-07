@@ -5,7 +5,10 @@ package com.nwu.service;
  * @time 2021.04.07
  */
 
+import io.fabric8.kubernetes.api.model.Event;
+
 import java.io.File;
+import java.util.List;
 
 /**
  * 公有方法 service 层接口
@@ -45,4 +48,19 @@ public interface CommonService {
     int changeIngressesByYaml(File yaml);
     int changeCrdObjectByYaml(File yaml,String crdName);
 
+//    /**
+//     * 获取指定资源的事件
+//     * @param name 事件所关联对象名称
+//     * @param namespace 事件所关联对象命名空间
+//     * @param kind 事件所关联对象的类型
+//     * @return 返回找到的 Event 列表
+//     */
+//    List<Event> getEventByInvolvedObjectNNK(String name, String namespace, String kind);
+//
+//    /**
+//     * 获取指定资源的事件
+//     * @param uid 事件所关联的对象的 UID
+//     * @return 返回找到的 Event 列表
+//     */
+//    List<Event> getEventByInvolvedObjectUid(String uid);
 }

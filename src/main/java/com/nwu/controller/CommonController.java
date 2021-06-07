@@ -6,14 +6,17 @@ package com.nwu.controller;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.service.CustomizeService;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.util.KubernetesUtils;
+import io.fabric8.kubernetes.api.model.Event;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -257,4 +260,29 @@ public class CommonController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/getEventByInvolvedObjectKKD")
+    public String getEventByInvolvedObjectKKD(String name, String namespace, String kind){
+        List<Event> events = commonService.getEventByInvolvedObjectNNK(name, namespace, kind);
+
+        HashMap<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取事件成功");
+        result.put("data", events);
+
+        return JSON.toJSONString(result);
+    }
+
+    @RequestMapping("/getEventByInvolvedObjectUid")
+    public String getEventByInvolvedObjectUid(String uid){
+        List<Event> events = commonService.getEventByInvolvedObjectUid(uid);
+
+        HashMap<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取事件成功");
+        result.put("data", events);
+
+        return JSON.toJSONString(result);
+    }
 }

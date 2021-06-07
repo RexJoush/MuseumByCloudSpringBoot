@@ -1,10 +1,7 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.dao.workload.PodUsageDao;
-import com.nwu.entity.workload.PodDefinition;
-import com.nwu.entity.workload.PodDetails;
-import com.nwu.entity.workload.PodForm;
-import com.nwu.entity.workload.PodUsage;
+import com.nwu.entity.workload.*;
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
@@ -225,15 +222,31 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public String getPodLogByNameAndNamespace(String name, String namespace) {
+    public String getPodLogFromContainer(String name, String namespace, String containerName) {
         String log = "";
         try {
-            log = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).getLog();
+            log = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).inContainer(containerName).getLog();
         } catch (Exception e) {
             System.out.println("未获取到Pod的日志");
         }
 
         return log;
+    }
+
+    @Override
+    public Map<String, String> getPodAllLogs(String name, String namespace) {
+        Map<String, String> logs = new HashMap<>();
+        try {
+            List<Container> containers = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get().getSpec().getContainers();
+            for(int i = containers.size() - 1; i >= 0 ; i-- ){
+                String containerName = containers.get(i).getName();
+                String log = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).inContainer(containerName).getLog();
+                logs.put(containerName, log);
+            }
+        } catch (Exception e) {
+            System.out.println("未获取到Pod的日志");
+        }
+        return logs;
     }
 
     @Override

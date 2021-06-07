@@ -7,12 +7,14 @@ package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.ReplicaSetInformation;
+import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.DeploymentsServiceImpl;
 import com.nwu.service.workload.impl.ReplicaSetsServiceImpl;
 import com.nwu.util.FilterReplicaSetByControllerUid;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.DeploymentFormat;
 import com.nwu.util.format.ReplicaSetFormat;
+import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.kubernetes.client.openapi.ApiException;
@@ -38,57 +40,12 @@ public class DeploymentsController {
     @Resource
     private DeploymentsServiceImpl deploymentsService;
 
-    @RequestMapping("/getAllDeployments")
-    public String findAllDeployments(String namespace) throws ApiException {
+    //增
 
-        List<Deployment> deployments;
-
-        if("".equals(namespace)){
-            deployments = deploymentsService.findAllDeployments();
-        }else{
-            deployments = deploymentsService.findDeploymentsByNamespace(namespace);
-        }
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "获取 Deployment 列表成功");
-        result.put("data", DeploymentFormat.formatDeploymentList(deployments));
-
-        return JSON.toJSONString(result);
-
-    }
-
-    @RequestMapping("/getDeploymentsByNamespace")
-    public String findDeploymentsByNamespace(String namespace) throws ApiException {
-
-        List<Deployment> v1DeploymentList = deploymentsService.findDeploymentsByNamespace(namespace);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "获取 Deployment 列表成功");
-        result.put("data", v1DeploymentList);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/getDeploymentByNameAndNamespace")
-    public String getDeploymentByNameAndNamespace(String name, String namespace){
-
-        Deployment deployment = deploymentsService.getDeploymentByNameAndNamespace(name, namespace);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "通过 name namespace 获取 Deployment 成功");
-        result.put("data", deployment);
-
-        return JSON.toJSONString(result);
-    }
-
+    //删
     @RequestMapping("/deleteDeploymentByNameAndNamespace")
     public String deleteDeploymentByNameAndNamespace(String name, String namespace){
+
         Boolean delete = deploymentsService.deleteDeploymentByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
@@ -100,36 +57,10 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
-    @RequestMapping("/loadDeploymentFromYaml")
-    public String loadDeploymentFromYaml(String path) throws FileNotFoundException {
-
-        Deployment aDeployment = deploymentsService.loadDeploymentFromYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "加载 Deployment 成功");
-        result.put("data", aDeployment);
-
-        return JSON.toJSONString(result);
-    }
-
-    @RequestMapping("/createOrReplaceDeploymentByPath")
-    public String createOrReplaceDeploymentByPath(String path) throws FileNotFoundException {
-
-        Deployment aDeployment = deploymentsService.createOrReplaceDeploymentByPath(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 Deployment 成功");
-        result.put("data", aDeployment);
-
-        return JSON.toJSONString(result);
-    }
-
+    //改
     @RequestMapping("/changeDeploymentByYaml")
     public String changeDeploymentByYaml(@RequestBody String yaml)  {
+
         System.out.println(yaml);
         Map<String, Object> result = new HashMap<>();
         int code = 0;
@@ -171,20 +102,19 @@ public class DeploymentsController {
 
         return JSON.toJSONString(result);
     }
+    @RequestMapping("/createOrReplaceDeploymentByPath")
+    public String createOrReplaceDeploymentByPath(String path) throws FileNotFoundException {
 
-    @RequestMapping("/getDeploymentLogByNameAndNamespace")
-    public String getDeploymentLogByNameAndNamespace(String name, String namespace){
-        String str = deploymentsService.getDeploymentLogByNameAndNamespace(name, namespace);
+        Deployment aDeployment = deploymentsService.createOrReplaceDeploymentByPath(path);
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "获取 Deployment日志 成功");
-        result.put("data", str);
+        result.put("message", "创建 Deployment 成功");
+        result.put("data", aDeployment);
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/setReplica")
     public String setReplica(String name, String namespace, String replica){
 
@@ -202,6 +132,52 @@ public class DeploymentsController {
         return JSON.toJSONString(result);
     }
 
+    //查
+    @RequestMapping("/getAllDeployments")
+    public String findAllDeployments(String namespace) throws ApiException {
+
+        List<Deployment> deployments;
+
+        if("".equals(namespace)){
+            deployments = deploymentsService.findAllDeployments();
+        }else{
+            deployments = deploymentsService.findDeploymentsByNamespace(namespace);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Deployment 列表成功");
+        result.put("data", DeploymentFormat.formatDeploymentList(deployments));
+
+        return JSON.toJSONString(result);
+    }
+    @RequestMapping("/getDeploymentsByNamespace")
+    public String findDeploymentsByNamespace(String namespace) throws ApiException {
+
+        List<Deployment> v1DeploymentList = deploymentsService.findDeploymentsByNamespace(namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "获取 Deployment 列表成功");
+        result.put("data", v1DeploymentList);
+
+        return JSON.toJSONString(result);
+    }
+    @RequestMapping("/getDeploymentByNameAndNamespace")
+    public String getDeploymentByNameAndNamespace(String name, String namespace){
+
+        Deployment deployment = deploymentsService.getDeploymentByNameAndNamespace(name, namespace);
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("code", 1200);
+        result.put("message", "通过 name namespace 获取 Deployment 成功");
+        result.put("data", deployment);
+
+        return JSON.toJSONString(result);
+    }
     @RequestMapping("/getDeploymentYamlByNameAndNamespace")
     public String getDeploymentYamlByNameAndNamespace(String name, String namespace) throws ApiException {
 
@@ -214,7 +190,6 @@ public class DeploymentsController {
 
         return JSON.toJSONString(result);
     }
-
     @RequestMapping("/getDeploymentResources")
     public String getDeploymentResources(String name, String namespace){
 
@@ -246,11 +221,15 @@ public class DeploymentsController {
         replicaSets.set(0, replicaSets.get(flag));
         replicaSets.set(flag, tmpReplicaSetInformation);
 
+        //获取事件
+        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(deployment.getMetadata().getUid());
+
         //封装数据
         Map<String, Object> data = new HashMap<>();
         data.put("deployment", deployment);
         data.put("newReplicaSets", replicaSets.subList(0,1));
         data.put("oldReplicaSets", replicaSets.subList(1, replicaSets.size()));
+        data.put("events", events);
 
         Map<String, Object> result = new HashMap<>();
 
@@ -260,4 +239,18 @@ public class DeploymentsController {
 
         return JSON.toJSONString(result);
     }
+
+    //弃用
+//    @RequestMapping("/getDeploymentLogByNameAndNamespace")
+//    public String getDeploymentLogByNameAndNamespace(String name, String namespace){
+//        String str = deploymentsService.getDeploymentLogByNameAndNamespace(name, namespace);
+//
+//        Map<String, Object> result = new HashMap<>();
+//
+//        result.put("code", 1200);
+//        result.put("message", "获取 Deployment日志 成功");
+//        result.put("data", str);
+//
+//        return JSON.toJSONString(result);
+//    }
 }
