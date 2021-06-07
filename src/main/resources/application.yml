@@ -3,13 +3,13 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://www.rexjoush.com:3306/museum?serverTimezone=UTC
-    username: root
-    password: liyihang123
+    username: museum
+    password: museum
 # 配置上传文件大小
   servlet:
     multipart:
-      max-file-size: 500KB
-      max-request-size: 500KB
+      max-file-size: 500MB
+      max-request-size: 500MB
 
 # mybatis 信息
 mybatis:

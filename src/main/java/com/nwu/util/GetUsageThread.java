@@ -29,7 +29,7 @@ public class GetUsageThread implements CommandLineRunner {
         nodesService.saveNodeUsage(); // 保存 node 利用率信息
         podsService.savePodUsage(); // 保存 pod 利用率信息
 
-        nodesService.deleteNodeUsage(); // 删除 node 利用率信息
-        podsService.deletePodUsage(); // 删除 pod 的利用率信息
+        //nodesService.deleteNodeUsage(); // 删除 node 利用率信息
+        //podsService.deletePodUsage(); // 删除 pod 的利用率信息
     }
 }

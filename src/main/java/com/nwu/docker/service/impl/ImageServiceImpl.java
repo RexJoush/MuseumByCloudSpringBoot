@@ -31,7 +31,13 @@ public class ImageServiceImpl implements ImageService {
             ImageDefinition imageDefinition = new ImageDefinition();
 
             // 设置镜像名称
-            imageDefinition.setName(image.getRepoDigests()[0].split("@")[0]);
+            if (image.getRepoDigests() != null) {
+                imageDefinition.setName(image.getRepoDigests()[0].split("@")[0]);
+            } else {
+                String[] repoTags = image.getRepoTags();
+                imageDefinition.setName(repoTags[repoTags.length - 1].split(":")[0]);
+            }
+
 
             // 设置 id
             imageDefinition.setId(image.getId());
@@ -68,9 +74,10 @@ public class ImageServiceImpl implements ImageService {
 
         RestTemplate template = new RestTemplate();
 
-        String layers = template.getForObject("http://192.168.29.145:2376/images/" + id + "/history", String.class);
+        String layers = template.getForObject(DockerUtils.httpUrl + "/images/" + id + "/history", String.class);
 
         definition.setLayers(layers);
+
         definition.setImage(DockerUtils.docker.inspectImageCmd(id).exec());
 
         return definition;
