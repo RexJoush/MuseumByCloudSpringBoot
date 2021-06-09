@@ -174,7 +174,7 @@ public class JobsServiceImpl implements JobsService {
             List<Pod> pods = podsService.findPodsByLabels(matchLabels);
 
             //获取事件
-            List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(aJob.getMetadata().getUid());
+            Pair<Integer, List<Event>> pairOfEvents = CommonServiceImpl.getEventByInvolvedObjectUid(aJob.getMetadata().getUid());
 
             Map<String, Object> data = new HashMap<>();
 
@@ -186,8 +186,8 @@ public class JobsServiceImpl implements JobsService {
                 data.put("pods", null);
                 flag |= (1 << 1);
             }
-            if(events != null) {
-                data.put("events",events);
+            if(pairOfEvents.getRight() != null) {
+                data.put("events", pairOfEvents.getRight());
             }else{
                 data.put("events",null);
                 flag |= 1;

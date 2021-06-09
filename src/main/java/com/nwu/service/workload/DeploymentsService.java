@@ -56,6 +56,7 @@ public interface DeploymentsService {
      */
     Pair<Integer, Deployment> loadDeploymentFromYaml(String path) throws FileNotFoundException;
 
+    // 弃用
     /**
      * 通过 Yaml 文件创建 Deployment
      * @param path Yaml 文件输入路径 String
@@ -63,6 +64,7 @@ public interface DeploymentsService {
      */
     Deployment createOrReplaceDeploymentByPath(String path) throws FileNotFoundException;
 
+    // 弃用
     /**
      * 通过 Yaml 文件创建或更新 Deployment
      * @param file Yaml文件

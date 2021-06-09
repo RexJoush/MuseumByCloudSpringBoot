@@ -1,8 +1,12 @@
 package com.nwu.service.workload;
 
-import com.nwu.entity.workload.*;
+import com.nwu.entity.workload.Pod.PodDefinition;
+import com.nwu.entity.workload.Pod.PodDetails;
+import com.nwu.entity.workload.Pod.PodForm;
+import com.nwu.entity.workload.Pod.PodUsage;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -114,7 +118,7 @@ public interface PodsService {
      * @param yaml 描述 Pod 的 Yaml 格式字符串
      * @return 创建结果代码
      */
-    int createOrReplacePodByYamlString(String yaml);
+    Pair<Integer, Boolean> createOrReplacePodByYamlString(String yaml);
 
     /**
      * 通过yaml文件路径创建Pod
@@ -144,7 +148,7 @@ public interface PodsService {
      * @param containerName 容器名
      * @return 某一个容器的日志信息
      */
-    String getPodLogFromContainer(String name, String namespace, String containerName);
+    Pair<Integer, String> getPodLogFromContainer(String name, String namespace, String containerName);
 
     /**
      * 获取 Pod 所有容器的日志信息
@@ -152,12 +156,19 @@ public interface PodsService {
      * @param namespace Pod命名空间
      * @return 所有容器的日志信息
      */
-    Map<String, String> getPodAllLogs(String name, String namespace);
+    Pair<Integer, Map<String, String>> getPodAllLogs(String name, String namespace);
+
+    /**
+     * 获取所有 Pod 的所有日志
+     * @param pods Pods 列表
+     * @return 获取到的日志和执行代码
+     */
+    Pair<Integer, Map> getAllPodsAllLogs(List<Pod> pods);
 
     /**
      *从表单创建Pod
      * @param podForm Pod 表单
      * @return 生成的 Pod 结果
      */
-    int createPodFromForm(PodForm podForm);
+    Pair<Integer, Boolean> createPodFromForm(PodForm podForm);
 }

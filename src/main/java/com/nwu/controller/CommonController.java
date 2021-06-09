@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSON;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Event;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -262,26 +263,32 @@ public class CommonController {
 
     @RequestMapping("/getEventByInvolvedObjectKKD")
     public String getEventByInvolvedObjectKKD(String name, String namespace, String kind){
-        List<Event> events = commonService.getEventByInvolvedObjectNNK(name, namespace, kind);
+        Pair<Integer, List<Event>> pair = commonService.getEventByInvolvedObjectNNK(name, namespace, kind);
 
         HashMap<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取事件成功");
-        result.put("data", events);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200)
+            result.put("message", "获取事件成功");
+        else
+            result.put("message", "获取事件成功");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
 
     @RequestMapping("/getEventByInvolvedObjectUid")
     public String getEventByInvolvedObjectUid(String uid){
-        List<Event> events = commonService.getEventByInvolvedObjectUid(uid);
+        Pair<Integer, List<Event>> pair = commonService.getEventByInvolvedObjectUid(uid);
 
         HashMap<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取事件成功");
-        result.put("data", events);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200)
+            result.put("message", "获取事件成功");
+        else
+            result.put("message", "获取事件失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }

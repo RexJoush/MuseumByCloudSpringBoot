@@ -1,6 +1,6 @@
 package com.nwu.service.workload.impl;
 
-import com.nwu.entity.workload.JobInformation;
+import com.nwu.entity.workload.Job.JobInformation;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.CronJobsService;
 import com.nwu.util.KubernetesUtils;
@@ -191,7 +191,7 @@ public class CronJobsServiceImpl implements CronJobsService {
             int mid = jobInformationList.get(i).getRunningPods() > 0 ? i : i + 1;//分割非运行与运行中
 
             //获取事件
-            List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(cronJobUid);
+            Pair<Integer, List<Event>> pairOfEvent = CommonServiceImpl.getEventByInvolvedObjectUid(cronJobUid);
 
             //放入数据
             Map<String, Object> data = new HashMap<>();
@@ -205,8 +205,8 @@ public class CronJobsServiceImpl implements CronJobsService {
                 data.put("runningJobs", null);
                 flag |= (1 << 2)|(1 << 1);
             }
-            if(events != null) {
-                data.put("events",events);
+            if(pairOfEvent.getRight() != null) {
+                data.put("events", pair.getRight());
             }else{
                 data.put("events", null);
                 flag |= 1;

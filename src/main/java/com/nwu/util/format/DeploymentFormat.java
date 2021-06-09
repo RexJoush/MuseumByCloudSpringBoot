@@ -1,6 +1,6 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.DeploymentInformation;
+import com.nwu.entity.workload.Deployment.DeploymentInformation;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 
 import java.util.ArrayList;

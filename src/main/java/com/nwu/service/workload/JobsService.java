@@ -55,6 +55,7 @@ public interface JobsService {
      */
     Pair<Integer, Boolean> createOrReplaceJobByYamlString(String yaml) throws IOException, ApiException;
 
+    // 弃用
     /**
      * 通过yaml文件创建 Job
      * @param path yaml文件输入路径 String
@@ -62,6 +63,7 @@ public interface JobsService {
      */
     Job createJobByYaml(String path) throws FileNotFoundException;
 
+    // 弃用
     /**
      * 通过yaml文件创建或更新Job
      * @param path yaml文件输入路径 String

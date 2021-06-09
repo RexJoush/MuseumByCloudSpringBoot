@@ -1,10 +1,15 @@
-package com.nwu.entity.workload;
+package com.nwu.entity.workload.Job;
 
 /**
  * @author zqy
  * @time 2021.04.16
  */
-public class ReplicaSetInformation {
+
+/**
+ * Job 类
+ * 保存前端需要信息
+ */
+public class JobInformation {
     private String status;//状态
     private String name;//名称
     private String namespace;//命名空间
@@ -12,10 +17,10 @@ public class ReplicaSetInformation {
     private int replicas;//期望的Pods数量
     private String creationTimestamp;//创建时间
 
-    public ReplicaSetInformation() {
+    public JobInformation() {
     }
 
-    public ReplicaSetInformation(String status, String name, String namespace, int runningPods, int replicas, String creationTimestamp) {
+    public JobInformation(String status, String name, String namespace, int runningPods, int replicas, String creationTimestamp) {
         this.status = status;
         this.name = name;
         this.namespace = namespace;
@@ -74,7 +79,7 @@ public class ReplicaSetInformation {
 
     @Override
     public String toString() {
-        return "ReplicaSetInformation{" +
+        return "JobInformation{" +
                 "status='" + status + '\'' +
                 ", name='" + name + '\'' +
                 ", namespace='" + namespace + '\'' +

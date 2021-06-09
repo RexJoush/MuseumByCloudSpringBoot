@@ -54,6 +54,7 @@ public interface ReplicationControllersService {
      */
     Pair<Integer, Boolean> createOrReplaceReplicationControllerByYamlString(String yaml);
 
+    // 弃用
     /**
      * 通过yaml文件创建 ReplicationController
      * @param path yaml文件输入路径 String
@@ -61,6 +62,7 @@ public interface ReplicationControllersService {
      */
     ReplicationController createReplicationControllerByYaml(String path) throws FileNotFoundException;
 
+    // 弃用
     /**
      * 通过yaml文件创建或更新ReplicationController
      * @param path yaml文件输入路径 String

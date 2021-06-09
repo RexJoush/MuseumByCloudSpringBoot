@@ -10,5 +10,4 @@ import lombok.NoArgsConstructor;
 public class ContainerLog {
     private String containerName;
     private String log;
-
 }

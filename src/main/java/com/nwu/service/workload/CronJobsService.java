@@ -46,6 +46,7 @@ public interface CronJobsService {
      */
     Pair<Integer, CronJob> loadCronJobFromYaml(String path) throws FileNotFoundException;
 
+    // 弃用
     /**
      * 通过 Yaml 文件创建 CronJob
      * @param path Yaml文件输入路径 String
@@ -60,6 +61,7 @@ public interface CronJobsService {
      */
     Pair<Integer, Boolean> createOrReplaceCronJobByYamlString(String yaml);
 
+    // 弃用
     /**
      * 通过 Yaml文件创建或更新 CronJob
      * @param path Yaml文件输入路径 String

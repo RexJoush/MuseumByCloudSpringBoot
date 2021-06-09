@@ -173,7 +173,7 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
             List<io.fabric8.kubernetes.api.model.Service> services = servicesService.getServicesByLabels(daemonSet.getSpec().getSelector().getMatchLabels());
 
             //获取事件
-            List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(daemonSet.getMetadata().getUid());
+            Pair<Integer, List<Event>> pairOfEvents = CommonServiceImpl.getEventByInvolvedObjectUid(daemonSet.getMetadata().getUid());
 
             //封装数据
             Map<String, Object> data = new HashMap<>();
@@ -191,8 +191,8 @@ public class DaemonSetsServiceImpl implements DaemonSetsService {
                 data.put("services", null);
                 flag |= (1 << 1);
             }
-            if(events != null) {
-                data.put("events",events);
+            if(pairOfEvents.getRight() != null) {
+                data.put("events", pairOfEvents.getRight());
             }else{
                 data.put("events",null);
                 flag |= 1;

@@ -54,6 +54,7 @@ public interface StatefulSetsService {
      */
     Pair<Integer, Boolean> createOrReplaceStatefulSetByYamlString(String yaml);
 
+    // 弃用
     /**
      * 通过yaml文件创建 StatefulSet
      * @param path yaml文件输入路径 String
@@ -61,6 +62,7 @@ public interface StatefulSetsService {
      */
     StatefulSet createStatefulSetByYaml(String path) throws FileNotFoundException;
 
+    // 弃用
     /**
      * 通过yaml文件创建或更新StatefulSet
      * @param path yaml文件输入路径 String

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -40,21 +39,9 @@ public class ReplicaSetsController {
     private ReplicaSetsServiceImpl replicaSetsService;
 
     //增
-    @RequestMapping("/createReplicaSetFromYaml")
-    public String createReplicaSetFromYaml(String path) throws FileNotFoundException {
-
-        ReplicaSet aReplicaSet = replicaSetsService.createReplicaSetByYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-        if(aReplicaSet != null) {
-            result.put("code", 1200);
-            result.put("message", "创建 ReplicaSet 成功");
-        }else {
-            result.put("code", 1299);
-            result.put("message", "创建 ReplicaSet 失败");
-        }
-
-        return JSON.toJSONString(result);
+    @RequestMapping("/createReplicaSetFromForm")
+    public String createReplicaSetFromForm(){
+        return "";
     }
 
     //删
@@ -211,21 +198,28 @@ public class ReplicaSetsController {
         Pair<Integer, List<Pod>> pair = replicaSetsService.getPodReplicaSetInvolved(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
-        if(pair.getLeft() == 1200) {
-            // 获取每个 Pod 的所有 Logs
-            Map<String, Map<String, String>> podLogs = new HashMap<>();
-            PodsServiceImpl podsService = new PodsServiceImpl();
-            List<Pod> pods = pair.getRight();
-            for(int i = 0; i < pods.size(); i++){
-                podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
-            }
-            result.put("code", 1200);
-            result.put("message", "获取 ReplicaSet 日志成功");
-            result.put("data", podLogs);
 
+        if(pair.getLeft() == 1200) {
+            // code = 1202 没有 Pod 时获取 Pod 的日志
+            if(pair.getRight() == null){
+                result.put("code", 1202);
+                result.put("message", "您的操作有误");
+                result.put("data", null);
+            }
+            else{
+
+                PodsServiceImpl podsService = new PodsServiceImpl();
+                Pair<Integer, Map> allPodsAllLogs = podsService.getAllPodsAllLogs(pair.getRight());
+
+                result.put("code", allPodsAllLogs.getLeft());
+                if(allPodsAllLogs.getLeft() == 1200) result.put("message", "获取 Job 日志成功");
+                else if(allPodsAllLogs.getLeft() == 1201) result.put("message", "获取 Job 日志失败");
+                else result.put("message", "获取到 Job 部分日志");// code = 1203
+                result.put("data", allPodsAllLogs.getRight());
+            }
         }else {
             result.put("code", 1201);
-            result.put("message", "获取 ReplicaSet 日志失败");
+            result.put("message", "获取 Job 日志失败");
             result.put("data", null);
         }
 

@@ -1,6 +1,6 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.DaemonSetInformation;
+import com.nwu.entity.workload.DaemonSet.DaemonSetInformation;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 
 import java.util.ArrayList;

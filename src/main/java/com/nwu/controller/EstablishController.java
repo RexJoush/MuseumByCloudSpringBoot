@@ -6,20 +6,21 @@ package com.nwu.controller;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.entity.workload.PodForm;
+import com.nwu.entity.workload.Pod.PodForm;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
-import io.fabric8.kubernetes.api.model.Pod;
-import org.springframework.web.bind.annotation.*;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -67,34 +68,13 @@ public class EstablishController {
 
     @RequestMapping(value = "/createPodFromForm")
     public String createPodFromForm(PodForm podForm){
-//        System.out.println(podForm.getEnvKeys()[1]);
-//        String name = "zqytest19";
-//        String namespace = "default";
-//        Map<String, String> labels = new HashMap<>();
-//        labels.put("name", "zqytest111");
-//        Map<String, String> annotations = new HashMap<>();
-//        annotations.put("name", "zqytest111");
-//        String secretName = "";
-//        String image = "nginx";
-//        String imagePullPolicy = "Always";
-//        String[] command = {""};
-//        String[] args ={""};
-//        String cpuLimit = "500m";
-//        String cpuRequest = "300m";
-//        String memoryLimit = "1000Gi";
-//        String memoryRequest = "512Mi";
-//        Map<String, String> envVar = new HashMap<>();
-//        envVar.put("name", "zqytest111");
-//        Integer amount = 2;
-//        PodForm podForm1 = new PodForm(name, namespace, labels, annotations, secretName, image, imagePullPolicy, command, args, cpuLimit, cpuRequest, memoryLimit, memoryRequest, envVar, amount);
-
-        int code = podsService.createPodFromForm(podForm);
+        Pair<Integer, Boolean> pair = podsService.createPodFromForm(podForm);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", code);
-        if(code == 1200) result.put("message", "创建 Pod 成功");
-        else result.put("message", "创建 Pod 失败，请检查是否重名");
+        result.put("code", pair.getLeft());
+        result.put("message", pair.getLeft() == 1200 ? "创建 Pod 成功" : "创建 Pod 失败，请检查是否重名");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
 

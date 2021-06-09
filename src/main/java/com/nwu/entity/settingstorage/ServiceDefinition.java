@@ -1,6 +1,6 @@
 package com.nwu.entity.settingstorage;
 
-import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.Pod.PodDefinition;
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Service;

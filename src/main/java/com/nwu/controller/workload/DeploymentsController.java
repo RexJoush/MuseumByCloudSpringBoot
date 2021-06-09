@@ -38,6 +38,10 @@ public class DeploymentsController {
     private DeploymentsServiceImpl deploymentsService;
 
     //增
+    @RequestMapping("/createDeploymentFromForm")
+    public String createDeploymentFromForm(){
+        return "";
+    }
 
     //删
     @RequestMapping("/deleteDeploymentByNameAndNamespace")

@@ -1,7 +1,7 @@
 package com.nwu.service.explorebalancing.impl;
 
 import com.nwu.entity.settingstorage.ServiceDefinition;
-import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.Pod.PodDefinition;
 import com.nwu.service.explorebalancing.ServicesService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.PodFormat;

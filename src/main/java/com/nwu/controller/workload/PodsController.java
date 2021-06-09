@@ -1,15 +1,16 @@
 package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.entity.workload.PodDefinition;
-import com.nwu.entity.workload.PodDetails;
-import com.nwu.entity.workload.PodForm;
+import com.nwu.entity.workload.Pod.PodDefinition;
+import com.nwu.entity.workload.Pod.PodDetails;
+import com.nwu.entity.workload.Pod.PodForm;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.DealYamlStringFromFront;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,7 @@ public class PodsController {
     private PodsServiceImpl podsService;
 
     //增
+    // 以弃用
     @PostMapping("/createPodFromYamlFile")
     public String createPodFromYamlFile(@RequestParam("yaml") MultipartFile originalFile) throws FileNotFoundException {
         return JSON.toJSONString("弃用，在establish中使用");
@@ -69,11 +71,12 @@ public class PodsController {
         Map<String, Object> result = new HashMap<>();
 
         yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
-        int code = podsService.createOrReplacePodByYamlString(yaml);
+        Pair<Integer, Boolean> pair = podsService.createOrReplacePodByYamlString(yaml);
 
-        if(code == 1200) result.put("message", "创建成功");
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) result.put("message", "创建成功");
         else result.put("message", "创建失败");
-        result.put("code", code);
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -214,13 +217,13 @@ public class PodsController {
     @RequestMapping("/getPodLogFromContainer")
     public String getPodLogByNameAndNamespace(String name, String namespace, String containerName){
 
-        String str = podsService.getPodLogFromContainer(name, namespace, containerName);
+        Pair<Integer, String> pair = podsService.getPodLogFromContainer(name, namespace, containerName);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 Pod日志 成功");
-        result.put("data", str);
+        result.put("code", pair.getLeft());
+        result.put("message", pair.getLeft() == 1200 ? "获取 Pod 日志成功" : "获取 Pod 日志失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -230,16 +233,16 @@ public class PodsController {
         PodDetails podDetails = podsService.findPodByNameAndNamespace(name, namespace);
 
         //获取事件
-        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(podDetails.getPod().getMetadata().getUid());
+        Pair<Integer, List<Event>> pair = CommonServiceImpl.getEventByInvolvedObjectUid(podDetails.getPod().getMetadata().getUid());
 
         Map<String, Object> data = new HashMap<>();
         data.put("podDetails", podDetails);
-        data.put("events", events);
+        data.put("events", pair.getRight());
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("code", 1200);
-        result.put("message", "获取 Pod资源 成功");
+        result.put("message", "获取 Pod 资源成功");
         result.put("data", data);
 
         return JSON.toJSONString(result);
@@ -247,12 +250,12 @@ public class PodsController {
     @RequestMapping("/getPodAllLogs")
     public String getPodAllLogs(String name, String namespace){
 
-        Map<String, String> logs = podsService.getPodAllLogs(name, namespace);
+        Pair<Integer, Map<String, String>> pair = podsService.getPodAllLogs(name, namespace);
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 Pod 日志成功");
-        result.put("data", logs);
+        result.put("code", pair.getLeft());
+        result.put("message", pair.getLeft() == 1200 ? "获取 Pod 日志成功" : "获取 Pod 日志失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }

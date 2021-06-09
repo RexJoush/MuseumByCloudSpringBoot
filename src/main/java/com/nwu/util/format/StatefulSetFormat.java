@@ -1,6 +1,6 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.StatefulSetInformation;
+import com.nwu.entity.workload.StatefulSet.StatefulSetInformation;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 
 import java.util.ArrayList;

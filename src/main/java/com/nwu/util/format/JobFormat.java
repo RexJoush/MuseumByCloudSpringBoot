@@ -5,7 +5,7 @@ package com.nwu.util.format;
  * @time 2021.04.16
  */
 
-import com.nwu.entity.workload.JobInformation;
+import com.nwu.entity.workload.Job.JobInformation;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.FilterPodsByControllerUid;
 import io.fabric8.kubernetes.api.model.Pod;

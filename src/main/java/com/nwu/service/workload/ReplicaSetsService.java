@@ -55,6 +55,7 @@ public interface ReplicaSetsService {
      */
     Pair<Integer, Boolean> createOrReplaceReplicaSetByYamlString(String yaml);
 
+    // 弃用
     /**
      * 通过yaml文件创建 ReplicaSet
      * @param path yaml文件输入路径 String
@@ -62,6 +63,7 @@ public interface ReplicaSetsService {
      */
     ReplicaSet createReplicaSetByYaml(String path) throws FileNotFoundException;
 
+    // 弃用
     /**
      * 通过yaml文件创建或更新ReplicaSet
      * @param path yaml文件输入路径 String

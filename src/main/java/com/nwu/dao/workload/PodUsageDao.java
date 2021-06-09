@@ -1,6 +1,6 @@
 package com.nwu.dao.workload;
 
-import com.nwu.entity.workload.PodUsage;
+import com.nwu.entity.workload.Pod.PodUsage;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -1,10 +1,10 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.dao.workload.PodUsageDao;
-import com.nwu.entity.workload.PodDefinition;
-import com.nwu.entity.workload.PodDetails;
-import com.nwu.entity.workload.PodForm;
-import com.nwu.entity.workload.PodUsage;
+import com.nwu.entity.workload.Pod.PodDefinition;
+import com.nwu.entity.workload.Pod.PodDetails;
+import com.nwu.entity.workload.Pod.PodForm;
+import com.nwu.entity.workload.Pod.PodUsage;
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
@@ -12,6 +12,7 @@ import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics;
 import io.kubernetes.client.util.Yaml;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -177,15 +178,15 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public int createOrReplacePodByYamlString(String yaml){
+    public Pair<Integer, Boolean> createOrReplacePodByYamlString(String yaml){
         try{
             Pod pod = Yaml.loadAs(yaml, Pod.class);
             KubernetesUtils.client.pods().inNamespace(pod.getMetadata().getNamespace()).withName(pod.getMetadata().getName()).createOrReplace(pod);
-            return 1200;
+            return Pair.of(1200, true);
         }catch (Exception e){
             System.out.println("创建 Pod 失败，请检查 Yaml 格式或是否重名，在 PodsServiceImpl 类的 createOrReplacePodByYamlString 方法中");
         }
-        return 1201;
+        return Pair.of(1201, null);
     }
 
     @Override
@@ -237,18 +238,18 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
-    public String getPodLogFromContainer(String name, String namespace, String containerName) {
+    public Pair<Integer, String> getPodLogFromContainer(String name, String namespace, String containerName) {
         try {
             String log = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).inContainer(containerName).getLog();
-            return log;
+            return Pair.of(1200, log);
         } catch (Exception e) {
             System.out.println("未获取到Pod的日志");
         }
-        return null;
+        return Pair.of(1201, null);
     }
 
     @Override
-    public Map<String, String> getPodAllLogs(String name, String namespace) {
+    public Pair<Integer, Map<String, String>> getPodAllLogs(String name, String namespace) {
         try {
             Map<String, String> logs = new HashMap<>();
             List<Container> containers = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get().getSpec().getContainers();
@@ -257,129 +258,156 @@ public class PodsServiceImpl implements PodsService {
                 String log = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).inContainer(containerName).getLog();
                 logs.put(containerName, log);
             }
-            return logs;
+            return Pair.of(1200, logs);
         } catch (Exception e) {
             System.out.println("未获取到Pod的日志");
         }
-        return null;
+        return Pair.of(1201, null);
     }
 
     @Override
-    public int createPodFromForm(PodForm podForm) {
-        //Name
-        String generateName = "";
-        String containerName = podForm.getName();
-        List<String> name = new ArrayList<String>(Collections.singleton(containerName));
-        int amount = podForm.getAmount();
-        if (amount > 1) {
-            generateName = containerName + '-';
-            name.set(0, generateName + 0);
-            for(int i = 1; i < amount; i ++){
-                name.add(generateName + i);
+    public Pair<Integer, Map> getAllPodsAllLogs(List<Pod> pods){
+        try{
+            // 获取每个 Pod 的所有 Logs
+            Boolean flag = true;
+            Map<String, Map<String, String>> podLogs = new HashMap<>();
+            for(int i = 0; i < pods.size(); i++){
+                Pair<Integer, Map<String, String>> podAllLogs = this.getPodAllLogs(pods.get(i).getMetadata().getName(), pods.get(i).getMetadata().getNamespace());
+                if(podAllLogs.getLeft() != 1200){
+                    podLogs.put(pods.get(i).getMetadata().getName(), null);
+                    flag = false;
+                }
+                else
+                    podLogs.put(pods.get(i).getMetadata().getName(), podAllLogs.getRight());
             }
+            if(flag) return Pair.of(1203, podLogs);
+            return Pair.of(1200, podLogs);
+        }catch (Exception e){
+            System.out.println("操作失败，在 PodsServiceImpl 类的 getAllPodsAllLogs 方法中");
         }
+        return Pair.of(1201, null);
+    }
 
-        //Image Secret
-        LocalObjectReference localObjectReference = new LocalObjectReference();
-        localObjectReference.setName(podForm.getSecretName());
+    @Override
+    public Pair<Integer, Boolean> createPodFromForm(PodForm podForm) {
+        try{
+            //Name
+            String generateName = "";
+            String containerName = podForm.getName();
+            List<String> name = new ArrayList<String>(Collections.singleton(containerName));
+            int amount = podForm.getAmount();
+            if (amount > 1) {
+                generateName = containerName + '-';
+                name.set(0, generateName + 0);
+                for(int i = 1; i < amount; i ++){
+                    name.add(generateName + i);
+                }
+            }
 
-        //CPU Memory
+            //Image Secret
+            LocalObjectReference localObjectReference = new LocalObjectReference();
+            localObjectReference.setName(podForm.getSecretName());
+
+            //CPU Memory
 //        ResourceRequirements resourceRequirements = new ResourceRequirements();
-        Quantity cpuLimitQu = new QuantityBuilder().withAmount(podForm.getCpuLimit()).build();
-        Quantity cpuRequestQu = new QuantityBuilder().withAmount(podForm.getCpuRequest()).build();
-        Quantity memoryLimitQu = new QuantityBuilder().withAmount(podForm.getMemoryLimit()).build();
-        Quantity memoryRequestQu = new QuantityBuilder().withAmount(podForm.getMemoryRequest()).build();
+            Quantity cpuLimitQu = new QuantityBuilder().withAmount(podForm.getCpuLimit()).build();
+            Quantity cpuRequestQu = new QuantityBuilder().withAmount(podForm.getCpuRequest()).build();
+            Quantity memoryLimitQu = new QuantityBuilder().withAmount(podForm.getMemoryLimit()).build();
+            Quantity memoryRequestQu = new QuantityBuilder().withAmount(podForm.getMemoryRequest()).build();
 
-        //Env
-        List<EnvVar> envVarList = new ArrayList<EnvVar>();
-        String[] envKeys = podForm.getEnvKeys();
-        String envValues[] = podForm.getEnvValues();
-        for(int i = 0; i < envKeys.length; i++){
-            EnvVar tmpEnvVar = new EnvVar();
-            tmpEnvVar.setName(envKeys[i]);
-            tmpEnvVar.setValue(envValues[i]);
-            envVarList.add(tmpEnvVar);
-        }
-
-        //Command
-        Boolean commandFlag = false;
-        List<String> commandsList = new ArrayList<>();
-        String commands[] = podForm.getCommands();
-        for(String command : commands){
-            if(!("".equals(command)) || command != null){
-                commandsList.add(command);
-                commandFlag = true;
+            //Env
+            List<EnvVar> envVarList = new ArrayList<EnvVar>();
+            String[] envKeys = podForm.getEnvKeys();
+            String envValues[] = podForm.getEnvValues();
+            for(int i = 0; i < envKeys.length; i++){
+                EnvVar tmpEnvVar = new EnvVar();
+                tmpEnvVar.setName(envKeys[i]);
+                tmpEnvVar.setValue(envValues[i]);
+                envVarList.add(tmpEnvVar);
             }
-        }
 
-        //Arg
-        Boolean argsFlag = false;
-        List<String> argsList = new ArrayList<>();
-        String args[] = podForm.getArgs();
-        for(String arg : args){
-            if(!("".equals(arg)) || arg != null){
-                argsList.add(arg);
-                argsFlag = true;
+            //Command
+            Boolean commandFlag = false;
+            List<String> commandsList = new ArrayList<>();
+            String commands[] = podForm.getCommands();
+            for(String command : commands){
+                if(!("".equals(command)) || command != null){
+                    commandsList.add(command);
+                    commandFlag = true;
+                }
             }
-        }
 
-        //labels
-        String[] labelsKeys = podForm.getLabelsKeys();
-        String[] labelsValues = podForm.getLabelsValues();
-        Map<String, String> labels = new HashMap<>();
-        for(int i = 0; i < labelsKeys.length; i++)
-            labels.put(labelsKeys[i], labelsValues[i]);
+            //Arg
+            Boolean argsFlag = false;
+            List<String> argsList = new ArrayList<>();
+            String args[] = podForm.getArgs();
+            for(String arg : args){
+                if(!("".equals(arg)) || arg != null){
+                    argsList.add(arg);
+                    argsFlag = true;
+                }
+            }
 
-        //annotations
-        String[] annotationsKeys = podForm.getAnnotationsKeys();
-        String[] annotationsValues = podForm.getAnnotationsValues();
-        Map<String, String> annotations = new HashMap<>();
-        for(int i = 0; i < annotationsKeys.length; i++)
-            labels.put(annotationsKeys[i], annotationsValues[i]);
+            //labels
+            String[] labelsKeys = podForm.getLabelsKeys();
+            String[] labelsValues = podForm.getLabelsValues();
+            Map<String, String> labels = new HashMap<>();
+            for(int i = 0; i < labelsKeys.length; i++)
+                labels.put(labelsKeys[i], labelsValues[i]);
 
-        //NodeSelect
-        Map<String, String> nodeSelect = new HashMap<>();
-        nodeSelect.put("type", "node");
+            //annotations
+            String[] annotationsKeys = podForm.getAnnotationsKeys();
+            String[] annotationsValues = podForm.getAnnotationsValues();
+            Map<String, String> annotations = new HashMap<>();
+            for(int i = 0; i < annotationsKeys.length; i++)
+                labels.put(annotationsKeys[i], annotationsValues[i]);
 
-        List<Pod> podList = new ArrayList<Pod>();
-        while (amount > 0) {
-            amount -= 1;
-            Pod tmpPod = new PodBuilder()
-                    .withNewMetadata()
-                    //.withNamespace(namespace)
-                    .withGenerateName(generateName)
-                    .withName(podForm.getName() + '-' + amount)
-                    .withLabels(labels)
-                    .withAnnotations(annotations)
-                    .endMetadata()
-                    .withNewSpec()
-                    .withNodeSelector(nodeSelect)
-                    .withImagePullSecrets(localObjectReference)
-                    .addNewContainer()
-                    .withName(containerName)
-                    .withImage(podForm.getImage())
-                    .withImagePullPolicy(podForm.getImagePullPolicy())
+            //NodeSelect
+            Map<String, String> nodeSelect = new HashMap<>();
+            nodeSelect.put("type", "node");
+
+            List<Pod> podList = new ArrayList<Pod>();
+            while (amount > 0) {
+                amount -= 1;
+                Pod tmpPod = new PodBuilder()
+                        .withNewMetadata()
+                        //.withNamespace(namespace)
+                        .withGenerateName(generateName)
+                        .withName(podForm.getName() + '-' + amount)
+                        .withLabels(labels)
+                        .withAnnotations(annotations)
+                        .endMetadata()
+                        .withNewSpec()
+                        .withNodeSelector(nodeSelect)
+                        .withImagePullSecrets(localObjectReference)
+                        .addNewContainer()
+                        .withName(containerName)
+                        .withImage(podForm.getImage())
+                        .withImagePullPolicy(podForm.getImagePullPolicy())
 //                    .withCommand()
 //                    .withArgs(podForm.getArgs())
-                    .withNewResources()
+                        .withNewResources()
 //                    .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
 //                    .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
-                    .endResources()
-                    .withEnv(envVarList)
-                    //addNewPort().withContainerPort(80).endPort()
-                    .endContainer()
-                    .endSpec().build();
-            if(commandFlag) tmpPod.getSpec().getContainers().get(0).setCommand(commandsList);
-            if(argsFlag) tmpPod.getSpec().getContainers().get(0).setArgs(argsList);
-            try{
-                Pod pod = KubernetesUtils.client.pods().inNamespace(podForm.getNamespace()).createOrReplace(tmpPod);
-                podList.add(pod);
-            }catch (Exception e){
-                return 1201;
+                        .endResources()
+                        .withEnv(envVarList)
+                        //addNewPort().withContainerPort(80).endPort()
+                        .endContainer()
+                        .endSpec().build();
+                if(commandFlag) tmpPod.getSpec().getContainers().get(0).setCommand(commandsList);
+                if(argsFlag) tmpPod.getSpec().getContainers().get(0).setArgs(argsList);
+                try{
+                    Pod pod = KubernetesUtils.client.pods().inNamespace(podForm.getNamespace()).createOrReplace(tmpPod);
+                    podList.add(pod);
+                }catch (Exception e){
+                    return Pair.of(1201, null);
+                }
             }
-
+            return Pair.of(1200, true);
+        }catch (Exception e){
+            System.out.println("创建 Pod 失败，在 PodsServiceImpl 类的 createPodFromForm 方法");
         }
-        return 1200;
+        return Pair.of(1201, null);
     }
 
 

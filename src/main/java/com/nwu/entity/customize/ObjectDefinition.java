@@ -1,12 +1,7 @@
 package com.nwu.entity.customize;
 
-import com.nwu.entity.workload.PodDefinition;
-import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Event;
-import io.fabric8.kubernetes.api.model.Service;
-import io.fabric8.kubernetes.client.dsl.Resource;
 
-import java.util.List;
 import java.util.Map;
 
 public class ObjectDefinition {

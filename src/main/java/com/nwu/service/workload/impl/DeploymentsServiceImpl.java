@@ -1,6 +1,6 @@
 package com.nwu.service.workload.impl;
 
-import com.nwu.entity.workload.ReplicaSetInformation;
+import com.nwu.entity.workload.ReplicaSet.ReplicaSetInformation;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.DeploymentsService;
 import com.nwu.util.FilterReplicaSetByControllerUid;
@@ -240,7 +240,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
             replicaSets.set(flag, tmpReplicaSetInformation);
 
             //获取事件
-            List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(deployment.getMetadata().getUid());
+            Pair<Integer, List<Event>> pairOfEvents = CommonServiceImpl.getEventByInvolvedObjectUid(deployment.getMetadata().getUid());
 
             //封装数据
             Map<String, Object> data = new HashMap<>();
@@ -254,8 +254,8 @@ public class DeploymentsServiceImpl implements DeploymentsService {
                 data.put("oldReplicaSets", null);
                 flag |= (1 << 2) | (1 << 1);
             }
-            if(events != null) {
-                data.put("events",events);
+            if(pairOfEvents.getRight() != null) {
+                data.put("events", pairOfEvents.getRight());
             }else{
                 data.put("events",null);
                 flag |= 1;

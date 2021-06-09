@@ -1,26 +1,21 @@
-package com.nwu.entity.workload;
+package com.nwu.entity.workload.ReplicationController;
 
 /**
  * @author zqy
  * @time 2021.04.16
  */
-
-/**
- * Job 类
- * 保存前端需要信息
- */
-public class JobInformation {
+public class ReplicationControllerInformation {
     private String status;//状态
     private String name;//名称
-    private String namespace;//命名空间
+    private String namespace;//明明空间
     private int runningPods;//正在运行的Pods数量
     private int replicas;//期望的Pods数量
     private String creationTimestamp;//创建时间
 
-    public JobInformation() {
+    public ReplicationControllerInformation() {
     }
 
-    public JobInformation(String status, String name, String namespace, int runningPods, int replicas, String creationTimestamp) {
+    public ReplicationControllerInformation(String status, String name, String namespace, int runningPods, int replicas, String creationTimestamp) {
         this.status = status;
         this.name = name;
         this.namespace = namespace;
@@ -79,7 +74,7 @@ public class JobInformation {
 
     @Override
     public String toString() {
-        return "JobInformation{" +
+        return "ReplicationControllerInformation{" +
                 "status='" + status + '\'' +
                 ", name='" + name + '\'' +
                 ", namespace='" + namespace + '\'' +

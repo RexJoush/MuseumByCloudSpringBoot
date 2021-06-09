@@ -1,8 +1,4 @@
-package com.nwu.entity.workload;
-
-import jdk.jfr.DataAmount;
-
-import java.util.Map;
+package com.nwu.entity.workload.Pod;
 
 /**
  * @author zqy

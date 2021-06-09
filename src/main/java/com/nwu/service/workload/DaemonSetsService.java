@@ -55,6 +55,7 @@ public interface DaemonSetsService {
      */
     Pair<Integer, Boolean> createOrReplaceDaemonSetByYamlString(String yaml);
 
+    // 弃用
     /**
      * 通过 Yaml 创建 DaemonSet
      * @param yaml Yaml 字符串
@@ -62,6 +63,7 @@ public interface DaemonSetsService {
      */
     Boolean createOrReplaceDaemonSetByYaml(String yaml) throws IOException;
 
+    // 弃用
     /**
      * 通过 Yaml文件创建或更新 DaemonSet
      * @param path Yaml文件输入路径 String

@@ -1,6 +1,6 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.CronJobInformation;
+import com.nwu.entity.workload.CronJob.CronJobInformation;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 
 import java.util.ArrayList;

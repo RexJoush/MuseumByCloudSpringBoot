@@ -1,4 +1,4 @@
-package com.nwu.entity.workload;
+package com.nwu.entity.workload.Pod;
 
 /**
  * @author Rex Joush

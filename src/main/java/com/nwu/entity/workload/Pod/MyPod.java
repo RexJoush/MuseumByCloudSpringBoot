@@ -1,6 +1,5 @@
-package com.nwu.entity.workload;
+package com.nwu.entity.workload.Pod;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.fabric8.kubernetes.api.model.*;
 
 /**

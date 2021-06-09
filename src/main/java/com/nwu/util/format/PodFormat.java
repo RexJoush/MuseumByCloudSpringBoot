@@ -1,10 +1,8 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.Pod.PodDefinition;
 import com.nwu.entity.workload.Usage;
-import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

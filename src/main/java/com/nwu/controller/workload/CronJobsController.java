@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -34,22 +33,9 @@ public class CronJobsController {
     private CronJobsServiceImpl cronJobsService;
 
     //增
-    @RequestMapping("/createCronJobFromYaml")
-    public String createCronJobFromYaml(String path) throws FileNotFoundException {
-
-        CronJob aCronJob = cronJobsService.createCronJobByYaml(path);
-
-        Map<String, Object> result = new HashMap<>();
-
-        if(aCronJob != null) {
-            result.put("code", 1200);
-            result.put("message", "创建 CronJob 成功");
-        }else {
-            result.put("code", 1299);
-            result.put("message", "创建 CronJob 失败");
-        }
-
-        return JSON.toJSONString(result);
+    @RequestMapping("/createCronJobFromForm")
+    public String createCronJobFromForm(){
+        return "";
     }
 
     //删

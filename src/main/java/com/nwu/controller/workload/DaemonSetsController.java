@@ -34,21 +34,9 @@ public class DaemonSetsController {
     private DaemonSetsServiceImpl daemonSetsService;
 
     //增
-    @RequestMapping("/createOrReplaceDaemonSetByYaml")
-    public String createOrReplaceDaemonSetByYaml(String yaml) throws IOException {
-
-        Boolean ok = daemonSetsService.createOrReplaceDaemonSetByYaml(yaml);
-
-        Map<String, Object> result = new HashMap<>();
-        if(ok != null) {
-            result.put("code", 1200);
-            result.put("message", ok ? "创建或更新 DaemonSet 成功" : "创建或更新 DaemonSet 失败");
-        }else {
-            result.put("code", 1299);
-            result.put("message", "创建或更新 DaemonSet 失败");
-        }
-
-        return JSON.toJSONString(result);
+    @RequestMapping("/createDaemonSetFromForm")
+    public String createDaemonSetFromForm(){
+        return "";
     }
 
     //删
@@ -171,20 +159,27 @@ public class DaemonSetsController {
         //获取 DaemonSet 包含的 Pods
         Pair<Integer, List<Pod>> pair = daemonSetsService.getPodDaemonSetInvolved(name, namespace);
 
-        result.put("code", pair.getLeft());
         if(pair.getLeft() == 1200) {
-            // 获取每个 Pod 的所有 Logs
-            List<Pod> pods = pair.getRight();
-            Map<String, Map<String, String>> podLogs = new HashMap<>();
-            PodsServiceImpl podsService = new PodsServiceImpl();
-            for(int i = 0; i < pods.size(); i++){
-                //此处假设 Pod 获取成功之后相应的 Log 也能获取成功
-                podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
+            // code = 1202 没有 Pod 时获取 Pod 的日志
+            if(pair.getRight() == null){
+                result.put("code", 1202);
+                result.put("message", "您的操作有误");
+                result.put("data", null);
             }
-            result.put("message", "获取 DaemonSet 日志成功");
-            result.put("data", podLogs);
+            else{
+
+                PodsServiceImpl podsService = new PodsServiceImpl();
+                Pair<Integer, Map> allPodsAllLogs = podsService.getAllPodsAllLogs(pair.getRight());
+
+                result.put("code", allPodsAllLogs.getLeft());
+                if(allPodsAllLogs.getLeft() == 1200) result.put("message", "获取 Job 日志成功");
+                else if(allPodsAllLogs.getLeft() == 1201) result.put("message", "获取 Job 日志失败");
+                else result.put("message", "获取到 Job 部分日志");// code = 1203
+                result.put("data", allPodsAllLogs.getRight());
+            }
         }else {
-            result.put("message", "获取 DaemonSet 日志失败");
+            result.put("code", 1201);
+            result.put("message", "获取 Job 日志失败");
             result.put("data", null);
         }
 

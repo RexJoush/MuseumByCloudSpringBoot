@@ -1,6 +1,6 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.ReplicationControllerInformation;
+import com.nwu.entity.workload.ReplicationController.ReplicationControllerInformation;
 import io.fabric8.kubernetes.api.model.ReplicationController;
 
 import java.util.ArrayList;

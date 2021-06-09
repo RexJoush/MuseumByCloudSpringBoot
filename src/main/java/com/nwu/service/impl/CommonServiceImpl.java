@@ -13,6 +13,7 @@ import io.fabric8.kubernetes.api.model.ObjectReference;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -161,19 +162,29 @@ public class CommonServiceImpl implements CommonService {
         }
     }
 
-    public static List<Event> getEventByInvolvedObjectNNK(String name, String namespace, String kind){
-        ObjectReference objectReference = new ObjectReference();
-        objectReference.setName(name);
-        objectReference.setNamespace(namespace);
-        objectReference.setKind(kind);
-        List<Event> items = KubernetesUtils.client.v1().events().withInvolvedObject(objectReference).list().getItems();
-        return items;
+    public static Pair<Integer, List<Event>> getEventByInvolvedObjectNNK(String name, String namespace, String kind){
+        try{
+            ObjectReference objectReference = new ObjectReference();
+            objectReference.setName(name);
+            objectReference.setNamespace(namespace);
+            objectReference.setKind(kind);
+            List<Event> items = KubernetesUtils.client.v1().events().withInvolvedObject(objectReference).list().getItems();
+            return Pair.of(1200, items);
+        }catch (Exception e){
+            System.out.println("获取事件失败，在 CommonServiceImpl 类的 getEventByInvolvedObjectNNK 方法里");
+        }
+        return Pair.of(1201, null);
     }
 
-    public static List<Event> getEventByInvolvedObjectUid(String uid){
-        ObjectReference objectReference = new ObjectReference();
-        objectReference.setUid(uid);
-        List<Event> items = KubernetesUtils.client.v1().events().withInvolvedObject(objectReference).list().getItems();
-        return items;
+    public static Pair<Integer, List<Event>> getEventByInvolvedObjectUid(String uid){
+        try{
+            ObjectReference objectReference = new ObjectReference();
+            objectReference.setUid(uid);
+            List<Event> items = KubernetesUtils.client.v1().events().withInvolvedObject(objectReference).list().getItems();
+            return Pair.of(1200, items);
+        }catch (Exception e){
+            System.out.println("获取事件失败，在 CommonServiceImpl 类的 getEventByInvolvedObjectUid 方法里");
+        }
+        return Pair.of(1201, null);
     }
 }

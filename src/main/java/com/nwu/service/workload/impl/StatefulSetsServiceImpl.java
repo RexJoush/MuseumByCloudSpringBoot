@@ -187,7 +187,7 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
             List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
 
             //获取事件
-            List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(statefulSet.getMetadata().getUid());
+            Pair<Integer, List<Event>> pairOfEvents = CommonServiceImpl.getEventByInvolvedObjectUid(statefulSet.getMetadata().getUid());
 
             //封装数据
             Map<String, Object> data = new HashMap<>();
@@ -199,8 +199,8 @@ public class StatefulSetsServiceImpl implements StatefulSetsService {
                 data.put("pods", null);
                 flag |= (1 << 1);
             }
-            if(events != null) {
-                data.put("events", events);
+            if(pairOfEvents.getRight() != null) {
+                data.put("events", pairOfEvents.getRight());
             }else{
                 data.put("events", null);
                 flag |= 1;
