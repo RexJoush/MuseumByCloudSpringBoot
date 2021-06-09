@@ -14,19 +14,19 @@ public class DockerUtils {
 
     public static DockerClient docker;
 
+    public static String baseUrl = "192.168.29.147:2376";
+
+    public static String httpUrl = "http://" + baseUrl;
+
     static {
 
-//        String url = "tcp://172.18.7.15:2376";
-        String url = "tcp://192.168.29.145:2376";
-
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost(url)
+                .withDockerHost("tcp://" + baseUrl)
                 .withDockerTlsVerify(false)
                 .withApiVersion("1.41")
                 .build();
 
         docker = DockerClientBuilder.getInstance(config).build();
     }
-
 
 }
