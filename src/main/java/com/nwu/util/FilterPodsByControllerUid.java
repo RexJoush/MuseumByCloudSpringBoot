@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class FilterPodsByControllerUid {
     public static List<Pod> filterPodsByControllerUid(String uid, List<Pod> pods){
+        if(pods == null) return null;
         List<Pod> newPods = new ArrayList<>();
         for(Pod pod :pods){
             int length = pod.getMetadata().getOwnerReferences().size();

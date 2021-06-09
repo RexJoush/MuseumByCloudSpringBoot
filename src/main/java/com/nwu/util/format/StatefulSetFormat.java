@@ -1,17 +1,11 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.JobInformation;
 import com.nwu.entity.workload.StatefulSetInformation;
-import com.nwu.service.workload.impl.PodsServiceImpl;
-import com.nwu.util.FilterPodsByControllerUid;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
-import io.fabric8.kubernetes.api.model.batch.Job;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author zqy
@@ -20,6 +14,7 @@ import java.util.Map;
 public class StatefulSetFormat {
     public static List<StatefulSetInformation> formatStatefulSetList(List<StatefulSet> statefulSetList){
 
+        if(statefulSetList == null) return null;
         List<StatefulSetInformation> statefulSetInformationList = new ArrayList<>();
 
 

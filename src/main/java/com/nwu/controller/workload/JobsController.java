@@ -6,20 +6,21 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.JobsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.DealYamlStringFromFront;
 import com.nwu.util.format.JobFormat;
-import com.nwu.util.format.PodFormat;
-import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +41,13 @@ public class JobsController {
         Job aJob = jobsService.createJobByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 Job 成功");
-        result.put("data", aJob);
+        if(aJob != null) {
+            result.put("code", 1200);
+            result.put("message", "创建 Job 成功");
+        }else {
+            result.put("code", 1299);
+            result.put("message", "创建 Job 失败");
+        }
 
         return JSON.toJSONString(result);
     }
@@ -52,27 +56,34 @@ public class JobsController {
     @RequestMapping("/deleteJobByNameAndNamespace")
     public String deleteJobByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = jobsService.deleteJobByNameAndNamespace(name, namespace);
+        Pair<Integer, Boolean> pair = jobsService.deleteJobByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "删除 Job 成功");
-        result.put("data", delete);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "删除 Job 成功");
+        }else {
+            result.put("message", "删除 Job 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
 
     //改
-    @RequestMapping("/createOrReplaceJob")
-    public String createOrReplaceJob(String path) throws FileNotFoundException {
-        Job aJob = jobsService.createOrReplaceJob(path);
+    @RequestMapping("/changeJobByYamlString")
+    public String changeJobByYamlString(@RequestBody String yaml) throws IOException, ApiException {
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "创建或更新 Job 成功");
-        result.put("data", aJob);
+        yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
+        Pair<Integer, Boolean> pair = jobsService.createOrReplaceJobByYamlString(yaml);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) result.put("message", "创建成功");
+        else result.put("message", "创建失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -81,85 +92,97 @@ public class JobsController {
     @RequestMapping("/getAllJobs")
     public String findAllJobs(String namespace) throws ApiException {
 
-        List<Job> jobs;
+        Pair<Integer, List<Job>> pair;
 
         if("".equals(namespace)){
-            jobs = jobsService.findAllJobs();
+            pair = jobsService.findAllJobs();
         }else{
-            jobs = jobsService.findJobsByNamespace(namespace);
+            pair = jobsService.findJobsByNamespace(namespace);
         }
-
-        System.out.println(JobFormat.formatJobList(jobs));
 
         Map<String, Object> result = new HashMap<>();
 
-        System.out.println("进入了findAllJobs");
-        result.put("code", 1200);
-        result.put("message", "获取 Job 列表成功");
-        result.put("data", JobFormat.formatJobList(jobs));
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 Job 列表成功");
+            result.put("data", JobFormat.formatJobList(pair.getRight()));
+        }else {
+            result.put("message", "获取 Job 列表失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getJobsByNamespace")
     public String findJobsByNamespace(String namespace) throws ApiException {
 
-        List<Job> v1JobList = jobsService.findJobsByNamespace(namespace);
+        Pair<Integer, List<Job>> pair = jobsService.findJobsByNamespace(namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 Job 列表成功");
-        result.put("data", v1JobList);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 Job 列表成功");
+        }else {
+            result.put("message", "获取 Job 列表失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getJobByNameAndNamespace")
     public String getJobByNameAndNamespace(String name, String namespace){
 
-        Job aJob = jobsService.getJobByNameAndNamespace(name, namespace);
+        Pair<Integer, Job> pair = jobsService.getJobByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "通过name和namespace获取 Job 成功");
-        result.put("data", aJob);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 Job 成功");
+        }else {
+            result.put("message", "获取 Job 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getJobResources")
     public String getJobResources(String name, String namespace){
 
-        Job aJob = jobsService.getJobByNameAndNamespace(name, namespace);
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        Map<String, String> matchLabels = aJob.getSpec().getSelector().getMatchLabels();
-        List<Pod> pods = podsService.findPodsByLabels(matchLabels);
-
-        //获取事件
-        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(aJob.getMetadata().getUid());
-
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("job", aJob);
-        data.put("pods", PodFormat.formatPodList(pods));
-        data.put("events", events);
-
+        Pair<Integer, Map> pair = jobsService.getJobResources(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "通过name和namespace获取 Job 和 Pods 成功");
-        result.put("dataJob", data);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200){
+            result.put("message", "获取成功");
+        }else if(pair.getLeft() == 1201){
+            result.put("message", "获取失败");
+        } else if(pair.getLeft() == 1202){
+            result.put("message", "您的操作有误");
+        }else{
+            result.put("message", "获取到部分资源");
+        }
+        result.put("data", pair.getRight());
+
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getJobYamlByNameAndNamespace")
     public String getJobYamlByNameAndNamespace(String name, String namespace){
 
-        String jobYaml = jobsService.getJobYamlByNameAndNamespace(name, namespace);
+        Pair<Integer, String> pair = jobsService.getJobYamlByNameAndNamespace(name, namespace);
+
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 Job Yaml 成功");
-        result.put("data", jobYaml);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 Job Yaml 成功");
+        }else {
+            result.put("message", "获取 Job Yaml 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -167,19 +190,25 @@ public class JobsController {
     public String getJobLogs(String name ,String namespace){
 
         //获取 Job 包含的 Pods
-        List<Pod> pods = jobsService.getPodJobInvolved(name, namespace);
-        // 获取每个 Pod 的所有 Logs
-        Map<String, Map<String, String>> podLogs = new HashMap<>();
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        for(int i = 0; i < pods.size(); i++){
-            podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
-        }
+        Pair<Integer, List<Pod>> pair = jobsService.getPodJobInvolved(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "获取 Job 日志成功");
-        result.put("data", podLogs);
+        if(pair.getLeft() == 1200) {
+            // 获取每个 Pod 的所有 Logs
+            Map<String, Map<String, String>> podLogs = new HashMap<>();
+            PodsServiceImpl podsService = new PodsServiceImpl();
+            List<Pod> pods = pair.getRight();
+            for(int i = 0; i < pods.size(); i++){
+                podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
+            }
+            result.put("code", 1200);
+            result.put("message", "获取 Job 日志成功");
+            result.put("data", podLogs);
+        }else {
+            result.put("code", 1201);
+            result.put("message", "获取 Job 日志失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }

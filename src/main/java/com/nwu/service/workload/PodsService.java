@@ -110,6 +110,13 @@ public interface PodsService {
     Pod loadPodFromYaml(String path) throws FileNotFoundException;
 
     /**
+     * 创建或更新 Pod
+     * @param yaml 描述 Pod 的 Yaml 格式字符串
+     * @return 创建结果代码
+     */
+    int createOrReplacePodByYamlString(String yaml);
+
+    /**
      * 通过yaml文件路径创建Pod
      * @param path yaml文件输入路径 String
      * @return 创建的Pod

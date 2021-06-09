@@ -1,21 +1,19 @@
 package com.nwu.controller.workload;
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.entity.workload.JobInformation;
-import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.CronJobsServiceImpl;
-import com.nwu.util.KubernetesUtils;
+import com.nwu.util.DealYamlStringFromFront;
 import com.nwu.util.format.CronJobFormat;
-import com.nwu.util.format.JobFormat;
-import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
-import io.fabric8.kubernetes.api.model.batch.Job;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +41,13 @@ public class CronJobsController {
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "创建 CronJob 成功");
-        result.put("data", aCronJob);
+        if(aCronJob != null) {
+            result.put("code", 1200);
+            result.put("message", "创建 CronJob 成功");
+        }else {
+            result.put("code", 1299);
+            result.put("message", "创建 CronJob 失败");
+        }
 
         return JSON.toJSONString(result);
     }
@@ -54,28 +56,31 @@ public class CronJobsController {
     @RequestMapping("/deleteCronJobByNameAndNamespace")
     public String deleteCronJobByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = cronJobsService.deleteCronJobByNameAndNamespace(name, namespace);
+        Pair<Integer, Boolean> pair = cronJobsService.deleteCronJobByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "删除 CronJob 成功");
-        result.put("data", delete);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) { result.put("message", "删除 CronJob 成功"); }
+        else { result.put("message", "删除 CronJob 失败"); }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
 
     //改
-    @RequestMapping("/createOrReplaceCronJob")
-    public String createOrReplaceCronJob(String path) throws FileNotFoundException {
-
-        CronJob aCronJob = cronJobsService.createOrReplaceCronJob(path);
+    @RequestMapping("/changeCronJobByYamlString")
+    public String changeCronJobByYamlString(@RequestBody String yaml) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "创建或更新 CronJob 成功");
-        result.put("data", aCronJob);
+        yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
+        Pair<Integer, Boolean> pair = cronJobsService.createOrReplaceCronJobByYamlString(yaml);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) result.put("message", "创建成功");
+        else result.put("message", "创建失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -84,110 +89,79 @@ public class CronJobsController {
     @RequestMapping("/getAllCronJobs")
     public String findAllCronJobs(String namespace) throws ApiException {
 
-        List<CronJob> cronJobList;
-
+        Pair<Integer, List<CronJob>> pair;
         if("".equals(namespace)){
-            cronJobList = cronJobsService.findAllCronJobs();
+            pair = cronJobsService.findAllCronJobs();
         }else{
-            cronJobList = cronJobsService.findCronJobsByNamespace(namespace);
-
+            pair = cronJobsService.findCronJobsByNamespace(namespace);
         }
+
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 CronJob 列表成功");
-        result.put("data", CronJobFormat.formatCronJobList(cronJobList));
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 CronJob 列表成功");
+            result.put("data", CronJobFormat.formatCronJobList(pair.getRight()));
+        }else {
+            result.put("message", "获取 CronJob 列表失败");
+            result.put("data", null);
+        }
+        result.put("code", pair.getLeft());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getCronJobByNameAndNamespace")
     public String getCronJobByNameAndNamespace(String name, String namespace){
 
-        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
+        Pair<Integer, CronJob> pair = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "通过名称和命名空间查找 CronJob 成功");
-        result.put("data", aCronJob);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "通过名称和命名空间查找 CronJob 成功");
+        }else {
+            result.put("message", "通过名称和命名空间查找 CronJob 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getCronJobYamlByNameAndNamespace")
     public String getCronJobYamlByNameAndNamespace(String name, String namespace){
 
-        String cronJobYaml = cronJobsService.getCronJobYamlByNameAndNamespace(name, namespace);
+        Pair<Integer, String> pair = cronJobsService.getCronJobYamlByNameAndNamespace(name, namespace);
+
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 CronJob Yaml 成功");
-        result.put("data", cronJobYaml);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 CronJob Yaml 成功");
+        }else {
+            result.put("message", "获取 CronJob Yaml 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getCronJobResources")
     public String getCronJobResources(String name, String namespace){
 
-        CronJob aCronJob = cronJobsService.getCronJobByNameAndNamespace(name, namespace);
-        String cronJobUid = aCronJob.getMetadata().getUid();
-
-        //获取CronJob下的Jobs 并放在前amount个位置
-        List<Job> jobList = KubernetesUtils.client.batch().jobs().inAnyNamespace().list().getItems();
-        int amount = 0;
-        for(int i = 0; i < jobList.size(); i ++){
-            Job tmp = jobList.get(i);
-            for(int j = tmp.getMetadata().getOwnerReferences().size() - 1; j >= 0; j --){
-                try{
-                    if(tmp.getMetadata().getOwnerReferences().get(j).getUid().equals(cronJobUid)){
-                        jobList.set(amount ++, tmp);
-                        break;
-                    }
-                }catch(Exception e){
-                    System.out.println("CronJobController-getCronJobResources-可能Job没有OwnerReferences及以下选项");
-                }
-            }
-        }
-
-        //标准化Job,并截取CronJob下的Job 前amount个
-        List<JobInformation> jobInformationList = JobFormat.formatJobList(jobList.subList(0, amount));
-
-        //将正在运行的Jobs放在列表后面
-        int i = 0;
-        int j = amount - 1;
-        while(i < j){
-            while(i < j){
-                if(jobInformationList.get(i).getRunningPods() > 0) break;
-                i ++;
-            }
-            while(i < j){
-                if(jobInformationList.get(j).getRunningPods() == 0) break;
-                j --;
-            }
-            //交换，运行中Job在后
-            JobInformation jobInformation = new JobInformation();
-            jobInformation = jobInformationList.get(i);
-            jobInformationList.set(i, jobInformationList.get(j));
-            jobInformationList.set(j, jobInformation);
-        }
-        int mid = jobInformationList.get(i).getRunningPods() > 0 ? i : i + 1;//分割非运行与运行中
-
-        //获取事件
-        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(cronJobUid);
-
-        //放入数据
-        Map<String, Object> data = new HashMap<>();
-        data.put("cronJob", aCronJob);
-        data.put("jods", jobInformationList.subList(0, mid));
-        data.put("runningJods", jobInformationList.subList(mid, amount));
-        data.put("events",events);
+        Pair<Integer, Map> pair = cronJobsService.getCronJobResources(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "通过name和namespace获取 cronJob 的 Resources 成功");
-        result.put("data", data);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200){
+            result.put("message", "获取成功");
+        }else if(pair.getLeft() == 1201){
+            result.put("message", "获取失败");
+        } else if(pair.getLeft() == 1202){
+            result.put("message", "您的操作有误");
+        }else{
+            result.put("message", "获取到部分资源");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
-
 }

@@ -6,6 +6,7 @@ import com.nwu.entity.workload.PodDetails;
 import com.nwu.entity.workload.PodForm;
 import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.DealYamlStringFromFront;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.kubernetes.client.openapi.ApiException;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +63,20 @@ public class PodsController {
     }
 
     //改
+    @RequestMapping("/changePodByYamlString")
+    public String changePodByYamlString(@RequestBody String yaml) throws IOException {
+
+        Map<String, Object> result = new HashMap<>();
+
+        yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
+        int code = podsService.createOrReplacePodByYamlString(yaml);
+
+        if(code == 1200) result.put("message", "创建成功");
+        else result.put("message", "创建失败");
+        result.put("code", code);
+
+        return JSON.toJSONString(result);
+    }
     @RequestMapping("/changeResourceByYaml")
     public String changeResourceByYaml(@RequestBody String yaml){
 

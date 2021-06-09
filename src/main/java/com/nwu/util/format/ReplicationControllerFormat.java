@@ -1,17 +1,11 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.JobInformation;
 import com.nwu.entity.workload.ReplicationControllerInformation;
-import com.nwu.service.workload.impl.PodsServiceImpl;
-import com.nwu.util.FilterPodsByControllerUid;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
-import io.fabric8.kubernetes.api.model.batch.Job;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author zqy
@@ -20,6 +14,7 @@ import java.util.Map;
 public class ReplicationControllerFormat {
     public static List<ReplicationControllerInformation> formatReplicationControllerList(List<ReplicationController> replicationControllerList){
 
+        if(replicationControllerList == null) return null;
         List<ReplicationControllerInformation> replicationControllerInformationList = new ArrayList<>();
 
 

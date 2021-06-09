@@ -6,26 +6,18 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.entity.workload.ReplicaSetInformation;
-import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.DeploymentsServiceImpl;
-import com.nwu.service.workload.impl.ReplicaSetsServiceImpl;
-import com.nwu.util.FilterReplicaSetByControllerUid;
-import com.nwu.util.KubernetesUtils;
+import com.nwu.util.DealYamlStringFromFront;
 import com.nwu.util.format.DeploymentFormat;
-import com.nwu.util.format.ReplicaSetFormat;
-import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
-import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +25,11 @@ import java.util.Map;
 
 /**
  * Deployments 的 controller 层
+ */
+
+/** 需要修改
+ * changeDeploymentByYaml 方法
+ * setReplica
  */
 @RestController
 @RequestMapping("/deployments")
@@ -46,59 +43,34 @@ public class DeploymentsController {
     @RequestMapping("/deleteDeploymentByNameAndNamespace")
     public String deleteDeploymentByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = deploymentsService.deleteDeploymentByNameAndNamespace(name, namespace);
+        Pair<Integer, Boolean> pair = deploymentsService.deleteDeploymentByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "删除 Deployment 成功");
-        result.put("data", delete);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "删除 Deployment 成功");
+        }else {
+            result.put("message", "删除 Deployment 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
 
     //改
-    @RequestMapping("/changeDeploymentByYaml")
-    public String changeDeploymentByYaml(@RequestBody String yaml)  {
+    @RequestMapping("/changeDeploymentByYamlString")
+    public String changeDeploymentByYaml(@RequestBody String yaml) throws IOException {
 
-        System.out.println(yaml);
+        yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
+        Pair<Integer, Boolean> pair = deploymentsService.createOrReplaceDeploymentByYamlString(yaml);
+
         Map<String, Object> result = new HashMap<>();
-        int code = 0;
-        // 将 \" 转换为 " 将 \\ 转换为 \
-        // 即，去掉前后端传值时自动添加的转义字符
-        String s1 = yaml.replaceFirst("[{]\"[A-Za-z]+\":\"", "");
-        String substring = s1.substring(0, s1.length() - 2);
-        System.out.println(substring);
-        String s = substring.replaceAll("\\\\\"","\"").replaceAll("\\\\\\\\", "\\\\").replaceAll("\\\\n","%");
-        System.out.println(s);
 
-        File file = new File(KubernetesUtils.path);
-        if (!file.getParentFile().exists()){
-            file.getParentFile().mkdir();
-        }
-        FileWriter fileWriter = null;
-        try {
-            fileWriter = new FileWriter(file);
-            for (char c : s.toCharArray()) {
-                if (c == '%'){
-                    fileWriter.append("\r\n");
-                }
-                else {
-                    fileWriter.append(c);
-                }
-            }
-            fileWriter.close();
-
-            deploymentsService.createOrReplaceDeploymentByFile(file);
-            code= 1200;
-
-        } catch (IOException | ApiException e) {
-            e.printStackTrace();
-            code = 1203;
-        }
-
-        result.put("code", code);
-        result.put("message", "请求成功");
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) result.put("message", "创建成功");
+        else result.put("message", "创建失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -109,25 +81,30 @@ public class DeploymentsController {
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "创建 Deployment 成功");
-        result.put("data", aDeployment);
+        if(aDeployment != null) {
+            result.put("code", 1200);
+            result.put("message", "创建 Deployment 成功");
+        }else {
+            result.put("code", 1299);
+            result.put("message", "创建 Deployment 失败");
+        }
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/setReplica")
     public String setReplica(String name, String namespace, String replica){
 
-        System.out.println(name);
-        System.out.println(namespace);
-        System.out.println(replica);
-        deploymentsService.setReplicas(name, namespace, Integer.parseInt(replica));
+        Pair<Integer, Boolean> pair = deploymentsService.setReplicas(name, namespace, Integer.parseInt(replica));
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "可能设置 Deployment的replica 成功");
-        result.put("data", "未明确");
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "设置 Deployment的replica 成功");
+        }else {
+            result.put("message", "设置 Deployment的replica 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -136,106 +113,97 @@ public class DeploymentsController {
     @RequestMapping("/getAllDeployments")
     public String findAllDeployments(String namespace) throws ApiException {
 
-        List<Deployment> deployments;
+        Pair<Integer, List<Deployment>> pair;
 
         if("".equals(namespace)){
-            deployments = deploymentsService.findAllDeployments();
+            pair = deploymentsService.findAllDeployments();
         }else{
-            deployments = deploymentsService.findDeploymentsByNamespace(namespace);
+            pair = deploymentsService.findDeploymentsByNamespace(namespace);
         }
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 Deployment 列表成功");
-        result.put("data", DeploymentFormat.formatDeploymentList(deployments));
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 Deployment 列表成功");
+            result.put("data", DeploymentFormat.formatDeploymentList(pair.getRight()));
+        }else {
+            result.put("message", "获取 Deployment 列表失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getDeploymentsByNamespace")
     public String findDeploymentsByNamespace(String namespace) throws ApiException {
 
-        List<Deployment> v1DeploymentList = deploymentsService.findDeploymentsByNamespace(namespace);
+        Pair<Integer, List<Deployment>> pair = deploymentsService.findDeploymentsByNamespace(namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 Deployment 列表成功");
-        result.put("data", v1DeploymentList);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 Deployment 列表成功");
+        }else {
+            result.put("message", "获取 Deployment 列表失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getDeploymentByNameAndNamespace")
     public String getDeploymentByNameAndNamespace(String name, String namespace){
 
-        Deployment deployment = deploymentsService.getDeploymentByNameAndNamespace(name, namespace);
+        Pair<Integer, Deployment> pair = deploymentsService.getDeploymentByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "通过 name namespace 获取 Deployment 成功");
-        result.put("data", deployment);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 Deployment 成功");
+        }else {
+            result.put("message", "获取 Deployment 失败功");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getDeploymentYamlByNameAndNamespace")
     public String getDeploymentYamlByNameAndNamespace(String name, String namespace) throws ApiException {
 
-        String deploymentYaml = deploymentsService.getDeploymentYamlByNameAndNamespace(name, namespace);
+        Pair<Integer, String> pair = deploymentsService.getDeploymentYamlByNameAndNamespace(name, namespace);
+
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 Deployment Yaml 成功");
-        result.put("data", deploymentYaml);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 Deployment Yaml 成功");
+        }else {
+            result.put("message", "获取 Deployment Yaml 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getDeploymentResources")
     public String getDeploymentResources(String name, String namespace){
 
-        Deployment deployment = deploymentsService.getDeploymentByNameAndNamespace(name, namespace);
+        Pair<Integer, Map> pair = deploymentsService.getDeploymentResources(name, namespace);
 
-        //获取 Deployment 下的 ReplicaSet(新[0]旧[1:-1]) 正确匹配按ControllerUid
-        ReplicaSetsServiceImpl replicaSetsService = new ReplicaSetsServiceImpl();
-        List<ReplicaSet> replicaSetList = KubernetesUtils.client.apps().replicaSets().inAnyNamespace().list().getItems();
-        replicaSetList = FilterReplicaSetByControllerUid.filterReplicaSetsByControllerUid(deployment.getMetadata().getUid(), replicaSetList);
-        List<ReplicaSetInformation> replicaSets = ReplicaSetFormat.formatReplicaSetList(replicaSetList);
-
-        //获取 Deployment 下的 ReplicaSet(新[0]旧[1:-1]) 错误匹配按Selector
-//        Map<String, String> m = deployment.getSpec().getSelector().getMatchLabels();
-//        ReplicaSetsServiceImpl replicaSetsService = new ReplicaSetsServiceImpl();
-//        List<ReplicaSet> replicaSetList = KubernetesUtils.client.apps().replicaSets().inAnyNamespace().withLabels(m).list().getItems();
-//        List<ReplicaSetInformation> replicaSets = ReplicaSetFormat.formatReplicaSetList(replicaSetList);
-
-        int flag= 0;
-        String minimum = replicaSets.get(0).getCreationTimestamp().replace("T", "").replace("Z", "");
-        for(int i = 1; i < replicaSets.size(); i ++){
-            String tmp = replicaSets.get(i).getCreationTimestamp().replace("T", "").replace("Z", "");
-            if(tmp.compareTo(minimum) == -1){
-                minimum = tmp;
-                flag = i;
-            }
-        }
-        ReplicaSetInformation tmpReplicaSetInformation = new ReplicaSetInformation();
-        tmpReplicaSetInformation = replicaSets.get(0);
-        replicaSets.set(0, replicaSets.get(flag));
-        replicaSets.set(flag, tmpReplicaSetInformation);
-
-        //获取事件
-        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(deployment.getMetadata().getUid());
-
-        //封装数据
-        Map<String, Object> data = new HashMap<>();
-        data.put("deployment", deployment);
-        data.put("newReplicaSets", replicaSets.subList(0,1));
-        data.put("oldReplicaSets", replicaSets.subList(1, replicaSets.size()));
-        data.put("events", events);
-
+        // 返回数据
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 Deployment 的 Resources 成功");
-        result.put("data", data);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200){
+            result.put("message", "获取成功");
+        }else if(pair.getLeft() == 1201){
+            result.put("message", "获取失败");
+        } else if(pair.getLeft() == 1202){
+            result.put("message", "您的操作有误");
+        }else{
+            result.put("message", "获取到部分资源");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }

@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class CronJobFormat {
     public static List<CronJobInformation> formatCronJobList(List<CronJob> cronJobList){
+        if(cronJobList == null) return null;
         List<CronJobInformation> cronJobInformationList = new ArrayList<>();
 
         for(int i = 0; i < cronJobList.size(); i ++){

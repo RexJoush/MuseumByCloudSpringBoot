@@ -6,22 +6,19 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
-import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.DaemonSetsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
+import com.nwu.util.DealYamlStringFromFront;
 import com.nwu.util.format.DaemonSetFormat;
-import com.nwu.util.format.PodFormat;
-import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -43,9 +40,13 @@ public class DaemonSetsController {
         Boolean ok = daemonSetsService.createOrReplaceDaemonSetByYaml(yaml);
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", ok ? "创建或更新 DaemonSet 成功" : "创建或更新 DaemonSet 失败");
+        if(ok != null) {
+            result.put("code", 1200);
+            result.put("message", ok ? "创建或更新 DaemonSet 成功" : "创建或更新 DaemonSet 失败");
+        }else {
+            result.put("code", 1299);
+            result.put("message", "创建或更新 DaemonSet 失败");
+        }
 
         return JSON.toJSONString(result);
     }
@@ -54,28 +55,33 @@ public class DaemonSetsController {
     @RequestMapping("/deleteDaemonSetByNameAndNamespace")
     public String deleteDaemonSetByNameAndNamespace(String name, String namespace) throws ApiException {
 
-        Boolean delete = daemonSetsService.deleteDaemonSetByNameAndNamespace(name, namespace);
+        Pair<Integer, Boolean> pair = daemonSetsService.deleteDaemonSetByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "删除 DaemonSet 成功");
-        result.put("data", delete);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200 ) {
+            result.put("message", "删除 DaemonSet 成功");
+        }else {
+            result.put("message", "删除 DaemonSet 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
 
     //改
-    @RequestMapping("/createOrReplaceDaemonSet")
-    public String createOrReplaceDaemonSet(String path) throws FileNotFoundException {
-
-        DaemonSet aDaemonSet = daemonSetsService.createOrReplaceDaemonSet(path);
+    @RequestMapping("/changeDaemonSetByYamlString")
+    public String changeDaemonSetByYamlString(@RequestBody String yaml) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "创建或更新 DaemonSet 成功");
-        result.put("data", aDaemonSet);
+        yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
+        Pair<Integer, Boolean> pair = daemonSetsService.createOrReplaceDaemonSetByYamlString(yaml);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) result.put("message", "创建成功");
+        else result.put("message", "创建失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -86,78 +92,101 @@ public class DaemonSetsController {
 
         System.out.println(namespace);
 
-        List<DaemonSet> daemonSets;
+        Pair<Integer, List<DaemonSet>> pair;
 
         if("".equals(namespace)){
-            daemonSets = daemonSetsService.findAllDaemonSets();
+            pair = daemonSetsService.findAllDaemonSets();
         }else{
-            daemonSets = daemonSetsService.findDaemonSetsByNamespace(namespace);
+            pair = daemonSetsService.findDaemonSetsByNamespace(namespace);
         }
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "获取 DaemonSet 列表成功");
-        result.put("data", DaemonSetFormat.formatDaemonSetList(daemonSets));
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 DaemonSet 列表成功");
+            result.put("data", DaemonSetFormat.formatDaemonSetList(pair.getRight()));
+        }else {
+            result.put("message", "获取 DaemonSet 列表失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getDaemonSetsByNamespace")
     public String findDaemonSetsByNamespace(String namespace) throws ApiException {
 
-        List<DaemonSet> v1DaemonSetList = daemonSetsService.findDaemonSetsByNamespace(namespace);
+        Pair<Integer, List<DaemonSet>> pair = daemonSetsService.findDaemonSetsByNamespace(namespace);
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "获取 DaemonSet 列表成功");
-        result.put("data", v1DaemonSetList);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 DaemonSet 列表成功");
+        }else {
+            result.put("message", "获取 DaemonSet 列表失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getDaemonSetByNameAndNamespace")
     public String getDaemonSetByNameAndNamespace(String name, String namespace) throws ApiException {
 
-        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace(name, namespace);
+        Pair<Integer, DaemonSet> pair = daemonSetsService.getDaemonSetByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 DaemonSet 成功");
-        result.put("data", aDaemonSet);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 DaemonSet 成功");
+        }else {
+            result.put("message", "获取 DaemonSet 失败");
+        }
+        result.put("data", pair.getRight());
+
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getDaemonSetYamlByNameAndNamespace")
     public String getDaemonSetYamlByNameAndNamespace(String name, String namespace){
 
-        String daemonSetYaml = daemonSetsService.getDaemonSetYamlByNameAndNamespace(name, namespace);
+        Pair<Integer, String> pair = daemonSetsService.getDaemonSetYamlByNameAndNamespace(name, namespace);
+
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 DaemonSet Yaml 成功");
-        result.put("data", daemonSetYaml);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 DaemonSet Yaml 成功");
+        }else {
+            result.put("message", "获取 DaemonSet Yaml 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getDaemonSetLogs")
     public String getDaemonSetLogs(String name ,String namespace){
 
-        //获取 DaemonSet 包含的 Pods
-        List<Pod> pods = daemonSetsService.getPodDaemonSetInvolved(name, namespace);
-        System.out.println(pods.get(0));
-        // 获取每个 Pod 的所有 Logs
-        Map<String, Map<String, String>> podLogs = new HashMap<>();
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        for(int i = 0; i < pods.size(); i++){
-            podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
-        }
-
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 DaemonSet 日志成功");
-        result.put("data", podLogs);
+        //获取 DaemonSet 包含的 Pods
+        Pair<Integer, List<Pod>> pair = daemonSetsService.getPodDaemonSetInvolved(name, namespace);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            // 获取每个 Pod 的所有 Logs
+            List<Pod> pods = pair.getRight();
+            Map<String, Map<String, String>> podLogs = new HashMap<>();
+            PodsServiceImpl podsService = new PodsServiceImpl();
+            for(int i = 0; i < pods.size(); i++){
+                //此处假设 Pod 获取成功之后相应的 Log 也能获取成功
+                podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
+            }
+            result.put("message", "获取 DaemonSet 日志成功");
+            result.put("data", podLogs);
+        }else {
+            result.put("message", "获取 DaemonSet 日志失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }
@@ -165,30 +194,21 @@ public class DaemonSetsController {
     public String getDaemonSetResources(String name, String namespace){
 
         //获取 DaemonSet
-        DaemonSet aDaemonSet = daemonSetsService.getDaemonSetByNameAndNamespace(name, namespace);
-
-        //获取 DaemonSet 有关的 Pods
-        List<Pod> pods = daemonSetsService.getPodDaemonSetInvolved(name, namespace);
-
-        //获取 Services
-        ServicesServiceImpl servicesService = new ServicesServiceImpl();
-        List<Service> services = servicesService.getServicesByLabels(aDaemonSet.getSpec().getSelector().getMatchLabels());
-
-        //获取事件
-        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(aDaemonSet.getMetadata().getUid());
-
-        //封装数据
-        Map<String, Object> data = new HashMap<>();
-        data.put("daemonSet", aDaemonSet);
-        data.put("pods", PodFormat.formatPodList(pods));
-        data.put("services", services);
-        data.put("events", events);
+        Pair<Integer, Map> pair = daemonSetsService.getDaemonSetResources(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "通过name和namespace获取 DaemonSet 的 Resources 成功");
-        result.put("data", data);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200){
+            result.put("message", "获取成功");
+        }else if(pair.getLeft() == 1201){
+            result.put("message", "获取失败");
+        } else if(pair.getLeft() == 1202){
+            result.put("message", "您的操作有误");
+        }else{
+            result.put("message", "获取到部分资源");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }

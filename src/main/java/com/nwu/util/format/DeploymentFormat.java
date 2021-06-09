@@ -1,8 +1,6 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.DaemonSetInformation;
 import com.nwu.entity.workload.DeploymentInformation;
-import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 
 import java.util.ArrayList;
@@ -14,6 +12,7 @@ import java.util.List;
  */
 public class DeploymentFormat {
     public static List<DeploymentInformation> formatDeploymentList(List<Deployment> deploymentList){
+        if(deploymentList == null) return null;
         List<DeploymentInformation> deploymentInformationList = new ArrayList<>();
 
         for(int i = 0; i < deploymentList.size(); i ++){

@@ -6,29 +6,32 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
-import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.ReplicationControllersServiceImpl;
-import com.nwu.util.FilterPodsByControllerUid;
-import com.nwu.util.format.PodFormat;
+import com.nwu.util.DealYamlStringFromFront;
 import com.nwu.util.format.ReplicationControllerFormat;
-import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ReplicationController;
-import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Replication Controllers 的 controller 层
+ */
+
+/**
+ * 修改
+ * setReplicas
  */
 @RestController
 @RequestMapping("/replicationControllers")
@@ -44,10 +47,13 @@ public class ReplicationControllersController {
         ReplicationController aReplicationController = replicationControllersService.createReplicationControllerByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 ReplicationController 成功");
-        result.put("data", aReplicationController);
+        if(aReplicationController != null) {
+            result.put("code", 1200);
+            result.put("message", "创建 ReplicationController 成功");
+        }else {
+            result.put("code", 1299);
+            result.put("message", "创建 ReplicationController 失败");
+        }
 
         return JSON.toJSONString(result);
     }
@@ -56,41 +62,50 @@ public class ReplicationControllersController {
     @RequestMapping("/deleteReplicationControllerByNameAndNamespace")
     public String deleteReplicationControllerByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = replicationControllersService.deleteReplicationControllerByNameAndNamespace(name, namespace);
+        Pair<Integer, Boolean> pair = replicationControllersService.deleteReplicationControllerByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "删除 ReplicationController 成功");
-        result.put("data", delete);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "删除 ReplicationController 成功");
+        }else {
+            result.put("message", "删除 ReplicationController 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
 
     //改
-    @RequestMapping("/createOrReplaceReplicationController")
-    public String createOrReplaceReplicationController(String path) throws FileNotFoundException {
-
-        ReplicationController aReplicationController = replicationControllersService.createOrReplaceReplicationController(path);
+    @RequestMapping("/changeReplicationControllerByYamlString")
+    public String changeReplicationControllerByYamlString(@RequestBody String yaml) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "创建或更新 ReplicationController 成功");
-        result.put("data", aReplicationController);
+        yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
+        Pair<Integer, Boolean> pair = replicationControllersService.createOrReplaceReplicationControllerByYamlString(yaml);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) result.put("message", "修改成功");
+        else result.put("message", "修改失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/setReplicas")
     public String setReplicas(String name, String namespace, Integer replicas){
 
-        replicationControllersService.setReplicas(name, namespace, replicas);
+        Pair<Integer, Boolean> pair = replicationControllersService.setReplicas(name, namespace, replicas);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "创建或更新 ReplicaSet 成功");
-        result.put("data", "未明确");
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "创建或更新 ReplicaSet 成功");
+        }else {
+            result.put("message", "创建或更新 ReplicaSet 失败");
+        }result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -99,97 +114,106 @@ public class ReplicationControllersController {
     @RequestMapping("/getAllReplicationControllers")
     public String findAllReplicationControllers(String namespace) throws ApiException {
 
-        List<ReplicationController> replicationControllerList;
+        Pair<Integer, List<ReplicationController>> pair;
 
         if("".equals(namespace)){
-            replicationControllerList = replicationControllersService.findAllReplicationControllers();
+            pair = replicationControllersService.findAllReplicationControllers();
         }else {
-            replicationControllerList = replicationControllersService.findReplicationControllersByNamespace(namespace);
+            pair = replicationControllersService.findReplicationControllersByNamespace(namespace);
         }
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 ReplicationController 列表成功");
-        result.put("data", ReplicationControllerFormat.formatReplicationControllerList(replicationControllerList));
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 ReplicationController 列表成功");
+            result.put("data", ReplicationControllerFormat.formatReplicationControllerList(pair.getRight()));
+        }else {
+            result.put("message", "获取 ReplicationController 列表失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getReplicationControllersByNamespace")
     public String findReplicationControllersByNamespace(String namespace) throws ApiException {
 
-        List<ReplicationController> replicationControllerList = replicationControllersService.findReplicationControllersByNamespace(namespace);
+        Pair<Integer, List<ReplicationController>> pair = replicationControllersService.findReplicationControllersByNamespace(namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 ReplicationController 列表成功");
-        result.put("data", replicationControllerList);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 ReplicationController 列表成功");
+        }else {
+            result.put("message", "获取 ReplicationController 列表失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getReplicationControllerYamlByNameAndNamespace")
     public String getReplicationControllerYamlByNameAndNamespace(String name, String namespace){
 
-        String replicationControllerYaml = replicationControllersService.getReplicationControllerYamlByNameAndNamespace(name, namespace);
+        Pair<Integer, String> pair = replicationControllersService.getReplicationControllerYamlByNameAndNamespace(name, namespace);
+
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 ReplicationController Yaml 成功");
-        result.put("data", replicationControllerYaml);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 ReplicationController Yaml 成功");
+        }else {
+            result.put("message", "获取 ReplicationController Yaml 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getReplicationControllerResources")
     public String getReplicationControllerResources(String name, String namespace){
 
-        //获取 ReplicationController
-        ReplicationController replicationController = replicationControllersService.getReplicationControllerByNameAndNamespace(name, namespace);
-        String uid = replicationController.getMetadata().getUid();
-        Map<String, String> matchLabel = replicationController.getSpec().getSelector();
-
-        //获取 Pods
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabel));
-
-        //获取 Services
-        ServicesServiceImpl servicesService = new ServicesServiceImpl();
-        List<Service> services = servicesService.getServicesByLabels(matchLabel);
-
-        //获取事件
-        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(replicationController.getMetadata().getUid());
-
-        //封装数据
-        Map<String, Object> data = new HashMap<>();
-        data.put("replicationController", replicationController);
-        data.put("pods", PodFormat.formatPodList(pods));
-        data.put("services", services);
-        data.put("events", events);
+        Pair<Integer, Map> pair = replicationControllersService.getReplicationControllerResources(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("code", 1200);
-        result.put("message", "获取 ReplicationController Resources 成功");
-        result.put("data", data);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200){
+            result.put("message", "获取成功");
+        }else if(pair.getLeft() == 1201){
+            result.put("message", "获取失败");
+        } else if(pair.getLeft() == 1202){
+            result.put("message", "您的操作有误");
+        }else{
+            result.put("message", "获取到部分资源");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getReplicationControllerLogs")
     public String getReplicationControllerLogs(String name ,String namespace){
-
+        //问题，刚开始启动集群时，前端出现timeout
+        //未启动的Pod获取不到Log
         //获取 ReplicationController 包含的 Pods
-        List<Pod> pods = replicationControllersService.getPodReplicationControllerInvolved(name, namespace);
-        // 获取每个 Pod 的所有 Logs
-        Map<String, Map<String, String>> podLogs = new HashMap<>();
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        for(int i = 0; i < pods.size(); i++){
-            podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
-        }
+        Pair<Integer, List<Pod>> pair = replicationControllersService.getPodReplicationControllerInvolved(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "获取 ReplicationController 日志成功");
-        result.put("data", podLogs);
+        if(pair.getLeft() == 1200) {
+            // 获取每个 Pod 的所有 Logs
+            Map<String, Map<String, String>> podLogs = new HashMap<>();
+            List<Pod> pods = pair.getRight();
+            PodsServiceImpl podsService = new PodsServiceImpl();
+            for(int i = 0; i < pods.size(); i++){
+                podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
+            }
+            result.put("code", 1200);
+            result.put("message", "获取 ReplicationController 日志成功");
+            result.put("data", podLogs);
+        }else {
+            result.put("code", 1201);
+            result.put("message", "获取 ReplicationController 日志失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }

@@ -1,17 +1,11 @@
 package com.nwu.util.format;
 
-import com.nwu.entity.workload.JobInformation;
 import com.nwu.entity.workload.ReplicaSetInformation;
-import com.nwu.service.workload.impl.PodsServiceImpl;
-import com.nwu.util.FilterPodsByControllerUid;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
-import io.fabric8.kubernetes.api.model.batch.Job;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author zqy
@@ -19,7 +13,7 @@ import java.util.Map;
  */
 public class ReplicaSetFormat {
     public static List<ReplicaSetInformation> formatReplicaSetList(List<ReplicaSet> replicaSetList){
-
+        if(replicaSetList == null) return null;
         List<ReplicaSetInformation> replicaSetInformationList = new ArrayList<>();
 
 

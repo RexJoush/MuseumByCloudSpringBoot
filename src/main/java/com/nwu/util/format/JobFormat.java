@@ -22,7 +22,7 @@ import java.util.Map;
 public class JobFormat {
 
     public static List<JobInformation> formatJobList(List<Job> jobList){
-
+        if(jobList == null) return null;
         List<JobInformation> jobInformationList = new ArrayList<>();
 
 

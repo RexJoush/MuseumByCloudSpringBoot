@@ -1,7 +1,10 @@
 package com.nwu.service.workload.impl;
 
 import com.nwu.dao.workload.PodUsageDao;
-import com.nwu.entity.workload.*;
+import com.nwu.entity.workload.PodDefinition;
+import com.nwu.entity.workload.PodDetails;
+import com.nwu.entity.workload.PodForm;
+import com.nwu.entity.workload.PodUsage;
 import com.nwu.service.workload.PodsService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
@@ -174,6 +177,18 @@ public class PodsServiceImpl implements PodsService {
     }
 
     @Override
+    public int createOrReplacePodByYamlString(String yaml){
+        try{
+            Pod pod = Yaml.loadAs(yaml, Pod.class);
+            KubernetesUtils.client.pods().inNamespace(pod.getMetadata().getNamespace()).withName(pod.getMetadata().getName()).createOrReplace(pod);
+            return 1200;
+        }catch (Exception e){
+            System.out.println("创建 Pod 失败，请检查 Yaml 格式或是否重名，在 PodsServiceImpl 类的 createOrReplacePodByYamlString 方法中");
+        }
+        return 1201;
+    }
+
+    @Override
     public Pod createPodByYamlPath(String path) throws FileNotFoundException {
 
         InputStream yamlInputStream = byPath(path);
@@ -223,30 +238,30 @@ public class PodsServiceImpl implements PodsService {
 
     @Override
     public String getPodLogFromContainer(String name, String namespace, String containerName) {
-        String log = "";
         try {
-            log = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).inContainer(containerName).getLog();
+            String log = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).inContainer(containerName).getLog();
+            return log;
         } catch (Exception e) {
             System.out.println("未获取到Pod的日志");
         }
-
-        return log;
+        return null;
     }
 
     @Override
     public Map<String, String> getPodAllLogs(String name, String namespace) {
-        Map<String, String> logs = new HashMap<>();
         try {
+            Map<String, String> logs = new HashMap<>();
             List<Container> containers = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).get().getSpec().getContainers();
             for(int i = containers.size() - 1; i >= 0 ; i-- ){
                 String containerName = containers.get(i).getName();
                 String log = KubernetesUtils.client.pods().inNamespace(namespace).withName(name).inContainer(containerName).getLog();
                 logs.put(containerName, log);
             }
+            return logs;
         } catch (Exception e) {
             System.out.println("未获取到Pod的日志");
         }
-        return logs;
+        return null;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.nwu.util;
 
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 
 import java.util.ArrayList;
@@ -11,9 +10,10 @@ import java.util.List;
  * @time 2021.04.16
  */
 public class FilterReplicaSetByControllerUid {
-    public static List<ReplicaSet> filterReplicaSetsByControllerUid(String uid, List<ReplicaSet> ReplicaSets){
+    public static List<ReplicaSet> filterReplicaSetsByControllerUid(String uid, List<ReplicaSet> replicaSets){
+        if(replicaSets == null) return null;
         List<ReplicaSet> newReplicaSets = new ArrayList<>();
-        for(ReplicaSet replicaSet :ReplicaSets){
+        for(ReplicaSet replicaSet :replicaSets){
             int length = replicaSet.getMetadata().getOwnerReferences().size();
             for(int i = 0; i < length; i++){
                 String controllerUid = replicaSet.getMetadata().getOwnerReferences().get(i).getUid();

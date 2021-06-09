@@ -1,37 +1,23 @@
 package com.nwu.controller.workload;
 
-import com.nwu.controller.workload.PodsController;
-import com.nwu.service.cluster.impl.ClusterRolesServiceImpl;
-import com.nwu.service.workload.impl.*;
+import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.Event;
-import io.fabric8.kubernetes.api.model.EventList;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.apps.DaemonSet;
-import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
-import io.fabric8.kubernetes.api.model.batch.CronJob;
-import io.fabric8.kubernetes.api.model.batch.Job;
-import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
-import io.fabric8.kubernetes.client.dsl.KubernetesListMixedOperation;
 import io.kubernetes.client.openapi.ApiException;
-import org.apache.commons.logging.Log;
 
-import javax.imageio.IIOImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
-
-
 
 
 public class Test {
 
-
-
-
     public static void main(String[] args) throws ApiException, IOException {
+
+        String a = "\\\\";
+        System.out.println(a);
+        String b = a.replaceAll("\\\\","\\\\");
+        System.out.println(b);
+
+
         PodsServiceImpl podsService = new PodsServiceImpl();
         Event items = KubernetesUtils.client.v1().events().
                 inNamespace("default").withName("web-0.*").get();

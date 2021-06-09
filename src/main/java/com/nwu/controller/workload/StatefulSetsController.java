@@ -6,21 +6,21 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.nwu.service.impl.CommonServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.service.workload.impl.StatefulSetsServiceImpl;
-import com.nwu.util.FilterPodsByControllerUid;
-import com.nwu.util.format.PodFormat;
+import com.nwu.util.DealYamlStringFromFront;
 import com.nwu.util.format.StatefulSetFormat;
-import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,10 +42,13 @@ public class StatefulSetsController {
         StatefulSet aStatefulSet = statefulSetsService.createStatefulSetByYaml(path);
 
         Map<String, Object> result = new HashMap<>();
-
-        result.put("code", 1200);
-        result.put("message", "创建 StatefulSet 成功");
-        result.put("data", aStatefulSet);
+        if(aStatefulSet != null) {
+            result.put("code", 1200);
+            result.put("message", "创建 StatefulSet 成功");
+        }else {
+            result.put("code", 1299);
+            result.put("message", "创建 StatefulSet 失败");
+        }
 
         return JSON.toJSONString(result);
     }
@@ -54,28 +57,34 @@ public class StatefulSetsController {
     @RequestMapping("/deleteStatefulSetByNameAndNamespace")
     public String deleteStatefulSetByNameAndNamespace(String name, String namespace){
 
-        Boolean delete = statefulSetsService.deleteStatefulSetByNameAndNamespace(name, namespace);
+        Pair<Integer, Boolean> pair = statefulSetsService.deleteStatefulSetByNameAndNamespace(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "删除 StatefulSet 成功");
-        result.put("data", delete);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "删除 StatefulSet 成功");
+        }else {
+            result.put("message", "删除 StatefulSet 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
 
     //改
-    @RequestMapping("/createOrReplaceStatefulSet")
-    public String createOrReplaceStatefulSet(String path) throws FileNotFoundException {
-
-        StatefulSet aStatefulSet = statefulSetsService.createOrReplaceStatefulSet(path);
+    @RequestMapping("/changeStatefulSetByYamlString")
+    public String changeStatefulSetByYamlString(@RequestBody String yaml) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "创建或更新 StatefulSet 成功");
-        result.put("data", aStatefulSet);
+        yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
+        Pair<Integer, Boolean> pair = statefulSetsService.createOrReplaceStatefulSetByYamlString(yaml);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) result.put("message", "创建成功");
+        else result.put("message", "创建失败");
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -84,73 +93,80 @@ public class StatefulSetsController {
     @RequestMapping("/getAllStatefulSets")
     public String findAllStatefulSets(String namespace) throws ApiException {
 
-        List<StatefulSet> statefulSetList;
+        Pair<Integer, List<StatefulSet>> pair;
 
         if("".equals(namespace)){
-            statefulSetList = statefulSetsService.findAllStatefulSets();
+            pair = statefulSetsService.findAllStatefulSets();
         }else {
-            statefulSetList = statefulSetsService.findStatefulSetsByNamespace(namespace);
+            pair = statefulSetsService.findStatefulSetsByNamespace(namespace);
         }
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 StatefulSet 列表成功");
-        result.put("data", StatefulSetFormat.formatStatefulSetList(statefulSetList));
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 StatefulSet 列表成功");
+            result.put("data", StatefulSetFormat.formatStatefulSetList(pair.getRight()));
+
+        }else {
+            result.put("message", "获取 StatefulSet 列表失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getStatefulSetsByNamespace")
     public String findStatefulSetsByNamespace(String namespace) throws ApiException {
 
-        List<StatefulSet> statefulSetList = statefulSetsService.findStatefulSetsByNamespace(namespace);
+        Pair<Integer, List<StatefulSet>> pair = statefulSetsService.findStatefulSetsByNamespace(namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 StatefulSet 列表成功");
-        result.put("data", statefulSetList);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 StatefulSet 列表成功");
+        }else {
+            result.put("message", "获取 StatefulSet 列表失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getStatefulSetYamlByNameAndNamespace")
     public String getStatefulSetYamlByNameAndNamespace(String name, String namespace){
 
-        String statefulSetYaml = statefulSetsService.getStatefulSetYamlByNameAndNamespace(name, namespace);
+        Pair<Integer, String> pair = statefulSetsService.getStatefulSetYamlByNameAndNamespace(name, namespace);
+
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 StatefulSet Yaml 成功");
-        result.put("data", statefulSetYaml);
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) {
+            result.put("message", "获取 StatefulSet Yaml 成功");
+        }else {
+            result.put("message", "获取 StatefulSet Yaml 失败");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getStatefulSetResources")
     public String getStatefulSetResources(String name,String namespace){
 
-        //获取 StatefulSet
-        StatefulSet statefulSet = statefulSetsService.getStatefulSetByNameAndNamespace(name, namespace);
-        String uid = statefulSet.getMetadata().getUid();
-        Map<String, String> matchLabels = statefulSet.getSpec().getSelector().getMatchLabels();
+        Pair<Integer, Map> pair = statefulSetsService.getStatefulSetResources(name, namespace);
 
-        //获取 Pods
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        List<Pod> pods = FilterPodsByControllerUid.filterPodsByControllerUid(uid, podsService.findPodsByLabels(matchLabels));
-
-        //获取事件
-        List<Event> events = CommonServiceImpl.getEventByInvolvedObjectUid(statefulSet.getMetadata().getUid());
-
-        //封装数据
-        Map<String, Object> data = new HashMap<>();
-        data.put("statefulSet", statefulSet);
-        data.put("pods", PodFormat.formatPodList(pods));
-        data.put("events", events);
-
-        //封装返回结果
         Map<String, Object> result = new HashMap<>();
-        result.put("code", 1200);
-        result.put("message", "获取 StatefulSet Resources 成功");
-        result.put("data", data);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200){
+            result.put("message", "获取成功");
+        }else if(pair.getLeft() == 1201){
+            result.put("message", "获取失败");
+        } else if(pair.getLeft() == 1202){
+            result.put("message", "您的操作有误");
+        }else{
+            result.put("message", "获取到部分资源");
+        }
+        result.put("data", pair.getRight());
 
         return JSON.toJSONString(result);
     }
@@ -158,19 +174,26 @@ public class StatefulSetsController {
     public String getStatefulSetLogs(String name ,String namespace){
 
         //获取 StatefulSet 包含的 Pods
-        List<Pod> pods = statefulSetsService.getPodStatefulSetInvolved(name, namespace);
-        // 获取每个 Pod 的所有 Logs
-        Map<String, Map<String, String>> podLogs = new HashMap<>();
-        PodsServiceImpl podsService = new PodsServiceImpl();
-        for(int i = 0; i < pods.size(); i++){
-            podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
-        }
+        Pair<Integer, List<Pod>> pair = statefulSetsService.getPodStatefulSetInvolved(name, namespace);
 
         Map<String, Object> result = new HashMap<>();
 
-        result.put("code", 1200);
-        result.put("message", "获取 StatefulSet 日志成功");
-        result.put("data", podLogs);
+        if(pair.getLeft() == 1200) {
+            // 获取每个 Pod 的所有 Logs
+            Map<String, Map<String, String>> podLogs = new HashMap<>();
+            PodsServiceImpl podsService = new PodsServiceImpl();
+            List<Pod> pods = pair.getRight();
+            for(int i = 0; i < pods.size(); i++){
+                podLogs.put(pods.get(i).getMetadata().getName(), podsService.getPodAllLogs(pods.get(i).getMetadata().getName(), namespace));
+            }
+            result.put("code", 1200);
+            result.put("message", "获取 StatefulSet 日志成功");
+            result.put("data", podLogs);
+        }else {
+            result.put("code", 1201);
+            result.put("message", "获取 StatefulSet 日志失败");
+            result.put("data", null);
+        }
 
         return JSON.toJSONString(result);
     }

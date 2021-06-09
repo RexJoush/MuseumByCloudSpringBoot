@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class DaemonSetFormat {
     public static List<DaemonSetInformation> formatDaemonSetList(List<DaemonSet> daemonSetList){
+        if(daemonSetList == null) return null;
         List<DaemonSetInformation> daemonSetInformationList = new ArrayList<>();
 
         for(int i = 0; i < daemonSetList.size(); i ++){
