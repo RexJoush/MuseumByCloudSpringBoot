@@ -9,6 +9,7 @@ import com.nwu.entity.settingstorage.ServiceDefinition;
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -102,4 +103,11 @@ public interface ServicesService {
      * @return 找到的 Service 列表
      */
     List<Service> getServicesByLabels(Map<String, String> labels);
+
+    /**
+     * 创建或更新 Service
+     * @param yaml 描述 Service 的 Yaml 格式字符串
+     * @return 创建结果和执行代码
+     */
+    Pair<Integer, Boolean> createOrReplaceServiceByYamlString(String yaml);
 }

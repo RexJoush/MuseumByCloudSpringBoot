@@ -8,14 +8,18 @@ package com.nwu.controller.explorebalancing;
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.settingstorage.ServiceDefinition;
 import com.nwu.service.explorebalancing.impl.ServicesServiceImpl;
+import com.nwu.util.DealYamlStringFromFront;
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Service;
 import io.kubernetes.client.openapi.ApiException;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,6 +177,21 @@ public class ServicesController {
         return JSON.toJSONString(result);
     }
 
+    @RequestMapping("/changeServiceByYamlString")
+    public String changeServiceByYamlString(@RequestBody String yaml) throws IOException {
+
+        Map<String, Object> result = new HashMap<>();
+
+        yaml = DealYamlStringFromFront.dealYamlStringFromFront(yaml);
+        Pair<Integer, Boolean> pair = serviceService.createOrReplaceServiceByYamlString(yaml);
+
+        result.put("code", pair.getLeft());
+        if(pair.getLeft() == 1200) result.put("message", "创建成功");
+        else result.put("message", "创建失败");
+        result.put("data", pair.getRight());
+
+        return JSON.toJSONString(result);
+    }
 }
 
 

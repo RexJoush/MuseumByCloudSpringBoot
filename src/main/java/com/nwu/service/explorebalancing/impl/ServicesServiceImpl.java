@@ -8,6 +8,7 @@ import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.*;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.models.V1Service;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import io.kubernetes.client.util.Yaml;
 
@@ -184,4 +185,15 @@ public class ServicesServiceImpl implements ServicesService {
         return  KubernetesUtils.client.services().withLabels(labels).list().getItems();
     }
 
+    @Override
+    public Pair<Integer, Boolean> createOrReplaceServiceByYamlString(String yaml){
+        try{
+            io.fabric8.kubernetes.api.model.Service service = Yaml.loadAs(yaml, io.fabric8.kubernetes.api.model.Service.class);
+            KubernetesUtils.client.services().inNamespace(service.getMetadata().getNamespace()).withName(service.getMetadata().getName()).createOrReplace(service);
+            return Pair.of(1200, true);
+        }catch (Exception e){
+            System.out.println("创建 Service 失败，请检查 Yaml 格式或是否重名，在 CronJobsServiceImpl 类的 createOrReplaceCronJobByYamlString 方法中");
+        }
+        return Pair.of(1201, null);
+    }
 }

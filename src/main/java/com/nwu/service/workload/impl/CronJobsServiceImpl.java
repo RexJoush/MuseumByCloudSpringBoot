@@ -206,7 +206,7 @@ public class CronJobsServiceImpl implements CronJobsService {
                 flag |= (1 << 2)|(1 << 1);
             }
             if(pairOfEvent.getRight() != null) {
-                data.put("events", pair.getRight());
+                data.put("events", pairOfEvent.getRight());
             }else{
                 data.put("events", null);
                 flag |= 1;
