@@ -310,10 +310,25 @@ public class PodsServiceImpl implements PodsService {
 
             //CPU Memory
 //        ResourceRequirements resourceRequirements = new ResourceRequirements();
-            Quantity cpuLimitQu = new QuantityBuilder().withAmount(podForm.getCpuLimit()).build();
-            Quantity cpuRequestQu = new QuantityBuilder().withAmount(podForm.getCpuRequest()).build();
-            Quantity memoryLimitQu = new QuantityBuilder().withAmount(podForm.getMemoryLimit()).build();
-            Quantity memoryRequestQu = new QuantityBuilder().withAmount(podForm.getMemoryRequest()).build();
+            Quantity cpuLimitQu = new Quantity(podForm.getCpuLimit(),podForm.getCpuUnit());
+            Quantity cpuRequestQu = new Quantity(podForm.getCpuRequest(), podForm.getCpuUnit());
+            Quantity memoryLimitQu = new Quantity(podForm.getMemoryLimit(), podForm.getMemoryUnit());
+            Quantity memoryRequestQu = new Quantity(podForm.getMemoryRequest(), podForm.getMemoryUnit());
+            System.out.println(podForm.getMemoryLimit() + '=' + podForm.getMemoryUnit() + '|');
+
+
+            System.out.println(podForm.getMemoryRequest() + '=' + podForm.getMemoryUnit() + '|');
+
+
+            System.out.println(podForm.getCpuLimit() + '=' + podForm.getCpuUnit() + '|');
+
+
+
+            System.out.println(podForm.getCpuRequest() + '=' + podForm.getCpuUnit() + '|');
+
+
+
+
 
             //Env
             List<EnvVar> envVarList = new ArrayList<EnvVar>();
@@ -378,7 +393,7 @@ public class PodsServiceImpl implements PodsService {
                         .withAnnotations(annotations)
                         .endMetadata()
                         .withNewSpec()
-                        .withNodeSelector(nodeSelect)
+//                        .withNodeSelector(nodeSelect)
                         .withImagePullSecrets(localObjectReference)
                         .addNewContainer()
                         .withName(containerName)
@@ -387,8 +402,8 @@ public class PodsServiceImpl implements PodsService {
 //                    .withCommand()
 //                    .withArgs(podForm.getArgs())
                         .withNewResources()
-//                    .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
-//                    .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
+                        .addToLimits("cpu", cpuLimitQu).addToRequests("cpu", cpuRequestQu)
+                        .addToLimits("memory", memoryLimitQu).addToRequests("memory", memoryRequestQu)
                         .endResources()
                         .withEnv(envVarList)
                         //addNewPort().withContainerPort(80).endPort()
@@ -400,6 +415,7 @@ public class PodsServiceImpl implements PodsService {
                     Pod pod = KubernetesUtils.client.pods().inNamespace(podForm.getNamespace()).createOrReplace(tmpPod);
                     podList.add(pod);
                 }catch (Exception e){
+                    System.out.println(e);
                     return Pair.of(1201, null);
                 }
             }
