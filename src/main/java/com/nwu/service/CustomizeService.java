@@ -7,6 +7,7 @@ package com.nwu.service;
 
 import com.nwu.entity.customize.ObjectDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
+import io.kubernetes.client.openapi.ApiException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -102,7 +103,7 @@ public interface CustomizeService {
      * @param crdName
      * @return crdYaml
      */
-    String getCrdYamlByName(String crdName);
+    String getCrdYamlByName(String crdName) throws ApiException;
      String getObjectYamlByName(String crdName, String objName, String nameSpace) throws FileNotFoundException;
     boolean deleteCustomResourceDefinitionObject(String crdName, String objName, String nameSpace) throws IOException;
 }

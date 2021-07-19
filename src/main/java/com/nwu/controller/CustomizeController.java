@@ -164,7 +164,7 @@ public class CustomizeController {
         return JSON.toJSONString(result);
     }
     @RequestMapping("/getCrdYamlByName")
-    public String getCrdYamlByName(String crdName){
+    public String getCrdYamlByName(String crdName) throws ApiException {
         String crdYaml = customizeService.getCrdYamlByName(crdName);
 
         Map<String, Object> result = new HashMap<>();

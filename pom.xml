@@ -11,7 +11,7 @@
     <groupId>com.nwu</groupId>
     <artifactId>museum</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>museum by cloud</name>
     <description>Museum By Cloud</description>
     <properties>

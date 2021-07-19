@@ -5,6 +5,9 @@ import com.nwu.service.CustomizeService;
 import com.nwu.util.KubernetesUtils;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
+import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.models.ExtensionsV1beta1Ingress;
+import io.kubernetes.client.openapi.models.V1CustomResourceDefinition;
 import io.kubernetes.client.util.Yaml;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +39,7 @@ public class CustomizeServiceImpl implements CustomizeService {
     public CustomResourceDefinition createCustomResourceDefinition(String path) throws FileNotFoundException {
         return KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().createOrReplace(loadCustomResourceDefinition(path));
     }
+
 
     @Override
     public List<CustomResourceDefinition> getCustomResourceDefinition() {
@@ -93,10 +97,23 @@ public class CustomizeServiceImpl implements CustomizeService {
         return KubernetesUtils.client.customResource(context).list();
     }
 
+//    @Override
+//    public String getCrdYamlByName(String crdName) {
+//        CustomResourceDefinition customResourceDefinition = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().withName(crdName).get();
+//        return Yaml.dump(customResourceDefinition);
+//    }
     @Override
-    public String getCrdYamlByName(String crdName) {
-        CustomResourceDefinition customResourceDefinition = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().withName(crdName).get();
-        return Yaml.dump(customResourceDefinition);
+    public String getCrdYamlByName(String crdName) throws ApiException {
+
+        V1CustomResourceDefinition v1CustomResourceDefinition = null;
+        try {
+            v1CustomResourceDefinition = KubernetesUtils.apiextensionsV1Api.readCustomResourceDefinition(crdName,null, null, null);
+
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+
+        return Yaml.dump(v1CustomResourceDefinition);
     }
 
     @Override

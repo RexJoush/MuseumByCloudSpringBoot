@@ -1,12 +1,10 @@
 package com.nwu.util;
 
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.*;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.*;
+import okhttp3.TlsVersion;
 
 /**
  * @author Rex Joush
@@ -19,10 +17,11 @@ import io.kubernetes.client.openapi.apis.*;
 public class KubernetesUtils {
 
     private static final Config config;
+    private static final ApiClient apiClient;
 
     static {
-        String token = "eyJhbGciOiJSUzI1NiIsImtpZCI6InhyT0R3RjlCd2F6MjdZYnI5WnZkd2duZVhQZU5GMXlEM3Q1cnM3SmdsVHcifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkYXNoYm9hcmQtYWRtaW4tdG9rZW4temJ0bXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGFzaGJvYXJkLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiNjFiZDI1MDctOTViMy00Y2U2LWFkM2MtYzNiNjVmNjIxYTQzIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmRhc2hib2FyZC1hZG1pbiJ9.Jt9QNlKKXWVeQkd_0gUUenLEYfJeatGV3p_wjF5NWtRIM-ncsm4s0NFrj_9PfkGFUjy2KrWc4U5U2aQhtqOmNDswAhmbJCGUQ5ySGESNhUDtzV-zG3c12WkdF8pFLz8-GtnZLgj29q1SDHKlVqtGaZLFZKhL-OyD26n_552zv_xGpWskJWsbDy_R1_OtYtEP7WCj2wRORHzdGnh0Psl6I9BC-IQPB9ae13aFROAclXghBD1skOcFteHcnndm8cLXAkRxjfeXLNQNx3zVKcT_IV-Hu5S1uVM6WVMsZAmsTP3IHJK_X0R6oofZqam1aY2DEyqQyfSlGgRTEtvLIzVjTw";
-        String kubernetesUrl = "192.168.18.129:6443";
+        String token = "eyJhbGciOiJSUzI1NiIsImtpZCI6IkNrVjB4VGQ2X3BiV0dWMXFyM1BwSzF3bUJIS2hwUTdwMW8zYWVGTVhCa00ifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlcm5ldGVzLWRhc2hib2FyZCIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi11c2VyLXRva2VuLTlua3ZrIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImFkbWluLXVzZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI4YzgwZWJhMi1kMDg2LTQ3NDAtOTRiNS01YjY3N2Y4YTRjZTIiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6a3ViZXJuZXRlcy1kYXNoYm9hcmQ6YWRtaW4tdXNlciJ9.49SaCVogFG53JIAJBtSVmPH7xlqGzpL9mCzZ-rWFei1olPv9hbNRkh6PUWp0Zmx1VUUY7nF2dRzMJ2957YTixtFfgu6Xwjq-f_E7ZejZUCsp_PkA8XDUSCdsVr_T8XAdgI-Vbk_PTfLbY4rf41mQhi6qiMFAhgc6juvMQMNmBsPOYd4tnT7yX_Vtjx935VZrsJn-NnihlGDppje-Osgf48Vx2ve_lkzw-rEYoikNgPmYkwUFiirWEDYfH5nvqqb5O1Rqq3--YRfWHFrvZ-DbaLlpYhGUCskLMxtn1-llo9TtjLPLbE5zrjW7Z-00B55WqIHMleWnzVI6pHB16iueIQ";
+        String kubernetesUrl = "https://172.18.7.46:7443";
         // kubernetes 连接 token
 
         // 新平台
@@ -39,27 +38,29 @@ public class KubernetesUtils {
 //        String kubernetesUrl = "https://172.18.7.23:6443";
 
 
-        config = new ConfigBuilder().withMasterUrl(kubernetesUrl).withTrustCerts(true).withOauthToken(token).build();
+        config = new ConfigBuilder().withMasterUrl(kubernetesUrl).withTrustCerts(true).addToTlsVersions(TlsVersion.TLS_1_2, TlsVersion.TLS_1_3).withOauthToken(token).build();
 
-        ApiClient apiClient = io.kubernetes.client.util.Config.fromToken(kubernetesUrl, token, false);
+        apiClient = io.kubernetes.client.util.Config.fromToken(kubernetesUrl, token, false);
         Configuration.setDefaultApiClient(apiClient);
     }
 
     // 创建 Kubernetes Official RbacAuthorizationV1Api 客户端
-    public static RbacAuthorizationV1Api rbacAuthorizationV1Api = new RbacAuthorizationV1Api();
+    public static RbacAuthorizationV1Api rbacAuthorizationV1Api = new RbacAuthorizationV1Api(apiClient);
 
 //    public static ApiextensionsV1Api apiextensionsV1Api= new ApiextensionsV1Api().getAPIResources().re;
 
     // 创建 Kubernetes Official CoreV1Api 客户端
-    public static CoreV1Api coreV1Api = new CoreV1Api();
+    public static CoreV1Api coreV1Api = new CoreV1Api(apiClient);
 
     // 创建 Kubernetes Official ExtensionsV1Beta1Api 客户端
-    public static ExtensionsV1beta1Api extensionsV1beta1Api = new ExtensionsV1beta1Api();
+    public static ExtensionsV1beta1Api extensionsV1beta1Api = new ExtensionsV1beta1Api(apiClient);
     // 创建 Kubernetes Official BatchApi 客户端
-    public static BatchV1Api batchV1Api = new BatchV1Api();
+    public static BatchV1Api batchV1Api = new BatchV1Api(apiClient);
 
-    public static AppsV1Api appsV1Api = new AppsV1Api();
+    public static AppsV1Api appsV1Api = new AppsV1Api(apiClient);
 
+    //创建 Kubernetes Official ApiextensionsV1Api 客户端
+    public static ApiextensionsV1Api apiextensionsV1Api = new ApiextensionsV1Api(apiClient);
     // 创建 Fabric8 Kubernetes客户端
     public static KubernetesClient client = new DefaultKubernetesClient(config);
 

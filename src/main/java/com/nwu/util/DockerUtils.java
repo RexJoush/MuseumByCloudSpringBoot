@@ -14,7 +14,7 @@ public class DockerUtils {
 
     public static DockerClient docker;
 
-    public static String baseUrl = "192.168.29.147:2376";
+    public static String baseUrl = "172.18.7.22:2375";
 
     public static String httpUrl = "http://" + baseUrl;
 
