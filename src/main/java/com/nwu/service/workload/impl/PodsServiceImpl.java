@@ -10,6 +10,8 @@ import com.nwu.util.KubernetesUtils;
 import com.nwu.util.TimeUtils;
 import com.nwu.util.format.PodFormat;
 import io.fabric8.kubernetes.api.model.*;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
+import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics;
 import io.kubernetes.client.util.Yaml;
 import org.apache.commons.lang3.tuple.Pair;
@@ -288,6 +290,8 @@ public class PodsServiceImpl implements PodsService {
         return Pair.of(1201, null);
     }
 
+
+
     @Override
     public Pair<Integer, Boolean> createPodFromForm(PodForm podForm) {
         try{
@@ -422,6 +426,7 @@ public class PodsServiceImpl implements PodsService {
             return Pair.of(1200, true);
         }catch (Exception e){
             System.out.println("创建 Pod 失败，在 PodsServiceImpl 类的 createPodFromForm 方法");
+            System.out.println(e);
         }
         return Pair.of(1201, null);
     }
