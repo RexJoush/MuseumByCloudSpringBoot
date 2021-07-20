@@ -13,6 +13,7 @@ import io.fabric8.kubernetes.api.model.ObjectReference;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.extensions.Ingress;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
+import io.kubernetes.client.openapi.models.V1CustomResourceDefinition;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
@@ -130,6 +131,37 @@ public class CommonServiceImpl implements CommonService {
             return 1202;
         }
     }
+
+    @Override
+    public int changeCrdByYaml(File yaml) {
+
+        try {
+            System.out.println(yaml.getParent());
+            InputStream inputStream = new FileInputStream(yaml);
+
+            CustomResourceDefinition customResourceDefinition = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().load(inputStream).get();
+
+            Boolean delete = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().withName(customResourceDefinition.getMetadata().getName()).delete();
+
+//            InputStream inputStream2 = new FileInputStream(yaml);
+//
+//            List<HasMetadata> orReplace = KubernetesUtils.client.load(inputStream2).createOrReplace();
+
+           CustomResourceDefinition orReplace = KubernetesUtils.client.apiextensions().v1().customResourceDefinitions().createOrReplace(customResourceDefinition);
+            inputStream.close();
+
+            yaml.delete();
+
+            if (orReplace != null) {
+                return 1200;
+            } else {
+                return 1201;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1202;
+        }
+    }
     @Override
     public int changeCrdObjectByYaml(File yaml,String crdName) {
         try {
@@ -187,4 +219,5 @@ public class CommonServiceImpl implements CommonService {
         }
         return Pair.of(1201, null);
     }
+
 }
