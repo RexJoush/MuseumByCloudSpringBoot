@@ -7,27 +7,30 @@ import java.util.Map;
  * @time 2021.04.19
  */
 public class DeploymentInformation {
-    //基本信息
-    private String status;//状态
-    private String name;//名称
-    private String namespace;//命名空间
-    private int runningPods;//正在运行的Pods数量
-    private int replicas;//期望的Pods数量
-    private String creationTimestamp;//创建时间
+    // 基本信息
+    private String status;// 状态
+    private String name;// 名称
+    private String namespace;// 命名空间
+    private int runningPods;// 正在运行的Pods数量
+    private int replicas;// 期望的Pods数量
+    private String creationTimestamp;// 创建时间
 
-    //详细信息
-    private String uid; //uid 标识
-    private Map<String, String> labels;//标签
-    private Map<String, String> annotation;//描述信息
-    private String policy;//Deployment 更新策略
+    // 详细信息
+    private String uid; // uid 标识
+    private Map<String, String> labels;// 标签
+    private Map<String, String> annotation;// 描述信息
+    private String policy;// Deployment 更新策略
     private String minReadySeconds;// 最小准备秒数 Pod Ready后度过这个秒数认为Pod可用
-    private String revisionHistoryLimit;//调整历史记录限制 RS保存数量
-    private  Map<String, String> matchLabels;//标签选择
+    private String revisionHistoryLimit;// 调整历史记录限制 RS保存数量
+    private  Map<String, String> matchLabels;// 标签选择
+
+    // 附加信息
+    private String alias; // 别名
 
     public DeploymentInformation() {
     }
 
-    public DeploymentInformation(String status, String name, String namespace, int runningPods, int replicas, String creationTimestamp, String uid, Map<String, String> labels, Map<String, String> annotation, String policy, String minReadySeconds, String revisionHistoryLimit, Map<String, String> matchLabels) {
+    public DeploymentInformation(String status, String name, String namespace, int runningPods, int replicas, String creationTimestamp, String uid, Map<String, String> labels, Map<String, String> annotation, String policy, String minReadySeconds, String revisionHistoryLimit, Map<String, String> matchLabels, String alias) {
         this.status = status;
         this.name = name;
         this.namespace = namespace;
@@ -41,6 +44,7 @@ public class DeploymentInformation {
         this.minReadySeconds = minReadySeconds;
         this.revisionHistoryLimit = revisionHistoryLimit;
         this.matchLabels = matchLabels;
+        this.alias = alias;
     }
 
     @Override
@@ -164,5 +168,13 @@ public class DeploymentInformation {
 
     public void setMatchLabels(Map<String, String> matchLabels) {
         this.matchLabels = matchLabels;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 }

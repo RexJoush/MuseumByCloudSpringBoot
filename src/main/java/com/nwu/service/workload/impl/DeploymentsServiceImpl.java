@@ -346,7 +346,7 @@ public class DeploymentsServiceImpl implements DeploymentsService {
             String[] annotationsValues = podForm.getAnnotationsValues();
             Map<String, String> annotations = new HashMap<>();
             for(int i = 0; i < annotationsKeys.length; i++)
-                labels.put(annotationsKeys[i], annotationsValues[i]);
+                annotations.put(annotationsKeys[i], annotationsValues[i]);
 
             //NodeSelect
             Map<String, String> nodeSelect = new HashMap<>();
