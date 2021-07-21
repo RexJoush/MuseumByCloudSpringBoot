@@ -5,6 +5,7 @@ import com.nwu.entity.workload.Pod.PodDefinition;
 import com.nwu.service.explorebalancing.ServicesService;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.PodFormat;
+import com.nwu.util.tempUtil.ChangesCreationTimestamp;
 import io.fabric8.kubernetes.api.model.*;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.models.V1Service;
@@ -76,6 +77,13 @@ public class ServicesServiceImpl implements ServicesService {
     public List<io.fabric8.kubernetes.api.model.Service> findAllServices(){
 
         List<io.fabric8.kubernetes.api.model.Service> items = KubernetesUtils.client.services().list().getItems();
+
+        /***
+         * ZQY 修改时间戳
+         */
+        //~~~~~~~~~~
+        items = ChangesCreationTimestamp.serviceList(items);
+        //~~~~~~~~~~
 
         return items;
 

@@ -1,6 +1,7 @@
 package com.nwu.util.format;
 
 import com.nwu.entity.workload.StatefulSet.StatefulSetInformation;
+import com.nwu.util.TimeTransformation;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class StatefulSetFormat {
             String name = null == aStatefulSet.getMetadata().getName() ? "未知" : aStatefulSet.getMetadata().getName();
             statefulSetInformation.setName(name);
             statefulSetInformation.setNamespace(aStatefulSet.getMetadata().getNamespace() == null ? "未知" : aStatefulSet.getMetadata().getNamespace());
-            statefulSetInformation.setCreationTimestamp(aStatefulSet.getMetadata().getCreationTimestamp() == null ? "未知" : aStatefulSet.getMetadata().getCreationTimestamp());
+            statefulSetInformation.setCreationTimestamp(aStatefulSet.getMetadata().getCreationTimestamp() == null ? "未知" : TimeTransformation.UTCToCST(aStatefulSet.getMetadata().getCreationTimestamp(), TimeTransformation.FORMAT));
             statefulSetInformation.setStatus(aStatefulSet.getStatus().getCurrentReplicas() == null || aStatefulSet.getSpec().getReplicas() == null || aStatefulSet.getStatus().getCurrentReplicas() != aStatefulSet.getSpec().getReplicas() ? "0" : "1");
             statefulSetInformation.setRunningPods(aStatefulSet.getStatus().getCurrentReplicas() == null ? 0 : aStatefulSet.getStatus().getCurrentReplicas());
             statefulSetInformation.setReplicas(aStatefulSet.getSpec().getReplicas() == null ? 0 : aStatefulSet.getSpec().getReplicas());

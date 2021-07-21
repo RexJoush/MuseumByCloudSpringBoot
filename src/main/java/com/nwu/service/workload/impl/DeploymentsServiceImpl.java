@@ -7,6 +7,7 @@ import com.nwu.service.workload.DeploymentsService;
 import com.nwu.util.FilterReplicaSetByControllerUid;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.ReplicaSetFormat;
+import com.nwu.util.tempUtil.ChangesCreationTimestamp;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
@@ -212,6 +213,8 @@ public class DeploymentsServiceImpl implements DeploymentsService {
             if(pair.getLeft() != 1200) return Pair.of(1201, null);// 操作失败
             else if(pair.getLeft() == 1200 && pair.getRight() == null) return Pair.of(1202, null);// 非法操作
             Deployment deployment = pair.getRight();
+
+            deployment = ChangesCreationTimestamp.deployment(deployment);
 
             //获取 Deployment 下的 ReplicaSet(新[0]旧[1:-1]) 正确匹配按ControllerUid
             ReplicaSetsServiceImpl replicaSetsService = new ReplicaSetsServiceImpl();

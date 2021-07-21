@@ -1,6 +1,7 @@
 package com.nwu.util.format;
 
 import com.nwu.entity.workload.ReplicationController.ReplicationControllerInformation;
+import com.nwu.util.TimeTransformation;
 import io.fabric8.kubernetes.api.model.ReplicationController;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class ReplicationControllerFormat {
             ReplicationControllerInformation replicationControllerInformation = new ReplicationControllerInformation();
             replicationControllerInformation.setName(aReplicationController.getMetadata().getName() == null ? "未知" : aReplicationController.getMetadata().getName());
             replicationControllerInformation.setNamespace(aReplicationController.getMetadata().getNamespace() == null ? "未知" : aReplicationController.getMetadata().getNamespace());
-            replicationControllerInformation.setCreationTimestamp(aReplicationController.getMetadata().getCreationTimestamp() == null ? "未知" : aReplicationController.getMetadata().getCreationTimestamp());
+            replicationControllerInformation.setCreationTimestamp(aReplicationController.getMetadata().getCreationTimestamp() == null ? "未知" : TimeTransformation.UTCToCST(aReplicationController.getMetadata().getCreationTimestamp(), TimeTransformation.FORMAT));
             replicationControllerInformation.setStatus(aReplicationController.getStatus().getReplicas() == null || aReplicationController.getStatus().getAvailableReplicas() == null || aReplicationController.getStatus().getReplicas() != aReplicationController.getStatus().getAvailableReplicas() ? "0" : "1");
             replicationControllerInformation.setRunningPods(aReplicationController.getStatus().getAvailableReplicas() == null ? 0 : aReplicationController.getStatus().getAvailableReplicas());
             replicationControllerInformation.setReplicas(aReplicationController.getSpec().getReplicas() == null ? 0 : aReplicationController.getSpec().getReplicas());

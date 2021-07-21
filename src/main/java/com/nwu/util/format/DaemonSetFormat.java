@@ -1,6 +1,7 @@
 package com.nwu.util.format;
 
 import com.nwu.entity.workload.DaemonSet.DaemonSetInformation;
+import com.nwu.util.TimeTransformation;
 import io.fabric8.kubernetes.api.model.apps.DaemonSet;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class DaemonSetFormat {
             daemonSetInformation.setStatus(daemonSetList.get(i).getStatus().getNumberAvailable() == null || daemonSetList.get(i).getStatus().getNumberReady() == null || daemonSetList.get(i).getStatus().getNumberAvailable() < daemonSetList.get(i).getStatus().getNumberReady() ? "0" : "1");
             daemonSetInformation.setRunningPods(daemonSetList.get(i).getStatus().getNumberReady() == null ? 0 : daemonSetList.get(i).getStatus().getNumberReady());
             daemonSetInformation.setReplicas(daemonSetList.get(i).getStatus().getNumberAvailable() == null ? 0 : daemonSetList.get(i).getStatus().getNumberAvailable());
-            daemonSetInformation.setCreationTimestamp(daemonSetList.get(i).getMetadata().getCreationTimestamp() == null ? "未知" : daemonSetList.get(i).getMetadata().getCreationTimestamp());
+            daemonSetInformation.setCreationTimestamp(daemonSetList.get(i).getMetadata().getCreationTimestamp() == null ? "未知" : TimeTransformation.UTCToCST(daemonSetList.get(i).getMetadata().getCreationTimestamp(), TimeTransformation.FORMAT));
 
             daemonSetInformationList.add(daemonSetInformation);
         }

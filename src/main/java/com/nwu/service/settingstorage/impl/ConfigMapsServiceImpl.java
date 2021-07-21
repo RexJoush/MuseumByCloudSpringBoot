@@ -2,6 +2,7 @@ package com.nwu.service.settingstorage.impl;
 
 import com.nwu.service.settingstorage.ConfigMapsService;
 import com.nwu.util.KubernetesUtils;
+import com.nwu.util.tempUtil.ChangesCreationTimestamp;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.models.V1ConfigMap;
@@ -35,6 +36,13 @@ public class ConfigMapsServiceImpl implements ConfigMapsService {
     public List<ConfigMap> findAllConfigMaps() {
 
         List<ConfigMap> items = KubernetesUtils.client.configMaps().inAnyNamespace().list().getItems();
+
+        /***
+         * ZQY 修改时间戳
+         */
+        //~~~~~~~~~~
+        items = ChangesCreationTimestamp.configMapList(items);
+        //~~~~~~~~~~
 
         return items;
 

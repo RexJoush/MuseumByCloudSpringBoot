@@ -8,6 +8,7 @@ package com.nwu.util.format;
 import com.nwu.entity.workload.Job.JobInformation;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import com.nwu.util.FilterPodsByControllerUid;
+import com.nwu.util.TimeTransformation;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.batch.Job;
 
@@ -55,7 +56,7 @@ public class JobFormat {
             JobInformation jobInformation = new JobInformation();
             jobInformation.setName(aJob.getMetadata().getName() == null ? "未知" : aJob.getMetadata().getName());
             jobInformation.setNamespace(aJob.getMetadata().getNamespace() == null ? "未知" : aJob.getMetadata().getNamespace());
-            jobInformation.setCreationTimestamp(aJob.getMetadata().getCreationTimestamp() == null ? "未知" : aJob.getMetadata().getCreationTimestamp());
+            jobInformation.setCreationTimestamp(aJob.getMetadata().getCreationTimestamp() == null ? "未知" : TimeTransformation.UTCToCST(aJob.getMetadata().getCreationTimestamp(), TimeTransformation.FORMAT));
             jobInformation.setStatus(status);
             jobInformation.setRunningPods(runningPods);
             jobInformation.setReplicas(aJob.getSpec().getCompletions() == null ? 0 : aJob.getSpec().getCompletions());
