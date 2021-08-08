@@ -6,6 +6,8 @@ package com.nwu.controller.workload;
  */
 
 import com.alibaba.fastjson.JSON;
+import com.nwu.service.LoadForecastingService;
+import com.nwu.service.workload.DeploymentsService;
 import com.nwu.service.workload.impl.DeploymentsServiceImpl;
 import com.nwu.util.DealYamlStringFromFront;
 import com.nwu.util.format.DeploymentFormat;
@@ -19,9 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Deployments 的 controller 层
@@ -36,6 +37,7 @@ import java.util.Map;
 public class DeploymentsController {
     @Resource
     private DeploymentsServiceImpl deploymentsService;
+    private LoadForecastingService loadForecastingService;
 
     //增
     @RequestMapping("/createDeploymentFromForm")
@@ -61,6 +63,7 @@ public class DeploymentsController {
 
         return JSON.toJSONString(result);
     }
+
 
     //改
     @RequestMapping("/changeDeploymentByYamlString")
@@ -225,4 +228,62 @@ public class DeploymentsController {
 //
 //        return JSON.toJSONString(result);
 //    }
+    static Pair<Integer, Boolean> pair1=null;
+    static String name1;
+    static String namespace1;
+    static String  replica1;
+    @RequestMapping("/setForecast")
+    public String setReplica(String date,String name, String namespace, String replica){
+
+        Date date1=new Date(Long.parseLong(date));
+
+
+        Pair<Integer, Boolean> pair;
+        SimpleDateFormat sdf = new SimpleDateFormat();// 格式化时间
+        sdf.applyPattern("yyyy-MM-dd HH:mm:ss a");// a为am/pm的标记
+        Date nowdate = new Date();// 获取当前时间
+        Date lastDate = new Date(date1 .getTime() - 60000);
+        System.out.println(date1.getTime()+nowdate.getTime());
+        System.out.println(date1.getTime()-nowdate.getTime());
+        //判断执行时间与当前时间的差，小于一分钟立即执行，大于一分钟，一分钟前执行
+        System.out.println(name+namespace+Integer.parseInt(replica));
+
+        if (date1.getTime()-nowdate.getTime()<60000){
+            System.out.println("1111");
+            pair1=deploymentsService.setReplicas(name, namespace, Integer.parseInt(replica));
+        }else {
+            name1=name;
+            namespace1=namespace;
+            replica1=replica;
+            System.out.println("2222");
+
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    System.out.println(name1+namespace1+replica1);
+//                    DeploymentsService deploymentsServiceImpl=new DeploymentsServiceImpl();
+                    pair1=deploymentsService.setReplicas(name1, namespace1, Integer.parseInt(replica1));
+                }
+
+            }, lastDate);
+
+        }
+        Map<String, Object> result = new HashMap<>();
+        System.out.println(pair1);
+        if (pair1!=null) {
+            result.put("code", pair1.getLeft());
+            if (pair1.getLeft() == 1200) {
+                result.put("message", "设置 Deployment的replica 成功");
+            } else {
+                result.put("message", "设置 Deployment的replica 失败");
+            }
+            result.put("data", pair1.getRight());
+
+            return JSON.toJSONString(result);
+        }else {
+            Map<String, Object> result1 = new HashMap<>();
+            result.put("message", "设置 Deployment的replica 成功");
+        return JSON.toJSONString(result1);
+        }
+    }
 }

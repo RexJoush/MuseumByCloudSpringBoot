@@ -8,6 +8,7 @@ package com.nwu.controller;
 import com.alibaba.fastjson.JSON;
 import com.nwu.entity.workload.Pod.PodForm;
 import com.nwu.service.impl.CommonServiceImpl;
+import com.nwu.service.workload.impl.DeploymentsServiceImpl;
 import com.nwu.service.workload.impl.PodsServiceImpl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,7 +69,8 @@ public class EstablishController {
 
     @RequestMapping(value = "/createPodFromForm")
     public String createPodFromForm(PodForm podForm){
-        Pair<Integer, Boolean> pair = podsService.createPodFromForm(podForm);
+        DeploymentsServiceImpl deploymentsService = new DeploymentsServiceImpl();
+        Pair<Integer, Boolean> pair = deploymentsService.createDeploymentFromForm(podForm);
 
         Map<String, Object> result = new HashMap<>();
 

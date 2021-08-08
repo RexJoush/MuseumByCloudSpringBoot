@@ -5,6 +5,7 @@ package com.nwu.service.workload;
  * @time 2021.03.22
  */
 
+import com.nwu.entity.workload.Pod.PodForm;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.kubernetes.client.openapi.ApiException;
 import org.apache.commons.lang3.tuple.Pair;
@@ -112,4 +113,11 @@ public interface DeploymentsService {
      * @return 相关资源和执行代码
      */
     Pair<Integer, Map> getDeploymentResources(String name, String namespace);
+
+    /**
+     *  从表单创建 Deployment
+     * @param podForm Pod表单
+     * @return 创建结果和执行代码
+     */
+    Pair<Integer, Boolean> createDeploymentFromForm(PodForm podForm);
 }

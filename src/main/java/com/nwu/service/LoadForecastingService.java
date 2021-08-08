@@ -7,6 +7,10 @@ package com.nwu.service;
  * @time 2021.03.22
  */
 
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.Date;
+
 /**
  * 负载预测的 service 层接口
  */
@@ -19,6 +23,7 @@ public interface LoadForecastingService {
      * @param replicas 修改的数量
      * @return 修改结果
      */
-    String expandShrinkPod(String name, String namespace, int replicas);
+//    String expandShrinkPod(String name, String namespace, int replicas);
 
+    Pair<Integer, Boolean> timer(Date lastDate, String name, String namespace, String replica);
 }
