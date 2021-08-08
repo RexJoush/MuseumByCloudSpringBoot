@@ -115,8 +115,13 @@ public interface DeploymentsService {
     Pair<Integer, Map> getDeploymentResources(String name, String namespace);
 
     /**
+<<<<<<< HEAD
      *  从表单创建 Deployment
      * @param podForm Pod表单
+=======
+     * 从表单创建 Deployment
+     * @param podForm Pod 表单
+>>>>>>> 66d30cbcca5e7497a40c65479ad5676f3aac53da
      * @return 创建结果和执行代码
      */
     Pair<Integer, Boolean> createDeploymentFromForm(PodForm podForm);

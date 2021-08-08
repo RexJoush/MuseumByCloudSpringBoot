@@ -1,8 +1,10 @@
 package com.nwu.util.format;
 
 import com.nwu.entity.workload.CronJob.CronJobInformation;
+import com.nwu.util.TimeTransformation;
 import io.fabric8.kubernetes.api.model.batch.CronJob;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
  * @time 2021.04.19
  */
 public class CronJobFormat {
-    public static List<CronJobInformation> formatCronJobList(List<CronJob> cronJobList){
+    public static List<CronJobInformation> formatCronJobList(List<CronJob> cronJobList) {
         if(cronJobList == null) return null;
         List<CronJobInformation> cronJobInformationList = new ArrayList<>();
 
@@ -24,7 +26,7 @@ public class CronJobFormat {
             cronJobInformation.setSchedule(cronJobList.get(i).getSpec().getSchedule() == null ? "未知" : cronJobList.get(i).getSpec().getSchedule());
             cronJobInformation.setRunningJobs(cronJobList.get(i).getStatus().getActive() == null ? 0 : cronJobList.get(i).getStatus().getActive().size());
             cronJobInformation.setLastSchedulingTime(cronJobList.get(i).getStatus().getLastScheduleTime() == null ? "未知" : cronJobList.get(i).getStatus().getLastScheduleTime());
-            cronJobInformation.setCreationTimestamp(cronJobList.get(i).getMetadata().getCreationTimestamp() == null ? "未知" : cronJobList.get(i).getMetadata().getCreationTimestamp());
+            cronJobInformation.setCreationTimestamp(cronJobList.get(i).getMetadata().getCreationTimestamp() == null ? "未知" : TimeTransformation.UTCToCST(cronJobList.get(i).getMetadata().getCreationTimestamp(), TimeTransformation.FORMAT));
 
             cronJobInformationList.add(cronJobInformation);
         }

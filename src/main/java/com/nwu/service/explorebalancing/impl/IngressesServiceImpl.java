@@ -2,6 +2,7 @@ package com.nwu.service.explorebalancing.impl;
 
 import com.nwu.service.explorebalancing.IngressesService;
 import com.nwu.util.KubernetesUtils;
+import com.nwu.util.tempUtil.ChangesCreationTimestamp;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.extensions.*;
@@ -54,8 +55,16 @@ public class IngressesServiceImpl implements IngressesService {
 //    }
     @Override
     public List<Ingress> findAllIngresses(){
+        List<Ingress> items = KubernetesUtils.client.extensions().ingresses().list().getItems();
 
-        return KubernetesUtils.client.extensions().ingresses().list().getItems();
+        /***
+         * ZQY 修改时间戳
+         */
+        //~~~~~~~~~~
+        items = ChangesCreationTimestamp.ingressList(items);
+        //~~~~~~~~~~
+
+        return items;
 
     }
 

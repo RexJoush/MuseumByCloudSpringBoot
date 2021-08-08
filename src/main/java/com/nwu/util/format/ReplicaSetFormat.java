@@ -1,6 +1,7 @@
 package com.nwu.util.format;
 
 import com.nwu.entity.workload.ReplicaSet.ReplicaSetInformation;
+import com.nwu.util.TimeTransformation;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class ReplicaSetFormat {
             ReplicaSetInformation replicaSetInformation = new ReplicaSetInformation();
             replicaSetInformation.setName(aReplicaSet.getMetadata().getName() != null ? aReplicaSet.getMetadata().getName() : "未知");
             replicaSetInformation.setNamespace(aReplicaSet.getMetadata().getNamespace() == null ? "未知" : aReplicaSet.getMetadata().getNamespace());
-            replicaSetInformation.setCreationTimestamp(aReplicaSet.getMetadata().getCreationTimestamp() == null ? "未知" : aReplicaSet.getMetadata().getCreationTimestamp());
+            replicaSetInformation.setCreationTimestamp(aReplicaSet.getMetadata().getCreationTimestamp() == null ? "未知" : TimeTransformation.UTCToCST(aReplicaSet.getMetadata().getCreationTimestamp(), TimeTransformation.FORMAT));
             replicaSetInformation.setStatus(aReplicaSet.getStatus().getReplicas() == null || aReplicaSet.getStatus().getAvailableReplicas() == null || aReplicaSet.getStatus().getReplicas() != aReplicaSet.getStatus().getAvailableReplicas() ? "0" : "1");
             replicaSetInformation.setRunningPods(aReplicaSet.getStatus().getReadyReplicas() == null ? 0 : aReplicaSet.getStatus().getReadyReplicas());
             replicaSetInformation.setReplicas(aReplicaSet.getSpec().getReplicas() == null ? 0 : aReplicaSet.getSpec().getReplicas());

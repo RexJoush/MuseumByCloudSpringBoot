@@ -7,10 +7,9 @@ import com.nwu.service.workload.DeploymentsService;
 import com.nwu.util.FilterReplicaSetByControllerUid;
 import com.nwu.util.KubernetesUtils;
 import com.nwu.util.format.ReplicaSetFormat;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.Event;
-import io.fabric8.kubernetes.api.model.LocalObjectReference;
-import io.fabric8.kubernetes.api.model.Quantity;
+
+import com.nwu.util.tempUtil.ChangesCreationTimestamp;
+import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.apps.DeploymentBuilder;
 import io.fabric8.kubernetes.api.model.apps.ReplicaSet;
@@ -23,6 +22,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -170,29 +170,27 @@ public class DeploymentsServiceImpl implements DeploymentsService {
         /**
          * 方法一
          */
-        try {
-            AppsV1Api apiInstance = new AppsV1Api();
-            // 更新副本的json串
-            String jsonPatchStr = "[{\"op\":\"replace\",\"path\":\"/spec/replicas\", \"value\": " + replicas + " }]";
-            V1Patch body = new V1Patch(jsonPatchStr);
-            apiInstance.patchNamespacedDeployment(name, namespace, body, null, null, null, null);
-            return Pair.of(1200, true);
-        } catch (ApiException e) {
-            e.printStackTrace();
-            System.out.println("更新Replicas失败，在DeploymentsServiceImpl的setReplicas方法中");
-        }
+//        try {
+//            AppsV1Api apiInstance = new AppsV1Api();
+//            // 更新副本的json串
+//            String jsonPatchStr = "[{\"op\":\"replace\",\"path\":\"/spec/replicas\", \"value\": " + replicas + " }]";
+//            V1Patch body = new V1Patch(jsonPatchStr);
+//            apiInstance.patchNamespacedDeployment(name, namespace, body, null, null, null, null);
+//            return Pair.of(1200, true);
+//        } catch (ApiException e) {
+//            e.printStackTrace();
+//            System.out.println("更新Replicas失败，在DeploymentsServiceImpl的setReplicas方法中");
+//        }
 
         /**
          * 方法二
          */
-//        try{
-//            KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).scale(replicas);
-//            return true;
-//        }catch(Exception e){
-//            System.out.println("设置Deployment的replicas失败");
-//            return false;
-//
-//        }
+        try{
+            KubernetesUtils.client.apps().deployments().inNamespace(namespace).withName(name).scale(replicas);
+            return Pair.of(1200, true);
+        }catch(Exception e){
+            System.out.println("设置Deployment的replicas失败");
+        }
         return Pair.of(1201, null);
     }
 
@@ -216,6 +214,8 @@ public class DeploymentsServiceImpl implements DeploymentsService {
             if(pair.getLeft() != 1200) return Pair.of(1201, null);// 操作失败
             else if(pair.getLeft() == 1200 && pair.getRight() == null) return Pair.of(1202, null);// 非法操作
             Deployment deployment = pair.getRight();
+
+            deployment = ChangesCreationTimestamp.deployment(deployment);
 
             //获取 Deployment 下的 ReplicaSet(新[0]旧[1:-1]) 正确匹配按ControllerUid
             ReplicaSetsServiceImpl replicaSetsService = new ReplicaSetsServiceImpl();
@@ -346,8 +346,11 @@ public class DeploymentsServiceImpl implements DeploymentsService {
             String[] annotationsKeys = podForm.getAnnotationsKeys();
             String[] annotationsValues = podForm.getAnnotationsValues();
             Map<String, String> annotations = new HashMap<>();
-            for(int i = 0; i < annotationsKeys.length; i++)
+            for(int i = 0; i < annotationsKeys.length; i++) {
                 labels.put(annotationsKeys[i], annotationsValues[i]);
+
+                annotations.put(annotationsKeys[i], annotationsValues[i]);
+            }
 
             //NodeSelect
             Map<String, String> nodeSelect = new HashMap<>();
